@@ -26,37 +26,37 @@
                 [
                     'name' => 'Rustic Wedding',
                     'category' => 'Weddings',
-                    'image' => 'slide1.png',
+                    'image' => 'rustic_wedding.jpg',
                     'slug' => 'rustic-wedding',
                 ],
                 [
                     'name' => '18th Birthday',
                     'category' => 'Birthdays',
-                    'image' => 'slide2.png',
+                    'image' => '18th_birthday.jpg',
                     'slug' => '18th-birthday',
                 ],
                 [
                     'name' => 'Corporate Gala',
                     'category' => 'Others',
-                    'image' => 'slide3.png',
+                    'image' => 'corporate_gala.jpg',
                     'slug' => 'corporate-gala',
                 ],
                 [
                     'name' => 'Garden Wedding',
                     'category' => 'Weddings',
-                    'image' => 'slide4.png',
+                    'image' => 'garden_wedding.jpg',
                     'slug' => 'garden-wedding',
                 ],
                 [
                     'name' => 'Debut Celebration',
                     'category' => 'Birthdays',
-                    'image' => 'slide5.png',
+                    'image' => 'debut_celebration.jpg',
                     'slug' => 'debut-celebration',
                 ],
                 [
                     'name' => 'Anniversary Party',
                     'category' => 'Others',
-                    'image' => 'slide6.png',
+                    'image' => 'anniversary_party.jpg',
                     'slug' => 'anniversary-party',
                 ],
             ];

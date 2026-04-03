@@ -1,0 +1,46 @@
+﻿@extends('headerfooter')
+
+@section('title', 'Login | FLEUR')
+
+@section('content')
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Login</h1>
+        <form class="auth-form" action="#" method="post" novalidate>
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" type="email" name="email" required>
+
+            <label for="loginUsername">Username</label>
+            <input id="loginUsername" type="text" name="username" required minlength="5" maxlength="15"
+                   pattern="^[A-Za-z][A-Za-z0-9_]{4,14}$"
+                   title="5-15 chars, start with a letter, letters/numbers/underscore only">
+
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" name="password" required minlength="8" maxlength="20"
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s'\"]{8,20}$"
+                   title="8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes">
+
+            <button type="submit" class="submit-btn">Sign In</button>
+        </form>
+
+        <div class="form-notes">
+            <h3>Login Validation Rules</h3>
+            <ul>
+                <li>Email is required and must be valid.</li>
+                <li>Username: 5-15 chars, starts with letter, letters/numbers/underscore only.</li>
+                <li>Password: 8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const loginForm = document.querySelector('.auth-form');
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!loginForm.reportValidity()) return;
+        alert('Login submitted.');
+        loginForm.reset();
+    });
+</script>
+@endsection

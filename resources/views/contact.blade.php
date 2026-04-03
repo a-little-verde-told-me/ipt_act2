@@ -26,7 +26,9 @@
     </form>
 
     <aside class="contact-info">
-      <div class="store-image">Store Image</div>
+      <div class="store-image">
+        <img src="{{ asset('images/store_image.jpg') }}" alt="Store Image">
+      </div>
       <ul class="contact-list">
         <li>
           <span class="icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
@@ -48,4 +50,14 @@
     </aside>
   </div>
 </main>
+
+<script>
+  const contactForm = document.querySelector('.contact-form');
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!contactForm.reportValidity()) return;
+    alert('Message sent! We will get back to you soon.');
+    contactForm.reset();
+  });
+</script>
 @endsection

@@ -22,6 +22,198 @@ Route::get('/gallery', function () {
     return view('gallery');
 })->name('gallery');
 
+Route::get('/search', function (\Illuminate\Http\Request $request) {
+    $query = trim((string) $request->query('q', ''));
+    $page = max(1, (int) $request->query('page', 1));
+    $perPage = 10;
+
+    $viewMap = [
+        'home' => route('home'),
+        'about' => route('about'),
+        'contact' => route('contact'),
+        'flowers' => route('flowers'),
+        'gallery' => route('gallery'),
+        'login' => route('login'),
+        'registration' => route('registration'),
+        'product' => route('product'),
+        'profile' => route('profile'),
+        'order' => route('order'),
+        'cart' => route('cart'),
+        'checkout' => route('checkout'),
+        'search' => route('search'),
+        'filter' => route('filter'),
+        // View gallery is dynamic; include a sample entry.
+        'viewgallery' => route('gallery.view', ['event' => 'rustic-wedding']),
+    ];
+
+    $stopwords = [
+        'the','and','for','with','this','that','your','you','from','into','our','are','was','were',
+        'has','have','will','shall','also','more','only','not','but','than','then','them','they',
+        'about','page','form','contact','home','gallery','flowers','search','filter','login','registration'
+    ];
+
+    $viewsDir = resource_path('views');
+    $files = glob($viewsDir.'/*.blade.php') ?: [];
+    $items = [];
+    $id = 1;
+
+    foreach ($files as $file) {
+        $viewName = basename($file, '.blade.php');
+        if (!isset($viewMap[$viewName])) {
+            continue;
+        }
+        $raw = file_get_contents($file) ?: '';
+        $raw = preg_replace('/<script\\b[^>]*>.*?<\\/script>/is', ' ', $raw);
+        $raw = preg_replace('/<style\\b[^>]*>.*?<\\/style>/is', ' ', $raw);
+        $raw = preg_replace('/{{.*?}}/s', ' ', $raw);
+        $raw = preg_replace('/@\\w+\\b[^\\n]*/', ' ', $raw);
+        $text = trim(preg_replace('/\\s+/', ' ', strip_tags($raw)));
+
+        $title = ucfirst($viewName);
+        if (preg_match("/@section\\('title',\\s*'([^']+)'\\)/", $raw, $m)) {
+            $title = $m[1];
+        } elseif (preg_match('/<title>([^<]+)<\\/title>/', $raw, $m)) {
+            $title = trim($m[1]);
+        }
+
+        $blurb = $text !== '' ? mb_substr($text, 0, 160) : 'Page content for '.$title.'.';
+
+        $words = preg_split('/[^a-zA-Z0-9]+/', strtolower($text), -1, PREG_SPLIT_NO_EMPTY);
+        $freq = [];
+        foreach ($words as $w) {
+            if (strlen($w) < 3 || in_array($w, $stopwords, true)) {
+                continue;
+            }
+            $freq[$w] = ($freq[$w] ?? 0) + 1;
+        }
+        arsort($freq);
+        $keywords = implode(' ', array_slice(array_keys($freq), 0, 12));
+
+        $items[] = [
+            'id' => $id++,
+            'title' => $title,
+            'blurb' => $blurb,
+            'url' => $viewMap[$viewName],
+            'keywords' => $keywords,
+        ];
+    }
+
+    // Add real items from Flowers catalog (names in flowers.blade.php)
+    $flowersFile = $viewsDir.DIRECTORY_SEPARATOR.'flowers.blade.php';
+    if (is_file($flowersFile)) {
+        $flowerRaw = file_get_contents($flowersFile) ?: '';
+        if (preg_match_all("/\\['image'\\s*=>\\s*'([^']+)'\\s*,\\s*'name'\\s*=>\\s*'([^']+)'\\]/", $flowerRaw, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $name = $m[2];
+                $items[] = [
+                    'id' => $id++,
+                    'title' => $name,
+                    'blurb' => 'Flower available in our catalog.',
+                    'url' => route('flowers'),
+                    'keywords' => strtolower($name).' flower bouquet',
+                ];
+            }
+        }
+    }
+
+    // Add real items from Gallery events (names in gallery.blade.php)
+    $galleryFile = $viewsDir.DIRECTORY_SEPARATOR.'gallery.blade.php';
+    if (is_file($galleryFile)) {
+        $galleryRaw = file_get_contents($galleryFile) ?: '';
+        if (preg_match_all("/'name'\\s*=>\\s*'([^']+)'\\s*,\\s*'category'\\s*=>\\s*'([^']+)'\\s*,\\s*'image'\\s*=>\\s*'[^']+'\\s*,\\s*'slug'\\s*=>\\s*'([^']+)'/", $galleryRaw, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $eventName = $m[1];
+                $category = $m[2];
+                $slug = $m[3];
+                $items[] = [
+                    'id' => $id++,
+                    'title' => $eventName,
+                    'blurb' => $category.' event gallery.',
+                    'url' => route('gallery.view', ['event' => $slug]),
+                    'keywords' => strtolower($eventName).' '.$category.' gallery event',
+                ];
+            }
+        }
+    }
+
+    // Add real items from Products list (names in product.blade.php)
+    $productFile = $viewsDir.DIRECTORY_SEPARATOR.'product.blade.php';
+    if (is_file($productFile)) {
+        $productRaw = file_get_contents($productFile) ?: '';
+        if (preg_match_all("/\\['name'\\s*=>\\s*'([^']+)'\\s*,\\s*'price'\\s*=>\\s*'([^']+)'\\s*,\\s*'image'\\s*=>\\s*'[^']+'\\]/", $productRaw, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $name = $m[1];
+                $price = $m[2];
+                $items[] = [
+                    'id' => $id++,
+                    'title' => $name,
+                    'blurb' => 'Product price: '.$price.'.',
+                    'url' => route('product'),
+                    'keywords' => strtolower($name).' product bouquet '.$price,
+                ];
+            }
+        }
+    }
+
+    $results = $items;
+    $tokens = [];
+
+    if ($query !== '') {
+        $tokens = preg_split('/\s+/', strtolower($query));
+        $results = array_filter($items, function ($item) use ($tokens) {
+            $hay = strtolower($item['title'].' '.$item['blurb'].' '.$item['keywords']);
+            foreach ($tokens as $token) {
+                if ($token === '') {
+                    continue;
+                }
+                if (str_contains($hay, $token)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    $scored = array_map(function ($item) use ($tokens) {
+        $score = 0;
+        $hay = strtolower($item['title'].' '.$item['keywords']);
+        foreach ($tokens as $token) {
+            if ($token === '') {
+                continue;
+            }
+            if (str_contains($hay, $token)) {
+                $score++;
+            }
+        }
+        $item['score'] = $score;
+        return $item;
+    }, $results);
+
+    usort($scored, function ($a, $b) {
+        return $b['score'] <=> $a['score'];
+    });
+
+    $total = count($scored);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    $page = min($page, $totalPages);
+    $offset = ($page - 1) * $perPage;
+    $paged = array_slice($scored, $offset, $perPage);
+
+    return view('search', [
+        'query' => $query,
+        'items' => $items,
+        'results' => $paged,
+        'page' => $page,
+        'total' => $total,
+        'totalPages' => $totalPages,
+        'perPage' => $perPage,
+    ]);
+})->name('search');
+
+Route::get('/filter', function () {
+    return view('filter');
+})->name('filter');
+
 Route::get('/view-gallery/{event}', function (string $event) {
     return view('viewgallery', ['event' => $event]);
 })->name('gallery.view');
