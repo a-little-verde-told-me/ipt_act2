@@ -64,13 +64,23 @@
 
         @foreach($events as $event)
             <div class="event-card" data-category="{{ $event['category'] }}" data-name="{{ strtolower($event['name']) }}">
-                <img class="event-image" src="{{ asset('images/'.$event['image']) }}" alt="{{ $event['name'] }}">
+                <button class="event-link" type="button" data-image="{{ asset('images/'.$event['image']) }}" data-title="{{ $event['name'] }}">
+                    <img class="event-image" src="{{ asset('images/'.$event['image']) }}" alt="{{ $event['name'] }}">
+                </button>
                 <div class="event-info">
                     <h3>{{ $event['name'] }}</h3>
                     <a href="{{ route('gallery.view', ['event' => $event['slug']]) }}" class="view-gallery-btn">View Gallery</a>
                 </div>
             </div>
         @endforeach
+    </div>
+</div>
+
+<div class="lightbox" id="galleryLightbox" aria-hidden="true">
+    <div class="lightbox-content" role="dialog" aria-modal="true">
+        <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+        <img id="galleryLightboxImage" src="" alt="">
+        <p id="galleryLightboxTitle"></p>
     </div>
 </div>
 
@@ -100,6 +110,38 @@
     searchInput.addEventListener('input', () => {
         const active = document.querySelector('.filter-btn.active');
         filterGallery(active.textContent.trim(), searchInput.value.trim());
+    });
+
+    const lightbox = document.getElementById('galleryLightbox');
+    const lightboxImage = document.getElementById('galleryLightboxImage');
+    const lightboxTitle = document.getElementById('galleryLightboxTitle');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+
+    document.querySelectorAll('.event-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+            lightboxImage.src = btn.dataset.image;
+            lightboxImage.alt = btn.dataset.title || 'Event image';
+            lightboxTitle.textContent = btn.dataset.title || '';
+            lightbox.classList.add('open');
+            lightbox.setAttribute('aria-hidden', 'false');
+        });
+    });
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightboxImage.src = '';
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+            closeLightbox();
+        }
     });
 </script>
 @endsection

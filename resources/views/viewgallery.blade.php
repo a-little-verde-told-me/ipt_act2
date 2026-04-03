@@ -8,27 +8,28 @@
         $eventGalleries = [
             'rustic-wedding' => [
                 'title' => 'Rustic Wedding',
-                'images' => ['slide1.png', 'slide4.png', 'slide6.png'],
+                // Replace the filenames with your images in public/images
+                'images' => ['rustic1.jpg', 'rustic2.jpg', 'rustic3.jpg'],
             ],
             '18th-birthday' => [
                 'title' => '18th Birthday',
-                'images' => ['slide2.png', 'slide5.png', 'slide3.png'],
+                'images' => ['birthday1.jpg', 'birthday2.jpg', 'birthday3.jpg'],
             ],
             'corporate-gala' => [
                 'title' => 'Corporate Gala',
-                'images' => ['slide3.png', 'slide6.png', 'slide1.png'],
+                'images' => ['corporate1.jpg', 'corporate2.jpg', 'corporate3.jpg'],
             ],
             'garden-wedding' => [
                 'title' => 'Garden Wedding',
-                'images' => ['slide4.png', 'slide1.png', 'slide5.png'],
+                'images' => ['garden1.jpg', 'garden2.jpg', 'garden3.jpg'],
             ],
             'debut-celebration' => [
                 'title' => 'Debut Celebration',
-                'images' => ['slide5.png', 'slide2.png', 'slide4.png'],
+                'images' => ['debut1.jpg', 'debut2.jpg', 'debut3.jpg'],
             ],
             'anniversary-party' => [
                 'title' => 'Anniversary Party',
-                'images' => ['slide6.png', 'slide3.png', 'slide2.png'],
+                'images' => ['anniv1.jpg', 'anniv2.jpg', 'anniv3.jpg'],
             ],
         ];
 
@@ -53,7 +54,7 @@
         </div>
     @else
         <p style="text-align:center; margin-top: 18px;">
-            Walang nahanap na gallery para sa event na ito.
+            No gallery found for this event.
         </p>
     @endif
 </div>

@@ -112,16 +112,6 @@ document.querySelector('.slider-arrow.right').addEventListener('click', () => {
   resetAutoSlide();
 });
 
-indicators.forEach((dot, i) => {
-  dot.addEventListener('click', () => {
-    currentIndex = i;
-    showSlide(currentIndex);
-    resetAutoSlide();
-  });
-});
-
-showSlide(currentIndex);
-startAutoSlide();
 </script>
 
 </body>

@@ -73,7 +73,7 @@ header {
     transition: color 0.3s ease;
 }
 
-.nav-links a:hover,
+.nav-links a,
 .active-link {
     color: var(--accent-rose);
 }
@@ -194,7 +194,7 @@ header {
     transition: transform 0.3s ease;
 }
 
-.bouquet-card:hover {
+.bouquet-card {
     transform: translateY(-5px);
 }
 
@@ -289,7 +289,7 @@ header {
     font-size: 0.85rem;
 }
 
-.submit-btn:hover {
+.submit-btn {
     background: #4b3a34;
 }
 
@@ -413,12 +413,12 @@ footer {
     width: 100%;
     max-width: 760px;
     background: #fff;
-    border: 1px solid #e3e3e3;
+    border: 1px solid #dddddd;
     display: flex;
     align-items: center;
-    border-radius: 14px;
-    padding: 10px 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    border-radius: 18px;
+    padding: 14px 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 .search-icon {
@@ -426,7 +426,7 @@ footer {
     align-items: center;
     justify-content: center;
     margin-right: 12px;
-    color: #7a6f67;
+    color: #6a5f57;
     font-size: 1rem;
 }
 
@@ -436,7 +436,7 @@ footer {
     outline: none;
     font-size: 0.98rem;
     padding: 6px 0;
-    color: #333;
+    color: #444;
     background: transparent;
 }
 
@@ -459,7 +459,7 @@ footer {
     transition: all 0.2s ease;
 }
 
-.filter-btn:hover,
+.filter-btn,
 .filter-btn.active {
     border-color: var(--accent-rose);
     background: var(--accent-rose);
@@ -510,6 +510,19 @@ footer {
     font-weight: 600;
 }
 
+.event-link {
+    display: block;
+    border: none;
+    padding: 0;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+}
+
+.event-link .event-image {
+    filter: brightness(0.95);
+}
+
 @media (max-width: 1024px) {
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -543,9 +556,6 @@ footer {
     margin-bottom: 28px;
 }
 
-.flowers-container .search-bar {
-    border-radius: 14px;
-}
 
 .flowers-grid {
     display: grid;
@@ -556,15 +566,108 @@ footer {
 .flower-card {
     background: #dedede;
     border: 1px solid #888;
-    height: 165px;
+    height: 210px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 .flower-image-placeholder {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     font-size: 0.9rem;
     color: #444;
+}
+
+.flower-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.flower-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+}
+
+.flower-link .flower-image {
+    filter: brightness(0.95);
+}
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 24px;
+}
+
+.lightbox.open {
+    display: flex;
+}
+
+.lightbox-content {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+.lightbox-content img {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    display: block;
+}
+
+.lightbox-content p {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: #333;
+    color: #fff;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 30px;
+}
+
+.flower-name {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    color: #333;
+    text-align: center;
+    background: #e6e6e6;
+    border-top: 1px solid #999;
 }
 
 @media (max-width: 1024px) {
