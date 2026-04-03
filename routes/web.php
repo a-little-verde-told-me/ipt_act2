@@ -22,8 +22,8 @@ Route::get('/gallery', function () {
     return view('gallery');
 })->name('gallery');
 
-Route::get('/view-gallery', function () {
-    return view('viewgallery');
+Route::get('/view-gallery/{event}', function (string $event) {
+    return view('viewgallery', ['event' => $event]);
 })->name('gallery.view');
 
 Route::get('/cart', function () {

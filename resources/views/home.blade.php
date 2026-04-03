@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FLEUR – Fresh Flowers for Everyone</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -74,28 +75,54 @@
 const slides = document.querySelectorAll('.slide');
 const indicators = document.querySelectorAll('.indicator');
 let currentIndex = 0;
+let autoSlideTimer = null;
 
 function showSlide(index) {
   slides.forEach((s, i) => s.classList.toggle('active', i === index));
   indicators.forEach((dot, i) => dot.classList.toggle('active', i === index));
 }
 
-document.querySelector('.slider-arrow.left').addEventListener('click', () => {
+function nextSlide() {
+  currentIndex = (currentIndex + 1) % slides.length;
+  showSlide(currentIndex);
+}
+
+function prevSlide() {
   currentIndex = (currentIndex - 1 + slides.length) % slides.length;
   showSlide(currentIndex);
+}
+
+function startAutoSlide() {
+  clearInterval(autoSlideTimer);
+  autoSlideTimer = setInterval(nextSlide, 4500);
+}
+
+function resetAutoSlide() {
+  clearInterval(autoSlideTimer);
+  startAutoSlide();
+}
+
+document.querySelector('.slider-arrow.left').addEventListener('click', () => {
+  prevSlide();
+  resetAutoSlide();
 });
 
 document.querySelector('.slider-arrow.right').addEventListener('click', () => {
-  currentIndex = (currentIndex + 1) % slides.length;
-  showSlide(currentIndex);
+  nextSlide();
+  resetAutoSlide();
 });
 
 indicators.forEach((dot, i) => {
   dot.addEventListener('click', () => {
     currentIndex = i;
     showSlide(currentIndex);
+    resetAutoSlide();
   });
 });
+
+showSlide(currentIndex);
+startAutoSlide();
 </script>
+
 </body>
 </html>
