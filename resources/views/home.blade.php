@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FLEUR – Fresh Flowers for Everyone</title>
+  <title>FLEUR â€“ Fresh Flowers for Everyone</title>
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -22,7 +22,7 @@
   </header>
 
  <section class="hero-section">
-  <div class="slider-arrow left" aria-label="Previous">‹</div>
+  <button class="slider-arrow left" type="button" aria-label="Previous">&lsaquo;</button>
 
   <div class="hero-content">
     <div class="slide active">
@@ -45,7 +45,7 @@
     </div>
   </div>
 
-  <div class="slider-arrow right" aria-label="Next">›</div>
+  <button class="slider-arrow right" type="button" aria-label="Next">&rsaquo;</button>
 
   <div class="indicators">
     <span class="indicator active"></span>
@@ -75,7 +75,6 @@
 const slides = document.querySelectorAll('.slide');
 const indicators = document.querySelectorAll('.indicator');
 let currentIndex = 0;
-let autoSlideTimer = null;
 
 function showSlide(index) {
   slides.forEach((s, i) => s.classList.toggle('active', i === index));
@@ -92,24 +91,12 @@ function prevSlide() {
   showSlide(currentIndex);
 }
 
-function startAutoSlide() {
-  clearInterval(autoSlideTimer);
-  autoSlideTimer = setInterval(nextSlide, 4500);
-}
-
-function resetAutoSlide() {
-  clearInterval(autoSlideTimer);
-  startAutoSlide();
-}
-
 document.querySelector('.slider-arrow.left').addEventListener('click', () => {
   prevSlide();
-  resetAutoSlide();
 });
 
 document.querySelector('.slider-arrow.right').addEventListener('click', () => {
   nextSlide();
-  resetAutoSlide();
 });
 
 </script>
