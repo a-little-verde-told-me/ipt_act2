@@ -226,6 +226,10 @@ Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
 
+Route::post('/checkout', function () {
+    return view('checkout', ['success' => true]);
+})->name('checkout.submit');
+
 Route::get('/login', function () {
     return view('login');
 })->name('login');

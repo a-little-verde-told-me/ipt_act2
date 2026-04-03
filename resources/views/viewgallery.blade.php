@@ -33,7 +33,8 @@
             ],
         ];
 
-        $selected = $eventGalleries[$event] ?? null;
+        $eventKey = is_string($event ?? null) ? $event : '';
+        $selected = $eventGalleries[$eventKey] ?? null;
     @endphp
 
     <h1 class="page-title">

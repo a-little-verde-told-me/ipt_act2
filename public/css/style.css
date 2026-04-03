@@ -1196,6 +1196,80 @@ footer {
 }
 
 /* -----------------------------------------
+   Checkout Page
+   ----------------------------------------- */
+.checkout-page {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+.checkout-page h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+    font-family: 'Playfair Display', serif;
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 22px;
+}
+
+.checkout-form,
+.checkout-summary {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.checkout-form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.checkout-form input,
+.checkout-form textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.checkout-form .submit-btn {
+    margin-top: 14px;
+    padding: 10px 18px;
+    background: #4d4d4d;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.checkout-summary .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.checkout-summary .total {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .checkout-layout { grid-template-columns: 1fr; }
+}
+
+/* -----------------------------------------
    About Page
    ----------------------------------------- */
 .about-page {
