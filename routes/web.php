@@ -238,9 +238,8 @@ Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
 
-Route::get('/product', function () {
-    return view('product');
-})->name('product');
+Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
+
 
 Route::get('/profile', function () {
     return view('profile');

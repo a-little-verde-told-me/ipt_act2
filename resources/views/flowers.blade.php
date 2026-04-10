@@ -3,7 +3,7 @@
 @section('title', 'Our Flowers | FLEUR')
 
 @section('content')
-<div class="flowers-container">
+<div class="products-page">
     <h1 class="page-title">FLOWERS</h1>
 
     <div class="search-section">
@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="flowers-grid">
+    <div class="products-grid">
         @php
             // Replace the filenames with your images in public/images
             $flowers = [ 
@@ -53,13 +53,15 @@
         @endphp
 
         @foreach($flowers as $flower)
-            <div class="flower-card" data-name="{{ strtolower($flower['name']) }}">
+            <div class="product-card" data-name="{{ strtolower($flower['name']) }}">
                 <button class="flower-link" type="button" data-image="{{ asset('images/'.$flower['image']) }}" data-title="{{ $flower['name'] }}">
-                    <div class="flower-image-placeholder">
+                    <div class="product-image">
                         <img class="flower-image" src="{{ asset('images/'.$flower['image']) }}" alt="{{ $flower['name'] }}">
                     </div>
                 </button>
-                <p class="flower-name">{{ $flower['name'] }}</p>
+                <div class="product-info">
+                    <h3>{{ $flower['name'] }}</h3>
+                </div>
             </div>
         @endforeach
     </div>
@@ -75,13 +77,13 @@
 
 <script>
     const searchInput = document.getElementById('flowerSearch');
-    const flowerCards = document.querySelectorAll('.flower-card');
+    const flowerCards = document.querySelectorAll('.product-card');
 
     function filterFlowers(query) {
         const q = query.trim().toLowerCase();
         flowerCards.forEach(card => {
             const name = card.dataset.name || '';
-            card.style.display = name.includes(q) ? 'flex' : 'none';
+            card.style.display = name.includes(q) ? 'block' : 'none';
         });
     }
 

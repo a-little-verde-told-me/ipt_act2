@@ -1,30 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FLEUR “ Fresh Flowers for Everyone</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-  <header>
-    <div class="logo"><span class="logo-circle"></span>FLEUR</div>
-    <nav class="nav-links">
-         <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active-link' : '' }}">Home</a>
-            <a href="{{ route('flowers') }}" class="{{ request()->routeIs('flowers') ? 'active-link' : '' }}">Flowers</a>
-            <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active-link' : '' }}">About</a>
-            <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'active-link' : '' }}">Gallery</a>
-            <a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active-link' : '' }}">Products</a>
-            <a href="{{ route('cart') }}" class="{{ request()->routeIs('cart') ? 'active-link' : '' }}">Cart</a>
-            <a href="{{ route('search') }}" class="{{ request()->routeIs('search') ? 'active-link' : '' }}">Search</a>
-            <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active-link' : '' }}">Contact Us</a>
-            <a href="{{ route('filter') }}" class="{{ request()->routeIs('filter') ? 'active-link' : '' }}">Filter</a>
-            <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active-link' : '' }}">Login</a>
-    </nav>
-     
-  </header>
+﻿@extends('headerfooter')
 
+@section('title', 'Photo Gallery | FLEUR')
+
+@section('content')
  <section class="hero-section">
   <button class="slider-arrow left" type="button" aria-label="Previous">&lsaquo;</button>
 
@@ -73,8 +51,6 @@
     <a href="{{ route('product') }}" class="shop-now">Shop Now</a>
   </section>
 
-  <footer>&copy; 2026 Fleur. All rights reserved.</footer>
-
   <script>
 const slides = document.querySelectorAll('.slide');
 const indicators = document.querySelectorAll('.indicator');
@@ -95,15 +71,27 @@ function prevSlide() {
   showSlide(currentIndex);
 }
 
-document.querySelector('.slider-arrow.left').addEventListener('click', () => {
-  prevSlide();
-});
+const autoplayDelay = 2000;
+let autoplayTimer = setInterval(nextSlide, autoplayDelay);
 
-document.querySelector('.slider-arrow.right').addEventListener('click', () => {
-  nextSlide();
-});
+const sliderLeft = document.querySelector('.slider-arrow.left');
+const sliderRight = document.querySelector('.slider-arrow.right');
+
+if (sliderLeft) {
+  sliderLeft.addEventListener('click', () => {
+    prevSlide();
+    clearInterval(autoplayTimer);
+    autoplayTimer = setInterval(nextSlide, autoplayDelay);
+  });
+}
+
+if (sliderRight) {
+  sliderRight.addEventListener('click', () => {
+    nextSlide();
+    clearInterval(autoplayTimer);
+    autoplayTimer = setInterval(nextSlide, autoplayDelay);
+  });
+}
 
 </script>
-
-</body>
-</html>
+@endsection

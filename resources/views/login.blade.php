@@ -20,7 +20,12 @@
                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s'\"]{8,20}$"
                    title="8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes">
 
-            <button type="submit" class="submit-btn">Sign In</button>
+            <div class="flex justify-center">
+                <button type="submit" class="submit-btn mx-auto">Sign In</button>
+            </div>
+            <p class="text-center mt-4 text-sm text-gray-700">
+                Don't have an account yet? <a href="{{ route('registration') }}" class="text-rose-700 hover:underline">Register here</a>
+            </p>
         </form>
 
         <div class="form-notes">
