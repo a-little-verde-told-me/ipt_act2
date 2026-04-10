@@ -7,63 +7,54 @@
     <h1 class="page-title">FLOWERS</h1>
 
     <div class="search-section">
-        <div class="search-bar">
-            <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" placeholder="Search flowers..." id="flowerSearch">
-        </div>
+        <form method="GET" action="{{ route('flowers') }}" class="product-filters">
+            <div class="product-search-row">
+                <div class="search-bar">
+                    <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="search" placeholder="Search flowers..." value="{{ $activeSearch ?? '' }}">
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="filters-right">
+                    <button type="submit" class="product-filter-btn">Search</button>
+                    <a href="{{ route('flowers') }}" class="product-filter-reset">Reset</a>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="products-grid">
-        @php
-            // Replace the filenames with your images in public/images
-            $flowers = [ 
-                ['image' => 'flower1.jpg', 'name' => 'Cosmos'],
-                ['image' => 'flower2.jpg', 'name' => 'Indian Paintbrush'],
-                ['image' => 'flower3.jpg', 'name' => 'Bluebonnet'],
-                ['image' => 'flower4.jpg', 'name' => 'Wild Bergamot'],
-                ['image' => 'flower5.jpg', 'name' => 'Dahlia'],
-                ['image' => 'flower6.jpg', 'name' => 'Zinnia'],
-                ['image' => 'flower7.jpg', 'name' => 'Ranunculus'],
-                ['image' => 'flower8.jpg', 'name' => 'Larkspur'],
-                ['image' => 'flower9.jpg', 'name' => 'Chrysanthemum'],
-                ['image' => 'flower10.jpg', 'name' => 'Anemone'],
-                ['image' => 'flower11.jpg', 'name' => 'Celosia'],
-                ['image' => 'flower12.jpg', 'name' => 'Gladiolus'],
-                ['image' => 'flower13.jpg', 'name' => 'Gomphrena'],
-                ['image' => 'flower14.jpg', 'name' => 'Sunflower'],
-                ['image' => 'flower15.jpg', 'name' => 'Craspedia'],
-                ['image' => 'flower16.jpg', 'name' => 'Gerbera Daisy'],
-                ['image' => 'flower17.jpg', 'name' => 'Snapdragon'],
-                ['image' => 'flower18.jpg', 'name' => 'Bells of Ireland'],
-                ['image' => 'flower19.jpg', 'name' => 'Stock'],
-                ['image' => 'flower20.jpg', 'name' => 'Strawflower'],
-                ['image' => 'flower21.jpg', 'name' => 'Nigella'],
-                ['image' => 'flower22.jpg', 'name' => 'Morning Glory'],
-                ['image' => 'flower23.jpg', 'name' => 'Lobelia'],
-                ['image' => 'flower24.jpg', 'name' => 'Verbena'],
-                ['image' => 'flower25.jpg', 'name' => 'Dusty Miller'],
-                ['image' => 'flower26.jpg', 'name' => 'Sweet Alyssum'],
-                ['image' => 'flower27.jpg', 'name' => 'Browallia'],
-                ['image' => 'flower28.jpg', 'name' => 'Torenia'],
-                ['image' => 'flower29.jpg', 'name' => 'Gazania'],
-                ['image' => 'flower30.jpg', 'name' => 'Nicotiana'],
-                ['image' => 'flower31.jpg', 'name' => 'Nasturtium'],
-                ['image' => 'flower32.jpg', 'name' => 'Alyssum'],
-            ];
-        @endphp
-
-        @foreach($flowers as $flower)
-            <div class="product-card" data-name="{{ strtolower($flower['name']) }}">
-                <button class="flower-link" type="button" data-image="{{ asset('images/'.$flower['image']) }}" data-title="{{ $flower['name'] }}">
+        @forelse($flowers as $flower)
+            <div class="product-card" data-name="{{ strtolower($flower->name) }}">
+                @php
+                    $flowerImage = $flower->image_url
+                        ? (str_starts_with($flower->image_url, 'http') ? $flower->image_url : asset('images/'.$flower->image_url))
+                        : asset('images/placeholder.jpg');
+                @endphp
+                <button class="flower-link" type="button" data-image="{{ $flowerImage }}" data-title="{{ $flower->name }}">
                     <div class="product-image">
-                        <img class="flower-image" src="{{ asset('images/'.$flower['image']) }}" alt="{{ $flower['name'] }}">
+                        <img class="flower-image" src="{{ $flowerImage }}" alt="{{ $flower->name }}">
                     </div>
                 </button>
                 <div class="product-info">
-                    <h3>{{ $flower['name'] }}</h3>
+                    <h3>{{ $flower->name }}</h3>
+                    <p class="product-price">Available for custom bouquets</p>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <p style="font-size: 1.1rem; margin: 0;">No flowers are listed yet.</p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">Add flower products in the database to show them here.</p>
+            </div>
+        @endforelse
+    </div>
+
+    <div class="customize-cta">
+        <div>
+            <h2>Want a personalized bouquet?</h2>
+            <p>Mix and match from our available flowers and tell us your theme, colors, and budget.</p>
+        </div>
+        <a href="{{ route('customize') }}" class="cta-button">Customize Now</a>
     </div>
 </div>
 
@@ -76,21 +67,6 @@
 </div>
 
 <script>
-    const searchInput = document.getElementById('flowerSearch');
-    const flowerCards = document.querySelectorAll('.product-card');
-
-    function filterFlowers(query) {
-        const q = query.trim().toLowerCase();
-        flowerCards.forEach(card => {
-            const name = card.dataset.name || '';
-            card.style.display = name.includes(q) ? 'block' : 'none';
-        });
-    }
-
-    searchInput.addEventListener('input', () => {
-        filterFlowers(searchInput.value);
-    });
-
     const lightbox = document.getElementById('flowerLightbox');
     const lightboxImage = document.getElementById('flowerLightboxImage');
     const lightboxTitle = document.getElementById('flowerLightboxTitle');

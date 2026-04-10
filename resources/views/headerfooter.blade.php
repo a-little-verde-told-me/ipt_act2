@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'FLEUR')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -18,6 +19,8 @@
     <nav class="nav-links">
          <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active-link' : '' }}">Home</a>
             <a href="{{ route('flowers') }}" class="{{ request()->routeIs('flowers') ? 'active-link' : '' }}">Flowers</a>
+            <a href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'active-link' : '' }}">Services</a>
+            <a href="{{ route('customize') }}" class="{{ request()->routeIs('customize') ? 'active-link' : '' }}">Customize</a>
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active-link' : '' }}">About</a>
             <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'active-link' : '' }}">Gallery</a>
             <a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active-link' : '' }}">Products</a>
@@ -25,7 +28,15 @@
             <!-- <a href="{{ route('search') }}" class="{{ request()->routeIs('search') ? 'active-link' : '' }}">Search</a> -->
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active-link' : '' }}">Contact Us</a>
             <!-- <a href="{{ route('filter') }}" class="{{ request()->routeIs('filter') ? 'active-link' : '' }}">Filter</a> -->
-            <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active-link' : '' }}">Login</a>
+            @auth
+                <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active-link' : '' }}">Profile</a>
+                <form method="POST" action="{{ route('logout') }}" class="nav-logout">
+                    @csrf
+                    <button type="submit" class="nav-link-button">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active-link' : '' }}">Login</a>
+            @endauth
     </nav>
      
   </header>

@@ -17,6 +17,7 @@
                 <span>Quantity</span>
                 <span>Total</span>
             </div>
+            <p class="empty-cart" id="loginNotice" style="display:none;">Please log in to view your saved cart.</p>
             <div id="cartRows"></div>
             <p class="empty-cart" id="emptyCart">Your cart is empty.</p>
         </div>
@@ -57,43 +58,52 @@
 </div>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const userId = @json(auth()->id());
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const itemsUrl = @json(route('cart.items'));
+    const updateBase = @json(url('/cart/items'));
+    const imageBase = @json(asset('images/'));
     const rowsEl = document.getElementById('cartRows');
     const emptyEl = document.getElementById('emptyCart');
+    const loginNotice = document.getElementById('loginNotice');
     const subtotalEl = document.getElementById('cartSubtotal');
     const shippingEl = document.getElementById('cartShipping');
     const totalEl = document.getElementById('cartTotal');
-
-    function getCart() {
-        try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function saveCart(cart) {
-        localStorage.setItem(cartKey, JSON.stringify(cart));
-    }
 
     function formatPrice(value) {
         return `₱ ${value.toFixed(2)}`;
     }
 
-    function renderCart() {
-        const cart = getCart();
+    async function fetchCart() {
+        const res = await fetch(itemsUrl, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('Failed');
+        return res.json();
+    }
+
+    function renderCart(items, totals) {
         rowsEl.innerHTML = '';
 
-        if (cart.length === 0) {
+        if (!userId) {
+            loginNotice.style.display = 'block';
+            emptyEl.style.display = 'none';
+            subtotalEl.textContent = formatPrice(0);
+            shippingEl.textContent = formatPrice(0);
+            totalEl.textContent = formatPrice(0);
+            return;
+        }
+
+        loginNotice.style.display = 'none';
+        if (items.length === 0) {
             emptyEl.style.display = 'block';
         } else {
             emptyEl.style.display = 'none';
         }
 
-        let subtotal = 0;
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.qty;
-            subtotal += itemTotal;
+        items.forEach((item) => {
+            const itemTotal = parseFloat(item.price) * item.quantity;
+            const imageUrl = item.image_url
+                ? (item.image_url.startsWith('http') ? item.image_url : `${imageBase}${item.image_url}`)
+                : `${imageBase}placeholder.jpg`;
 
             const row = document.createElement('div');
             row.className = 'cart-row';
@@ -102,53 +112,67 @@
                     <input type="checkbox" checked>
                 </label>
                 <div class="product-cell">
-                    <div class="thumb"><img src="${item.image}" alt="${item.name}"></div>
+                    <div class="thumb"><img src="${imageUrl}" alt="${item.name}"></div>
                     <div class="product-text">
                         <strong>${item.name}</strong>
-                        <span>color</span>
+                        <span>custom bouquet</span>
                     </div>
                 </div>
-                <div class="price-cell">${formatPrice(item.price)}</div>
+                <div class="price-cell">${formatPrice(parseFloat(item.price))}</div>
                 <div class="qty-cell">
-                    <button type="button" class="qty-btn" data-action="dec" data-index="${index}">−</button>
-                    <span class="qty-value">${item.qty}</span>
-                    <button type="button" class="qty-btn" data-action="inc" data-index="${index}">+</button>
+                    <button type="button" class="qty-btn" data-action="dec" data-id="${item.id}" data-qty="${item.quantity}">−</button>
+                    <span class="qty-value">${item.quantity}</span>
+                    <button type="button" class="qty-btn" data-action="inc" data-id="${item.id}" data-qty="${item.quantity}">+</button>
                 </div>
                 <div class="total-cell">${formatPrice(itemTotal)}</div>
             `;
             rowsEl.appendChild(row);
         });
 
-        const shipping = cart.length ? 150 : 0;
-        subtotalEl.textContent = formatPrice(subtotal);
-        shippingEl.textContent = formatPrice(shipping);
-        totalEl.textContent = formatPrice(subtotal + shipping);
+        subtotalEl.textContent = formatPrice(totals.subtotal);
+        shippingEl.textContent = formatPrice(totals.shipping);
+        totalEl.textContent = formatPrice(totals.total);
     }
 
-    rowsEl.addEventListener('click', (e) => {
+    async function updateItem(id, quantity) {
+        await fetch(`${updateBase}/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ quantity }),
+        });
+    }
+
+    rowsEl.addEventListener('click', async (e) => {
         const btn = e.target.closest('.qty-btn');
         if (!btn) return;
 
-        const index = parseInt(btn.dataset.index, 10);
+        const id = parseInt(btn.dataset.id, 10);
+        const currentQty = parseInt(btn.dataset.qty, 10);
         const action = btn.dataset.action;
-        const cart = getCart();
+        const nextQty = action === 'inc' ? currentQty + 1 : currentQty - 1;
 
-        if (!cart[index]) return;
+        if (nextQty < 0) return;
 
-        if (action === 'inc') {
-            cart[index].qty += 1;
-        } else if (action === 'dec') {
-            cart[index].qty -= 1;
-            if (cart[index].qty <= 0) {
-                cart.splice(index, 1);
-            }
+        try {
+            await updateItem(id, nextQty);
+            const data = await fetchCart();
+            renderCart(data.items, data);
+        } catch (e) {
+            alert('Unable to update cart.');
         }
-
-        saveCart(cart);
-        renderCart();
     });
 
-    renderCart();
+    if (userId) {
+        fetchCart().then(data => renderCart(data.items, data)).catch(() => {
+            renderCart([], { subtotal: 0, shipping: 0, total: 0 });
+        });
+    } else {
+        renderCart([], { subtotal: 0, shipping: 0, total: 0 });
+    }
 
     const addressEl = document.getElementById('deliveryAddress');
     const changeBtn = document.getElementById('changeAddressBtn');

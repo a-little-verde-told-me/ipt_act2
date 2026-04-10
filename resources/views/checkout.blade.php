@@ -50,32 +50,29 @@
 </div>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const userId = @json(auth()->id());
+    const itemsUrl = @json(route('cart.items'));
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const shippingEl = document.getElementById('checkoutShipping');
     const totalEl = document.getElementById('checkoutTotal');
-
-    function getCart() {
-        try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
-        } catch (e) {
-            return [];
-        }
-    }
 
     function formatPrice(value) {
         return `₱ ${value.toFixed(2)}`;
     }
 
-    function updateSummary() {
-        const cart = getCart();
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const shipping = cart.length ? 150 : 0;
-        subtotalEl.textContent = formatPrice(subtotal);
-        shippingEl.textContent = formatPrice(shipping);
-        totalEl.textContent = formatPrice(subtotal + shipping);
+    function updateSummary(data) {
+        subtotalEl.textContent = formatPrice(data.subtotal || 0);
+        shippingEl.textContent = formatPrice(data.shipping || 0);
+        totalEl.textContent = formatPrice(data.total || 0);
     }
 
-    updateSummary();
+    if (userId) {
+        fetch(itemsUrl, { headers: { 'Accept': 'application/json' } })
+            .then(res => res.json())
+            .then(updateSummary)
+            .catch(() => updateSummary({}));
+    } else {
+        updateSummary({});
+    }
 </script>
 @endsection

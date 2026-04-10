@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FlowersController;
 
 Route::get('/', function () {
     return view('home');
@@ -14,9 +17,7 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-Route::get('/flowers', function () {
-    return view('flowers');
-})->name('flowers');
+Route::get('/flowers', [FlowersController::class, 'index'])->name('flowers');
 
 Route::get('/gallery', function () {
     return view('gallery');
@@ -33,6 +34,8 @@ Route::get('/search', function (\Illuminate\Http\Request $request) {
         'contact' => route('contact'),
         'flowers' => route('flowers'),
         'gallery' => route('gallery'),
+        'services' => route('services'),
+        'customize' => route('customize'),
         'login' => route('login'),
         'registration' => route('registration'),
         'product' => route('product'),
@@ -218,9 +221,13 @@ Route::get('/view-gallery/{event}', function (string $event) {
     return view('viewgallery', ['event' => $event]);
 })->name('gallery.view');
 
-Route::get('/cart', function () {
-    return view('cart');
-})->name('cart');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::get('/cart/items', [CartController::class, 'items'])->name('cart.items');
+Route::middleware('auth')->group(function () {
+    Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
+    Route::patch('/cart/items/{id}', [CartController::class, 'update'])->name('cart.items.update');
+    Route::delete('/cart/items/{id}', [CartController::class, 'destroy'])->name('cart.items.destroy');
+});
 
 Route::get('/checkout', function () {
     return view('checkout');
@@ -238,6 +245,10 @@ Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
 
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/registration', [AuthController::class, 'register'])->name('registration.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
 
 
@@ -248,3 +259,15 @@ Route::get('/profile', function () {
 Route::get('/order', function () {
     return view('order');
 })->name('order');
+
+Route::get('/services', function () {
+    return view('services');
+})->name('services');
+
+Route::get('/customize', function () {
+    return view('customize');
+})->name('customize');
+
+Route::post('/customize', function () {
+    return view('customize', ['success' => true]);
+})->name('customize.submit');
