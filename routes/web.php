@@ -1,5 +1,11 @@
 <?php
 
+use App\Models\User;
+use App\Models\Cart;
+use App\Http\Controllers\AdminProductController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -234,18 +240,178 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'login' => ['required', 'string', 'min:5', 'max:50'],
+        'password' => ['required', 'string', 'min:8', 'max:20'],
+    ]);
+
+    $login = $request->input('login');
+
+    if ($login === 'admin@gmail.com' && $request->password === 'admin123') {
+        $user = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+                'age' => 30,
+                'gender' => 'Other',
+                'civil_status' => 'Single',
+                'mobile' => '09990000000',
+                'address' => 'Admin Office Address',
+                'zip' => '0000',
+            ]
+        );
+
+        Auth::login($user);
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    $user = filter_var($login, FILTER_VALIDATE_EMAIL)
+        ? User::where('email', $login)->first()
+        : User::where('username', $login)->first();
+
+    if (! $user) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'No account found with that email or username. Please register first.');
+    }
+
+    if (! Hash::check($request->password, $user->password)) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'Invalid password. Please try again.');
+    }
+
+    Auth::login($user);
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    return redirect()->route('profile')->with('success', 'Welcome back, '.$user->name.'!');
+})->name('login.submit');
+
 Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
 
-Route::get('/product', function () {
-    return view('product');
-})->name('product');
+Route::post('/registration', function (Request $request) {
+    $request->validate([
+        'name' => ['required', 'string', 'min:2', 'regex:/^[A-Za-z ]+$/'],
+        'username' => ['required', 'string', 'min:5', 'max:15', 'regex:/^[A-Za-z][A-Za-z0-9_]{4,14}$/', 'unique:users,username'],
+        'email' => ['required', 'email', 'unique:users,email'],
+        'password' => ['required', 'string', 'min:8', 'max:20', "regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[^\\s'\"]{8,20}$/"],
+        'confirm_password' => ['required', 'same:password'],
+        'age' => ['required', 'integer', 'between:18,60'],
+        'gender' => ['required', 'in:Male,Female,Other'],
+        'civil_status' => ['required', 'in:Single,Married,Separated,Widowed'],
+        'mobile' => ['required', 'regex:/^09\d{9}$/'],
+        'address' => ['required', 'string', 'min:50'],
+        'zip' => ['required', 'regex:/^\d{4}$/'],
+    ], [
+        'name.regex' => 'Full name may only contain letters and spaces.',
+        'username.regex' => 'Username must start with a letter and contain only letters, numbers, and underscore.',
+        'password.regex' => 'Password must be 8-20 chars, include uppercase, lowercase, and a number.',
+        'confirm_password.same' => 'Passwords do not match.',
+        'mobile.regex' => 'Mobile number must be 11 digits and start with 09.',
+        'zip.regex' => 'ZIP code must be exactly 4 digits.',
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'age' => $request->age,
+        'gender' => $request->gender,
+        'civil_status' => $request->civil_status,
+        'mobile' => $request->mobile,
+        'address' => $request->address,
+        'zip' => $request->zip,
+    ]);
+
+    Auth::login($user);
+
+    return redirect()->route('profile')->with('success', 'Account created successfully. You are now logged in.');
+})->name('registration.submit');
+
+Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+});
 
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
+Route::post('/logout', function (Request $request) {
+    if (Auth::check()) {
+        Cart::where('user_id', Auth::id())->delete();
+    }
+    
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home')->with('success', 'You have been logged out successfully.');
+})->name('logout');
+
 Route::get('/order', function () {
     return view('order');
 })->name('order');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/api/cart', function () {
+        $cartItems = Cart::where('user_id', Auth::id())->get()->map(function ($item) {
+            return [
+                'name' => $item->product_name,
+                'price' => (float) $item->price,
+                'image' => $item->image_url,
+                'qty' => $item->qty,
+            ];
+        })->values()->all();
+
+        return response()->json($cartItems);
+    })->name('api.cart.get');
+
+    Route::post('/api/cart', function (Request $request) {
+        $request->validate([
+            'product_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'image_url' => 'required|string|max:1000',
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        $existing = Cart::where('user_id', Auth::id())
+            ->where('product_name', $request->product_name)
+            ->first();
+
+        if ($existing) {
+            $existing->increment('qty', $request->qty);
+        } else {
+            Cart::create([
+                'user_id' => Auth::id(),
+                'product_name' => $request->product_name,
+                'price' => $request->price,
+                'image_url' => $request->image_url,
+                'qty' => $request->qty,
+            ]);
+        }
+
+        return response()->json(['status' => 'added']);
+    })->name('api.cart.add');
+
+    Route::delete('/api/cart', function () {
+        Cart::where('user_id', Auth::id())->delete();
+        return response()->json(['status' => 'cleared']);
+    })->name('api.cart.clear');
+});

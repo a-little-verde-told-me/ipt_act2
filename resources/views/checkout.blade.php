@@ -4,7 +4,11 @@
 
 @section('content')
 <div class="checkout-page">
-    <h1>CHECKOUT</h1>
+    <h1 class="page-title">CHECKOUT</h1>
+
+    <div class="checkout-header">
+        <a href="{{ route('cart') }}" class="back-to-cart-btn">← Back to Cart</a>
+    </div>
 
     <div class="checkout-layout">
         <form class="checkout-form" action="{{ route('checkout.submit') }}" method="post">
@@ -40,7 +44,6 @@
                 <span>Total</span>
                 <span id="checkoutTotal">₱ 0.00</span>
             </div>
-            <a href="{{ route('cart') }}" class="continue-link">Back to Cart</a>
         </aside>
     </div>
 

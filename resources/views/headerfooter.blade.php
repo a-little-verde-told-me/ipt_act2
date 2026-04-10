@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'FLEUR')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -11,20 +12,38 @@
 <body>
 
     <header>
-    <div class="logo"><span class="logo-circle"></span>FLEUR</div>
+    <a href="{{ route('home') }}" class="logo">
+        <img src="{{ asset('images/fleur_logo.png') }}" alt="FLEUR logo" class="logo-img">
+        <span style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-rose);">FLEUR</span>
+    </a>
     <nav class="nav-links">
          <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active-link' : '' }}">Home</a>
             <a href="{{ route('flowers') }}" class="{{ request()->routeIs('flowers') ? 'active-link' : '' }}">Flowers</a>
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active-link' : '' }}">About</a>
             <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'active-link' : '' }}">Gallery</a>
             <a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active-link' : '' }}">Products</a>
-            <a href="{{ route('cart') }}" class="{{ request()->routeIs('cart') ? 'active-link' : '' }}">Cart</a>
-            <a href="{{ route('search') }}" class="{{ request()->routeIs('search') ? 'active-link' : '' }}">Search</a>
+            <!-- <a href="{{ route('search') }}" class="{{ request()->routeIs('search') ? 'active-link' : '' }}">Search</a> -->
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active-link' : '' }}">Contact Us</a>
-            <a href="{{ route('filter') }}" class="{{ request()->routeIs('filter') ? 'active-link' : '' }}">Filter</a>
-            <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active-link' : '' }}">Login</a>
+            <!-- <a href="{{ route('filter') }}" class="{{ request()->routeIs('filter') ? 'active-link' : '' }}">Filter</a> -->
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.*') ? 'active-link' : '' }}">Admin</a>
+                @endif
+            @endauth
     </nav>
-     
+    <div class="header-actions">
+        <a href="{{ route('cart') }}" class="cart-icon" title="Cart">
+            <i class="fa-solid fa-shopping-cart"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+        </a>
+        @auth
+            <a href="{{ route('profile') }}" class="profile-icon" title="Profile">
+                <i class="fa-solid fa-user"></i>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="login-btn {{ request()->routeIs('login') ? 'active-link' : '' }}">Login</a>
+        @endauth
+    </div>
   </header>
 
 
@@ -38,5 +57,36 @@
         <p>&copy; 2026 FLEUR Flower Shop</p>
     </footer>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        function getCartCount() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('fleur_cart')) || [];
+                return cart.reduce((sum, item) => sum + (item.qty || 0), 0);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartCount');
+            if (!badge) return;
+            const count = getCartCount();
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-flex' : 'none';
+        }
+
+        updateCartBadge();
+
+        window.addEventListener('cart-updated', updateCartBadge);
+
+        // also update after localStorage changes in same page via custom event
+        document.addEventListener('storage', (event) => {
+            if (event.key === 'fleur_cart') {
+                updateCartBadge();
+            }
+        });
+    });
+</script>
 </body>
 </html>
