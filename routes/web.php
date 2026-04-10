@@ -25,9 +25,22 @@ Route::get('/contact', function () {
 
 Route::get('/flowers', [FlowersController::class, 'index'])->name('flowers');
 
+Route::get('/services', function () {
+    return view('services');
+})->name('services');
+
+Route::get('/customize', function () {
+    return view('customize');
+})->name('customize');
+
+Route::post('/customize', function () {
+    return view('customize', ['success' => true]);
+})->name('customize.submit');
+
 Route::get('/gallery', function () {
     return view('gallery');
 })->name('gallery');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('api.cart.add');
 
 Route::get('/search', function (\Illuminate\Http\Request $request) {
     $query = trim((string) $request->query('q', ''));
@@ -304,6 +317,8 @@ Route::post('/login', function (Request $request) {
 Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
+
+Route::post('/registration', [AuthController::class, 'register'])->name('registration.submit');
 
 Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
 

@@ -6,7 +6,8 @@
 <div class="auth-page">
     <div class="auth-card">
         <h1>Registration</h1>
-        <form class="auth-form" id="registrationForm" action="#" method="post" novalidate>
+        <form class="auth-form" id="registrationForm" action="{{ route('registration.submit') }}" method="post" novalidate>
+            @csrf
             <h3>Personal Information</h3>
 
             <label for="fullName">Full Name</label>

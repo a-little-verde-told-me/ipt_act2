@@ -13,7 +13,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // Paste image links in "image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [ // Individual Flowers
+        $items = [
             // Flowers (for customization)
             ['name' => 'Red Rose', 'category' => 'Flower', 'price' => 120.00, 'description' => 'Classic red rose stem.', 'image_url' => 'Red Rose.jpg'],
             ['name' => 'White Rose', 'category' => 'Flower', 'price' => 120.00, 'description' => 'Elegant white rose stem.', 'image_url' => 'White Rose.jpg'],
@@ -28,59 +28,7 @@ class ProductSeeder extends Seeder
             ['name' => 'Orchid', 'category' => 'Flower', 'price' => 180.00, 'description' => 'Premium orchid stem.', 'image_url' => 'Orchid.jpg'],
             ['name' => 'Chrysanthemum', 'category' => 'Flower', 'price' => 75.00, 'description' => 'Full-bodied mum bloom.', 'image_url' => 'Chrysanthemum.jpg'],
             ['name' => 'Stargazer Lily', 'category' => 'Flower', 'price' => 160.00, 'description' => 'Starry stargazer lily stem.', 'image_url' => 'Stargazer Lily.jpg'],
-        ];
-
-        foreach ($items as $item) {
-            Product::create($item);
-        }
-    }
-}
-
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name' =>('image_url" (full URL). Replace PASTE_URL_HERE per item.
-        $items = [
-            // Flowers (for customization)
-            ['name]' =>
-
+            // Bouquets
             ['name' => 'Rose Romance', 'category' => 'Bouquet', 'price' => 1299.00, 'description' => '12 red roses with greenery.', 'image_url' => 'PASTE_URL_HERE'],
             ['name' => 'Blush Dreams', 'category' => 'Bouquet', 'price' => 1199.00, 'description' => 'Pink roses with baby’s breath.', 'image_url' => 'PASTE_URL_HERE'],
             ['name' => 'Sunshine Cheer', 'category' => 'Bouquet', 'price' => 1099.00, 'description' => 'Sunflowers and daisies mix.', 'image_url' => 'PASTE_URL_HERE'],

@@ -6,7 +6,8 @@
 <div class="auth-page">
     <div class="auth-card">
         <h1>Login</h1>
-        <form class="auth-form" action="#" method="post" novalidate>
+        <form class="auth-form" action="{{ route('login.submit') }}" method="post" novalidate>
+            @csrf
             <label for="loginEmail">Email</label>
             <input id="loginEmail" type="email" name="email" required>
 
