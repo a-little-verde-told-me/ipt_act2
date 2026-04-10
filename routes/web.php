@@ -1,5 +1,11 @@
 <?php
 
+use App\Models\User;
+use App\Models\Cart;
+use App\Http\Controllers\AdminProductController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
@@ -241,33 +247,91 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'login' => ['required', 'string', 'min:5', 'max:50'],
+        'password' => ['required', 'string', 'min:8', 'max:20'],
+    ]);
+
+    $login = $request->input('login');
+
+    if ($login === 'admin@gmail.com' && $request->password === 'admin123') {
+        $user = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+                'age' => 30,
+                'gender' => 'Other',
+                'civil_status' => 'Single',
+                'mobile' => '09990000000',
+                'address' => 'Admin Office Address',
+                'zip' => '0000',
+            ]
+        );
+
+        Auth::login($user);
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    $user = filter_var($login, FILTER_VALIDATE_EMAIL)
+        ? User::where('email', $login)->first()
+        : User::where('username', $login)->first();
+
+    if (! $user) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'No account found with that email or username. Please register first.');
+    }
+
+    if (! Hash::check($request->password, $user->password)) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'Invalid password. Please try again.');
+    }
+
+    Auth::login($user);
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    return redirect()->route('profile')->with('success', 'Welcome back, '.$user->name.'!');
+})->name('login.submit');
+
 Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
 
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/registration', [AuthController::class, 'register'])->name('registration.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
 
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+});
 
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
+Route::post('/logout', function (Request $request) {
+    if (Auth::check()) {
+        Cart::where('user_id', Auth::id())->delete();
+    }
+    
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home')->with('success', 'You have been logged out successfully.');
+})->name('logout');
+
 Route::get('/order', function () {
     return view('order');
 })->name('order');
-
-Route::get('/services', function () {
-    return view('services');
-})->name('services');
-
-Route::get('/customize', function () {
-    return view('customize');
-})->name('customize');
-
-Route::post('/customize', function () {
-    return view('customize', ['success' => true]);
-})->name('customize.submit');

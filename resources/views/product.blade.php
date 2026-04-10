@@ -8,30 +8,33 @@
 
     <div class="search-section">
         <form method="GET" action="{{ route('product') }}" class="product-filters">
-            <div class="product-search-row">
-                <div class="search-bar">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <!-- Search Bar -->
+                <div class="search-bar" style="flex: 1; min-width: 250px;">
                     <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" name="search" placeholder="Search products..." value="{{ $activeSearch ?? '' }}">
                 </div>
-            </div>
-            <div class="filters-row">
-                <div class="filters-right">
-                    <select name="category" class="filter-select">
-                        <option value="">All Categories</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                        @endforeach
-                    </select>
 
-                    <select name="sort" class="filter-select">
-                        <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
-                        <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                        <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                    </select>
+                <!-- Category Filter -->
+                <select name="category" style="padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem;">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
 
-                    <button type="submit" class="product-filter-btn">Filter</button>
-                    <a href="{{ route('product') }}" class="product-filter-reset">Reset</a>
-                </div>
+                <!-- Sort Dropdown -->
+                <select name="sort" style="padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.95rem;">
+                    <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
+                    <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
+
+                <!-- Submit Button -->
+                <button type="submit" style="padding: 10px 16px; background: var(--accent-rose); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Filter</button>
+
+                <!-- Reset Button -->
+                <a href="{{ route('product') }}" style="padding: 10px 16px; background: #666; color: white; text-decoration: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: inline-block;">Reset</a>
             </div>
         </form>
     </div>
@@ -49,6 +52,7 @@
                 </div>
                 <div class="product-info">
                     <h3>{{ $product->name }}</h3>
+                    <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                     <button
                         class="product-btn add-to-cart"
@@ -70,9 +74,7 @@
 </div>
 
 <script>
-    const userId = @json(auth()->id());
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    const addToCartUrl = @json(route('cart.items.store'));
+    const cartKey = 'fleur_cart';
     const buttons = document.querySelectorAll('.add-to-cart');
 
     function parsePrice(priceText) {
@@ -80,41 +82,135 @@
         return numeric ? parseFloat(numeric) : 0;
     }
 
+    function getCart() {
+        try {
+            return JSON.parse(localStorage.getItem(cartKey)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem(cartKey, JSON.stringify(cart));
+    }
+
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
-            if (!userId) {
-                alert('Please log in to save items in your cart.');
-                window.location.href = @json(route('login'));
-                return;
-            }
-
             const name = btn.dataset.name;
             const price = parsePrice(btn.dataset.price || '0');
             const image = btn.dataset.image;
-            const productId = btn.dataset.id ? parseInt(btn.dataset.id, 10) : null;
+            const cart = getCart();
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name, price, image, qty: 1 });
+            }
+            saveCart(cart);
+            const original = btn.textContent;
+            btn.textContent = 'Added';
+            setTimeout(() => { btn.textContent = original; }, 900);
+        });
+    });
 
-            fetch(addToCartUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    name,
-                    price,
-                    image_url: image || null,
-                    quantity: 1,
-                }),
-            }).then(() => {
+    // Automatic filtering, searching, and sorting
+    let filterTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const productFiltersForm = document.getElementById('productFilters');
+
+    function applyFilters() {
+        const formData = new FormData(productFiltersForm);
+        const params = new URLSearchParams(formData);
+
+        fetch(`{{ route('product') }}?${params.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Extract products grid from response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newGrid = doc.querySelector('.products-grid');
+            const currentGrid = document.querySelector('.products-grid');
+            
+            if (newGrid && currentGrid) {
+                currentGrid.innerHTML = newGrid.innerHTML;
+                
+                // Reattach event listeners to new buttons
+                attachCartButtons();
+                
+                // Update URL without page reload
+                window.history.pushState({ page: 'product-filter' }, '', `{{ route('product') }}?${params.toString()}`);
+            }
+        })
+        .catch(error => console.error('Filter error:', error));
+    }
+
+    function attachCartButtons() {
+        const newButtons = document.querySelectorAll('.add-to-cart');
+        newButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const name = btn.dataset.name;
+                const price = parsePrice(btn.dataset.price || '0');
+                const image = btn.dataset.image;
+                
+                if (isAuthenticated) {
+                    try {
+                        await fetch('{{ route("api.cart.add") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            },
+                            body: JSON.stringify({
+                                product_name: name,
+                                price: price,
+                                image_url: image,
+                                qty: 1,
+                            }),
+                        });
+                        
+                        const cart = getCartGuest();
+                        const existing = cart.find(item => item.name === name);
+                        if (existing) {
+                            existing.qty += 1;
+                        } else {
+                            cart.push({ name, price, image, qty: 1 });
+                        }
+                        saveCartGuest(cart);
+                    } catch (e) {
+                        console.error('Failed to add to cart:', e);
+                    }
+                } else {
+                    const cart = getCartGuest();
+                    const existing = cart.find(item => item.name === name);
+                    if (existing) {
+                        existing.qty += 1;
+                    } else {
+                        cart.push({ name, price, image, qty: 1 });
+                    }
+                    saveCartGuest(cart);
+                }
+                
                 const original = btn.textContent;
                 btn.textContent = 'Added';
                 setTimeout(() => { btn.textContent = original; }, 900);
-            }).catch(() => {
-                alert('Unable to add item. Please try again.');
+                window.dispatchEvent(new Event('cart-updated'));
             });
         });
+    }
+
+    // Event listeners for automatic filtering
+    searchInput.addEventListener('input', () => {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
     });
+
+    categorySelect.addEventListener('change', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
 </script>
 @endsection

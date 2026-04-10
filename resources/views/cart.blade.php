@@ -6,7 +6,7 @@
 <div class="cart-page">
     <div class="cart-header">
         <h1>MY CART</h1>
-        <a class="continue-link" href="{{ route('product') }}">Continue Browsing &gt;</a>
+        <a class="continue-link" href="{{ route('product') }}">← Continue Browsing</a>
     </div>
 
     <div class="cart-layout">
@@ -17,41 +17,28 @@
                 <span>Quantity</span>
                 <span>Total</span>
             </div>
-            <p class="empty-cart" id="loginNotice" style="display:none;">Please log in to view your saved cart.</p>
             <div id="cartRows"></div>
-            <p class="empty-cart" id="emptyCart">Your cart is empty.</p>
+            <p class="empty-cart" id="emptyCart" style="text-align: center; padding: 40px 20px; color: #999;">Your cart is empty.</p>
         </div>
 
-        <aside class="cart-side">
-            <div class="address-box">
-                <h3>Delivery address</h3>
-                <p id="deliveryAddress">001 Alvear St., Lingayen</p>
-                <button class="change-btn" type="button" id="changeAddressBtn">Change</button>
-            </div>
-
+        <aside class="cart-summary">
             <div class="summary-box">
                 <h3>Order Summary</h3>
+                
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <span id="cartSubtotal">₱ 0.00</span>
+                    <span id="cartSubtotal">₱0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Shipping</span>
-                    <span id="cartShipping">₱ 0.00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Coupon Code</span>
-                    <input type="text">
-                </div>
-                <div class="summary-row">
-                    <span>Add a note</span>
-                    <textarea rows="3"></textarea>
+                    <span id="cartShipping">₱0.00</span>
                 </div>
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span id="cartTotal">₱ 0.00</span>
+                    <span id="cartTotal">₱0.00</span>
                 </div>
-                <a href="{{ route('checkout') }}" class="checkout-btn">Checkout</a>
+                
+                <a href="{{ route('checkout') }}" class="checkout-btn">Proceed to Checkout</a>
             </div>
         </aside>
     </div>
@@ -71,7 +58,7 @@
     const totalEl = document.getElementById('cartTotal');
 
     function formatPrice(value) {
-        return `₱ ${value.toFixed(2)}`;
+        return `₱${value.toFixed(2)}`;
     }
 
     async function fetchCart() {
@@ -106,25 +93,26 @@
                 : `${imageBase}placeholder.jpg`;
 
             const row = document.createElement('div');
-            row.className = 'cart-row';
+            row.className = 'cart-item';
             row.innerHTML = `
                 <label class="check-cell">
                     <input type="checkbox" checked>
                 </label>
                 <div class="product-cell">
-                    <div class="thumb"><img src="${imageUrl}" alt="${item.name}"></div>
+                    <div class="thumb"><img src="${item.image}" alt="${item.name}"></div>
                     <div class="product-text">
                         <strong>${item.name}</strong>
-                        <span>custom bouquet</span>
+                        <span>color</span>
                     </div>
                 </div>
-                <div class="price-cell">${formatPrice(parseFloat(item.price))}</div>
+                <div class="price-cell">${formatPrice(item.price)}</div>
                 <div class="qty-cell">
-                    <button type="button" class="qty-btn" data-action="dec" data-id="${item.id}" data-qty="${item.quantity}">−</button>
-                    <span class="qty-value">${item.quantity}</span>
-                    <button type="button" class="qty-btn" data-action="inc" data-id="${item.id}" data-qty="${item.quantity}">+</button>
+                    <button type="button" class="qty-btn" data-action="dec" data-index="${index}">−</button>
+                    <span class="qty-value">${item.qty}</span>
+                    <button type="button" class="qty-btn" data-action="inc" data-index="${index}">+</button>
                 </div>
-                <div class="total-cell">${formatPrice(itemTotal)}</div>
+                <div class="item-total">${formatPrice(itemTotal)}</div>
+                <button type="button" class="remove-btn" data-index="${index}" title="Remove">✕</button>
             `;
             rowsEl.appendChild(row);
         });
@@ -146,33 +134,30 @@
         });
     }
 
-    rowsEl.addEventListener('click', async (e) => {
+    rowsEl.addEventListener('click', (e) => {
         const btn = e.target.closest('.qty-btn');
         if (!btn) return;
 
-        const id = parseInt(btn.dataset.id, 10);
-        const currentQty = parseInt(btn.dataset.qty, 10);
+        const index = parseInt(btn.dataset.index, 10);
         const action = btn.dataset.action;
-        const nextQty = action === 'inc' ? currentQty + 1 : currentQty - 1;
+        const cart = getCart();
 
-        if (nextQty < 0) return;
+        if (!cart[index]) return;
 
-        try {
-            await updateItem(id, nextQty);
-            const data = await fetchCart();
-            renderCart(data.items, data);
-        } catch (e) {
-            alert('Unable to update cart.');
+        if (action === 'inc') {
+            cart[index].qty += 1;
+        } else if (action === 'dec') {
+            cart[index].qty -= 1;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
         }
+
+        saveCart(cart);
+        renderCart();
     });
 
-    if (userId) {
-        fetchCart().then(data => renderCart(data.items, data)).catch(() => {
-            renderCart([], { subtotal: 0, shipping: 0, total: 0 });
-        });
-    } else {
-        renderCart([], { subtotal: 0, shipping: 0, total: 0 });
-    }
+    renderCart();
 
     const addressEl = document.getElementById('deliveryAddress');
     const changeBtn = document.getElementById('changeAddressBtn');

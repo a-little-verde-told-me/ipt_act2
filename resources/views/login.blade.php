@@ -6,11 +6,7 @@
 <div class="auth-page">
     <div class="auth-card">
         <h1>Login</h1>
-        <form class="auth-form" action="{{ route('login.submit') }}" method="post" novalidate>
-            @csrf
-            @if($errors->any())
-                <p style="color:#a64452; font-weight:600; margin-bottom:10px;">{{ $errors->first() }}</p>
-            @endif
+        <form class="auth-form" action="#" method="post" novalidate>
             <label for="loginEmail">Email</label>
             <input id="loginEmail" type="email" name="email" required>
 
@@ -21,8 +17,8 @@
 
             <label for="loginPassword">Password</label>
             <input id="loginPassword" type="password" name="password" required minlength="8" maxlength="20"
-                   pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9\\s;'&quot;/\\\\])[^\\s;'&quot;/\\\\]{8,20}$"
-                   title="8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, 1 special, no spaces, no ; ' / \">
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s'\"]{8,20}$"
+                   title="8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes">
 
             <div class="flex justify-center">
                 <button type="submit" class="submit-btn mx-auto">Sign In</button>
@@ -33,14 +29,23 @@
         </form>
 
         <div class="form-notes">
-            <h3>Login Validation Rules</h3>
+            <h3>Login Notes</h3>
             <ul>
-                <li>Email is required and must be valid.</li>
+                <li>Email is required and must be valid, or use your username.</li>
                 <li>Username: 5-15 chars, starts with letter, letters/numbers/underscore only.</li>
-                <li>Password: 8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, 1 special, no spaces, no ; ' / \</li>
+                <li>Password: 8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes.</li>
             </ul>
         </div>
     </div>
 </div>
 
+<script>
+    const loginForm = document.querySelector('.auth-form');
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!loginForm.reportValidity()) return;
+        alert('Login submitted.');
+        loginForm.reset();
+    });
+</script>
 @endsection
