@@ -5,6 +5,17 @@
 @section('content')
 <div class="auth-page">
     <div class="auth-card">
+<<<<<<< HEAD
+        <h1>Profile</h1>
+
+        @auth
+            <p style="margin-bottom:10px;"><strong>Name:</strong> {{ auth()->user()->name }}</p>
+            <p style="margin-bottom:10px;"><strong>Username:</strong> {{ auth()->user()->username }}</p>
+            <p style="margin-bottom:10px;"><strong>Email:</strong> {{ auth()->user()->email }}</p>
+        @else
+            <p style="margin-bottom:10px;">Please log in to view your profile.</p>
+            <a href="{{ route('login') }}" class="submit-btn">Go to Login</a>
+=======
         <h1>My Profile</h1>
 
         @if(session('success'))
@@ -32,6 +43,7 @@
             </div>
         @else
             <p class="form-error">You are not logged in. Please <a href="{{ route('login') }}">sign in</a> or <a href="{{ route('registration') }}">register</a>.</p>
+>>>>>>> e4a410a73bc82e8585405de66b0db980670780d3
         @endauth
     </div>
 </div>
