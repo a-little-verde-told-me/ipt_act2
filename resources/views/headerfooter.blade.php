@@ -56,8 +56,8 @@
     </footer>
 
 <script>
-    const clearCartOnLogout = @json(session('clear_cart', false));
-    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+    const clearCartOnLogout = "{{ session('clear_cart', false) }}" === "1";
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
 
     function initCartHeader() {
         function getCartCount() {

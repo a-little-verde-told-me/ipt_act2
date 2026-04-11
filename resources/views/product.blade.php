@@ -73,7 +73,7 @@
 
 <script>
     const buttons = document.querySelectorAll('.add-to-cart');
-    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
 
     function parsePrice(priceText) {
         const numeric = String(priceText).replace(/[^0-9.]/g, '');

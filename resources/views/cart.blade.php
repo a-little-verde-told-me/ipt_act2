@@ -57,7 +57,7 @@
     const shippingEl = document.getElementById('cartShipping');
     const totalEl = document.getElementById('cartTotal');
     const checkoutBtn = document.getElementById('checkoutBtn');
-    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
     const selectedItemsKey = 'fleur_selected_items';
     let cartItems = [];
     let selectedItems = [];
