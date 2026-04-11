@@ -29,34 +29,4 @@
         <p>As a startup, we're obsessed with the details. Whether it's the way we validate your order form to make sure your message is perfect, or the way we source our flowers to ensure they last, we put our souls into every part of this system. We're here to help you celebrate the big wins, the "just because" moments, and everything in between.</p>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const aboutZoomTrigger = document.getElementById('aboutZoomTrigger');
-        const aboutZoomOverlay = document.getElementById('aboutZoomOverlay');
-        const aboutZoomClose = aboutZoomOverlay?.querySelector('.zoom-close');
-
-        if (aboutZoomTrigger && aboutZoomOverlay) {
-            aboutZoomTrigger.addEventListener('click', () => {
-                aboutZoomOverlay.classList.add('open');
-                aboutZoomOverlay.setAttribute('aria-hidden', 'false');
-            });
-
-            const closeOverlay = () => {
-                aboutZoomOverlay.classList.remove('open');
-                aboutZoomOverlay.setAttribute('aria-hidden', 'true');
-            };
-
-            aboutZoomClose?.addEventListener('click', closeOverlay);
-            aboutZoomOverlay.addEventListener('click', (event) => {
-                if (event.target === aboutZoomOverlay) closeOverlay();
-            });
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && aboutZoomOverlay.classList.contains('open')) {
-                    closeOverlay();
-                }
-            });
-        }
-    });
-</script>
 @endsection

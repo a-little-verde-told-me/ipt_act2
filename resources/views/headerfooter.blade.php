@@ -60,7 +60,7 @@
         function getCartCount() {
             try {
                 const cart = JSON.parse(localStorage.getItem('fleur_cart')) || [];
-                return cart.reduce((sum, item) => sum + (item.qty || 0), 0);
+                return cart.reduce((sum, item) => sum + ((item.qty || item.quantity) || 0), 0);
             } catch (e) {
                 return 0;
             }
@@ -78,7 +78,14 @@
 
         window.addEventListener('cart-updated', updateCartBadge);
 
-        // also update after localStorage changes in same page via custom event
+        const clearCartOnLogout = @json(session('clear_cart', false));
+        if (clearCartOnLogout) {
+            localStorage.removeItem('fleur_cart');
+            localStorage.removeItem('fleur_selected_items');
+            updateCartBadge();
+            window.dispatchEvent(new Event('cart-updated'));
+        }
+
         document.addEventListener('storage', (event) => {
             if (event.key === 'fleur_cart') {
                 updateCartBadge();

@@ -51,40 +51,115 @@
 </div>
 
 <script>
-    const userId = @json(auth()->id());
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    const itemsUrl = @json(route('cart.items'));
-    const updateBase = @json(url('/cart/items'));
-    const imageBase = @json(asset('images/'));
     const rowsEl = document.getElementById('cartRows');
     const emptyEl = document.getElementById('emptyCart');
-    const loginNotice = document.getElementById('loginNotice');
     const subtotalEl = document.getElementById('cartSubtotal');
     const shippingEl = document.getElementById('cartShipping');
     const totalEl = document.getElementById('cartTotal');
+    const cartKey = 'fleur_cart';
 
-    function getCart() {
+    function normalizeCartItem(item) {
+        const idValue = Number(item.id || item.product_id);
+
+        return {
+            id: Number.isFinite(idValue) && idValue > 0 ? idValue : Date.now() + Math.floor(Math.random() * 1000),
+            product_name: item.product_name || item.name || 'Unnamed product',
+            price: Number(item.price || item.unit_price || 0),
+            image_url: item.image_url || item.image || '{{ asset("images/placeholder.jpg") }}',
+            qty: Number(item.qty || item.quantity || 1),
+        };
+    }
+
+    function loadCart() {
         try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
+            const saved = JSON.parse(localStorage.getItem(cartKey)) || [];
+            return saved.map(normalizeCartItem);
         } catch (e) {
             return [];
         }
     }
 
     function saveCart(cart) {
-        localStorage.setItem(cartKey, JSON.stringify(cart));
+        const normalized = cart.map(normalizeCartItem);
+        localStorage.setItem(cartKey, JSON.stringify(normalized));
+        window.dispatchEvent(new Event('cart-updated'));
     }
 
     function getSelectedItems() {
         try {
-            return JSON.parse(localStorage.getItem('fleur_selected_items')) || [];
+            const items = JSON.parse(localStorage.getItem('fleur_selected_items')) || [];
+            return items.map(id => Number(id)).filter(id => Number.isFinite(id));
         } catch (e) {
             return [];
         }
     }
 
+    function hasStoredSelection() {
+        return localStorage.getItem('fleur_selected_items') !== null;
+    }
+
     function saveSelectedItems(selected) {
-        localStorage.setItem('fleur_selected_items', JSON.stringify(selected));
+        const normalized = selected.map(id => Number(id)).filter(id => Number.isFinite(id));
+        localStorage.setItem('fleur_selected_items', JSON.stringify(normalized));
+    }
+
+    function formatPrice(value) {
+        return `₱${value.toFixed(2)}`;
+    }
+
+    function renderCart() {
+        const cart = loadCart();
+        rowsEl.innerHTML = '';
+
+        if (cart.length === 0) {
+            emptyEl.style.display = 'block';
+        } else {
+            emptyEl.style.display = 'none';
+        }
+
+        let selectedItems = getSelectedItems();
+        if (cart.length > 0 && selectedItems.length === 0 && !hasStoredSelection()) {
+            selectedItems = cart.map(item => item.id);
+            saveSelectedItems(selectedItems);
+        }
+
+        let subtotal = 0;
+
+        cart.forEach(item => {
+            const itemTotal = item.price * item.qty;
+            if (selectedItems.includes(item.id)) {
+                subtotal += itemTotal;
+            }
+
+            const isSelected = selectedItems.includes(item.id);
+
+            const row = document.createElement('div');
+            row.className = 'cart-item';
+            row.innerHTML = `
+                <input type="checkbox" class="item-checkbox" data-id="${item.id}" ${isSelected ? 'checked' : ''}>
+                <div class="item-image">
+                    <img src="${item.image_url}" alt="${item.product_name}">
+                </div>
+                <div class="item-details">
+                    <h4>${item.product_name}</h4>
+                    <p>₱${Number(item.price).toFixed(2)} each</p>
+                </div>
+                <div class="item-qty">
+                    <button type="button" class="qty-btn" data-action="dec" data-id="${item.id}" ${item.qty === 1 ? 'disabled' : ''}>−</button>
+                    <span>${item.qty}</span>
+                    <button type="button" class="qty-btn" data-action="inc" data-id="${item.id}">+</button>
+                </div>
+                <div class="item-total">${formatPrice(itemTotal)}</div>
+                <button type="button" class="remove-btn" data-id="${item.id}" title="Remove">✕</button>
+            `;
+            rowsEl.appendChild(row);
+        });
+
+        const shipping = subtotal > 0 ? 150 : 0;
+        subtotalEl.textContent = formatPrice(subtotal);
+        shippingEl.textContent = formatPrice(shipping);
+        totalEl.textContent = formatPrice(subtotal + shipping);
+        updateCheckoutButton();
     }
 
     function updateCheckoutButton() {
@@ -99,88 +174,20 @@
         }
     }
 
-    function formatPrice(value) {
-        return `₱${value.toFixed(2)}`;
-    }
-
-    async function fetchCart() {
-        const res = await fetch(itemsUrl, { headers: { 'Accept': 'application/json' } });
-        if (!res.ok) throw new Error('Failed');
-        return res.json();
-    }
-
-    function renderCart(items, totals) {
-        rowsEl.innerHTML = '';
-
-        if (!userId) {
-            loginNotice.style.display = 'block';
-            emptyEl.style.display = 'none';
-            subtotalEl.textContent = formatPrice(0);
-            shippingEl.textContent = formatPrice(0);
-            totalEl.textContent = formatPrice(0);
-            return;
-        }
-
-        loginNotice.style.display = 'none';
-        if (items.length === 0) {
-            emptyEl.style.display = 'block';
-        } else {
-            emptyEl.style.display = 'none';
-        }
-
-        const selectedItems = getSelectedItems();
-        let subtotal = 0;
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.qty;
-            if (selectedItems.includes(index)) {
-                subtotal += itemTotal;
-            }
-
-            const isSelected = selectedItems.includes(index);
-
-            const row = document.createElement('div');
-            row.className = 'cart-item';
-            row.innerHTML = `
-                <input type="checkbox" class="item-checkbox" data-index="${index}" ${isSelected ? 'checked' : ''}>
-                <div class="item-image">
-                    <img src="${item.image}" alt="${item.name}">
-                </div>
-                <div class="item-details">
-                    <h4>${item.name}</h4>
-                    <p>₱${Number(item.price).toFixed(2)} each</p>
-                </div>
-                <div class="item-qty">
-                    <button type="button" class="qty-btn" data-action="dec" data-index="${index}" ${item.qty === 1 ? 'disabled' : ''}>−</button>
-                    <span>${item.qty}</span>
-                    <button type="button" class="qty-btn" data-action="inc" data-index="${index}">+</button>
-                </div>
-                <div class="item-total">${formatPrice(itemTotal)}</div>
-                <button type="button" class="remove-btn" data-index="${index}" title="Remove">✕</button>
-            `;
-            rowsEl.appendChild(row);
-        });
-
-        const shipping = subtotal > 0 ? 150 : 0;
-        subtotalEl.textContent = formatPrice(subtotal);
-        shippingEl.textContent = formatPrice(shipping);
-        totalEl.textContent = formatPrice(subtotal + shipping);
-        updateCheckoutButton();
-    }
-
     rowsEl.addEventListener('click', (e) => {
         const checkbox = e.target.closest('.item-checkbox');
         if (checkbox) {
-            const index = parseInt(checkbox.dataset.index, 10);
+            const itemId = parseInt(checkbox.dataset.id, 10);
             let selectedItems = getSelectedItems();
-            
+
             if (checkbox.checked) {
-                if (!selectedItems.includes(index)) {
-                    selectedItems.push(index);
+                if (!selectedItems.includes(itemId)) {
+                    selectedItems.push(itemId);
                 }
             } else {
-                selectedItems = selectedItems.filter(i => i !== index);
+                selectedItems = selectedItems.filter(id => id !== itemId);
             }
-            
+
             saveSelectedItems(selectedItems);
             renderCart();
             return;
@@ -188,77 +195,43 @@
 
         const qtyBtn = e.target.closest('.qty-btn');
         if (qtyBtn) {
-            if (qtyBtn.disabled) return;
-            
-            const index = parseInt(qtyBtn.dataset.index, 10);
+            const itemId = parseInt(qtyBtn.dataset.id, 10);
             const action = qtyBtn.dataset.action;
-            const cart = getCart();
+            const cart = loadCart();
+            const item = cart.find(i => i.id === itemId);
+            if (!item) return;
 
-            if (!cart[index]) return;
-
-            if (action === 'inc') {
-                cart[index].qty += 1;
-            } else if (action === 'dec') {
-                cart[index].qty -= 1;
-                if (cart[index].qty <= 0) {
-                    cart.splice(index, 1);
-                    let selectedItems = getSelectedItems();
-                    saveSelectedItems(selectedItems.filter(i => i !== index));
-                }
-            }
-
+            item.qty = action === 'inc' ? item.qty + 1 : item.qty - 1;
+            if (item.qty < 1) item.qty = 1;
             saveCart(cart);
             renderCart();
-            window.dispatchEvent(new Event('cart-updated'));
             return;
         }
 
         const removeBtn = e.target.closest('.remove-btn');
         if (removeBtn) {
-            const index = parseInt(removeBtn.dataset.index, 10);
-            const cart = getCart();
-            cart.splice(index, 1);
-            let selectedItems = getSelectedItems();
-            saveSelectedItems(selectedItems.filter(i => i !== index));
+            const itemId = parseInt(removeBtn.dataset.id, 10);
+            let cart = loadCart();
+            cart = cart.filter(item => item.id !== itemId);
             saveCart(cart);
+
+            const selectedItems = getSelectedItems().filter(id => id !== itemId);
+            saveSelectedItems(selectedItems);
             renderCart();
-            window.dispatchEvent(new Event('cart-updated'));
         }
     });
 
-    window.addEventListener('load', updateCheckoutButton);
-
-    // Handle checkout button click
     const checkoutBtn = document.getElementById('checkoutBtn');
-    const loginModal = document.getElementById('loginModal');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const isAuthenticated = "{{ Auth::check() }}" === "1";
 
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', (e) => {
-            if (!isAuthenticated) {
+            const cart = loadCart();
+            if (cart.length === 0) {
                 e.preventDefault();
-                e.stopPropagation();
-                loginModal.style.display = 'flex';
             }
         });
     }
 
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            loginModal.style.display = 'none';
-        });
-    }
-
-    // Close modal when clicking outside of it
-    if (loginModal) {
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                loginModal.style.display = 'none';
-            }
-        });
-    }
-
-    renderCart();
+    window.addEventListener('load', renderCart);
 </script>
 @endsection

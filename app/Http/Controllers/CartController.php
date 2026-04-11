@@ -2,98 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CartItem;
+use App\Models\Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function index()
+    public function getCart()
     {
-        return view('cart');
+        $cartItems = Cart::where('user_id', Auth::id())
+            ->get(['id', 'product_name', 'price', 'image_url', 'qty']);
+
+        return response()->json($cartItems);
     }
 
-    public function items()
+    public function getCount()
     {
-        if (!auth()->check()) {
-            return response()->json([
-                'items' => [],
-                'subtotal' => 0,
-                'shipping' => 0,
-                'total' => 0,
+        $count = Cart::where('user_id', Auth::id())->sum('qty');
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function addToCart(Request $request)
+    {
+        $request->validate([
+            'product_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'image_url' => 'required|string|max:1000',
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        $existing = Cart::where('user_id', Auth::id())
+            ->where('product_name', $request->product_name)
+            ->first();
+
+        if ($existing) {
+            $existing->increment('qty', $request->qty);
+        } else {
+            Cart::create([
+                'user_id' => Auth::id(),
+                'product_name' => $request->product_name,
+                'price' => $request->price,
+                'image_url' => $request->image_url,
+                'qty' => $request->qty,
             ]);
         }
 
-        $items = CartItem::where('user_id', auth()->id())->get();
-        $subtotal = $items->sum(fn ($item) => $item->price * $item->quantity);
-        $shipping = $items->count() ? 150 : 0;
-
-        return response()->json([
-            'items' => $items,
-            'subtotal' => (float) $subtotal,
-            'shipping' => (float) $shipping,
-            'total' => (float) ($subtotal + $shipping),
-        ]);
+        return response()->json(['status' => 'added']);
     }
 
-    public function store(Request $request)
+    public function updateQty(Request $request, Cart $cart)
     {
-        $validated = $request->validate([
-            'product_id' => ['nullable', 'integer'],
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'image_url' => ['nullable', 'string', 'max:255'],
-            'quantity' => ['nullable', 'integer', 'min:1'],
+        if ($cart->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'qty' => 'required|integer|min:1',
         ]);
 
-        $query = CartItem::where('user_id', auth()->id());
-        if (!empty($validated['product_id'])) {
-            $query->where('product_id', $validated['product_id']);
-        } else {
-            $query->where('name', $validated['name']);
-        }
+        $cart->update(['qty' => $request->qty]);
 
-        $item = $query->first();
-        $qty = $validated['quantity'] ?? 1;
-
-        if ($item) {
-            $item->quantity += $qty;
-            $item->save();
-        } else {
-            $item = CartItem::create([
-                'user_id' => auth()->id(),
-                'product_id' => $validated['product_id'] ?? null,
-                'name' => $validated['name'],
-                'price' => $validated['price'],
-                'image_url' => $validated['image_url'] ?? null,
-                'quantity' => $qty,
-            ]);
-        }
-
-        return response()->json(['item' => $item], 201);
+        return response()->json(['status' => 'updated', 'qty' => $cart->qty]);
     }
 
-    public function update(Request $request, int $id)
+    public function removeItem(Cart $cart)
     {
-        $validated = $request->validate([
-            'quantity' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $item = CartItem::where('user_id', auth()->id())->findOrFail($id);
-        if ($validated['quantity'] === 0) {
-            $item->delete();
-        } else {
-            $item->quantity = $validated['quantity'];
-            $item->save();
+        if ($cart->user_id !== Auth::id()) {
+            abort(403);
         }
 
-        return response()->json(['ok' => true]);
+        $cart->delete();
+
+        return response()->json(['status' => 'removed']);
     }
 
-    public function destroy(int $id)
+    public function clearCart()
     {
-        $item = CartItem::where('user_id', auth()->id())->findOrFail($id);
-        $item->delete();
+        Cart::where('user_id', Auth::id())->delete();
 
-        return response()->json(['ok' => true]);
+        return response()->json(['status' => 'cleared']);
     }
 }

@@ -62,17 +62,25 @@
     @endif
 </div>
 
+@php
+    $userData = $user ?? null;
+@endphp
+
 <script>
-    const userId = @json(auth()->id());
-    const itemsUrl = @json(route('cart.items'));
+    const userData = JSON.parse('@json($userData)');
+</script>
+
+<script>
+    const cartKey = 'fleur_cart';
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const shippingEl = document.getElementById('checkoutShipping');
     const totalEl = document.getElementById('checkoutTotal');
     const fullNameInput = document.getElementById('fullName');
     const phoneInput = document.getElementById('phone');
     const addressInput = document.getElementById('address');
+    const notesInput = document.getElementById('notes');
 
-    function getCart() {
+    function loadCart() {
         try {
             return JSON.parse(localStorage.getItem(cartKey)) || [];
         } catch (e) {
@@ -93,24 +101,33 @@
     }
 
     function updateSummary() {
-        const cart = getCart();
+        const cart = loadCart();
         const selectedItems = getSelectedItems();
-        
         let subtotal = 0;
-        cart.forEach((item, index) => {
-            if (selectedItems.includes(index)) {
+
+        cart.forEach(item => {
+            if (selectedItems.includes(item.id)) {
                 subtotal += item.price * item.qty;
             }
         });
-        
+
         const shipping = subtotal > 0 ? 150 : 0;
         subtotalEl.textContent = formatPrice(subtotal);
         shippingEl.textContent = formatPrice(shipping);
         totalEl.textContent = formatPrice(subtotal + shipping);
     }
 
+    function ensureSelection() {
+        const cart = loadCart();
+        let selectedItems = getSelectedItems();
+
+        if (cart.length > 0 && selectedItems.length === 0) {
+            selectedItems = cart.map(item => item.id);
+            localStorage.setItem('fleur_selected_items', JSON.stringify(selectedItems));
+        }
+    }
+
     function prefillUserDetails() {
-        const userData = @json($user);
         if (userData && userData.id) {
             if (userData.name && !fullNameInput.value) fullNameInput.value = userData.name;
             if (userData.mobile && !phoneInput.value) phoneInput.value = userData.mobile;
@@ -118,35 +135,21 @@
         }
     }
 
-    prefillUserDetails();
-    updateSummary();
+    window.addEventListener('load', () => {
+        ensureSelection();
+        prefillUserDetails();
+        updateSummary();
+    });
 
-    // Handle form submission to remove ordered items from cart
     const checkoutForm = document.querySelector('.checkout-form');
-    const successOverlay = document.getElementById('successOverlay');
-    
+
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get current cart and selected items
-            const cart = getCart();
+        checkoutForm.addEventListener('submit', function() {
+            const cart = loadCart();
             const selectedItems = getSelectedItems();
-            
-            // Remove selected items from cart (in reverse order to maintain indices)
-            for (let i = selectedItems.length - 1; i >= 0; i--) {
-                const index = selectedItems[i];
-                if (cart[index]) {
-                    cart.splice(index, 1);
-                }
-            }
-            
-            // Save updated cart and clear selected items
-            localStorage.setItem(cartKey, JSON.stringify(cart));
+            const remainingCart = cart.filter(item => !selectedItems.includes(item.id));
+            localStorage.setItem(cartKey, JSON.stringify(remainingCart));
             localStorage.removeItem('fleur_selected_items');
-            
-            // Submit the form
-            this.submit();
         });
     }
 </script>

@@ -1,16 +1,13 @@
 <?php
 
 use App\Models\User;
-use App\Models\Cart;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\FlowersController;
 
 Route::get('/', function () {
     return view('home');
@@ -135,7 +132,7 @@ Route::get('/gallery', function (Request $request) {
 
     return view('gallery', ['events' => $paginated]);
 })->name('gallery');
-Route::post('/cart/add', [CartController::class, 'addToCart'])->name('api.cart.add');
+
 
 
     $viewsDir = resource_path('views');
@@ -245,13 +242,9 @@ Route::get('/view-gallery/{event}', function (string $event) {
     return view('viewgallery', ['event' => $event]);
 })->name('gallery.view');
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart');
-Route::get('/cart/items', [CartController::class, 'items'])->name('cart.items');
-Route::middleware('auth')->group(function () {
-    Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
-    Route::patch('/cart/items/{id}', [CartController::class, 'update'])->name('cart.items.update');
-    Route::delete('/cart/items/{id}', [CartController::class, 'destroy'])->name('cart.items.destroy');
-});
+Route::get('/cart', function () {
+    return view('cart');
+})->name('cart');
 
 Route::get('/checkout', function () {
     $user = Auth::user();
@@ -381,64 +374,24 @@ Route::get('/profile', function () {
 })->name('profile');
 
 Route::post('/logout', function (Request $request) {
-    if (Auth::check()) {
-        Cart::where('user_id', Auth::id())->delete();
-    }
-    
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect()->route('home')->with('success', 'You have been logged out successfully.');
+    return redirect()->route('home')
+        ->with('success', 'You have been logged out successfully.')
+        ->with('clear_cart', true);
 })->name('logout');
 
 Route::get('/order', function () {
     return view('order');
 })->name('order');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/api/cart', function () {
-        $cartItems = Cart::where('user_id', Auth::id())->get()->map(function ($item) {
-            return [
-                'name' => $item->product_name,
-                'price' => (float) $item->price,
-                'image' => $item->image_url,
-                'qty' => $item->qty,
-            ];
-        })->values()->all();
-
-        return response()->json($cartItems);
-    })->name('api.cart.get');
-
-    Route::post('/api/cart', function (Request $request) {
-        $request->validate([
-            'product_name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'image_url' => 'required|string|max:1000',
-            'qty' => 'required|integer|min:1',
-        ]);
-
-        $existing = Cart::where('user_id', Auth::id())
-            ->where('product_name', $request->product_name)
-            ->first();
-
-        if ($existing) {
-            $existing->increment('qty', $request->qty);
-        } else {
-            Cart::create([
-                'user_id' => Auth::id(),
-                'product_name' => $request->product_name,
-                'price' => $request->price,
-                'image_url' => $request->image_url,
-                'qty' => $request->qty,
-            ]);
-        }
-
-        return response()->json(['status' => 'added']);
-    })->name('api.cart.add');
-
-    Route::delete('/api/cart', function () {
-        Cart::where('user_id', Auth::id())->delete();
-        return response()->json(['status' => 'cleared']);
-    })->name('api.cart.clear');
+Route::middleware('auth')->prefix('api/cart')->group(function () {
+    Route::get('/', [CartController::class, 'getCart'])->name('api.cart.get');
+    Route::get('/count', [CartController::class, 'getCount'])->name('api.cart.count');
+    Route::post('/', [CartController::class, 'addToCart'])->name('api.cart.add');
+    Route::put('/{cart}', [CartController::class, 'updateQty'])->name('api.cart.update');
+    Route::delete('/{cart}', [CartController::class, 'removeItem'])->name('api.cart.remove');
+    Route::delete('/', [CartController::class, 'clearCart'])->name('api.cart.clear');
 });
