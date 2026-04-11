@@ -1653,7 +1653,7 @@ input[type="password"]:autofill {
     background: #4d4d4d;
     color: #fff;
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.85rem;
@@ -2137,6 +2137,60 @@ input[type="password"]:autofill {
     animation: slideUp 0.3s ease;
 }
 
+.message-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.message-card {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 40px 36px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+    animation: slideUp 0.25s ease;
+}
+
+.message-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    background: #fbe9e9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #b33a48;
+    font-weight: bold;
+}
+
+.message-card h2 {
+    font-size: 1.65rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.message-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 26px;
+    line-height: 1.6;
+}
+
+.message-card .success-btn {
+    width: 100%;
+    max-width: none;
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(30px);
@@ -2274,7 +2328,7 @@ input[type="password"]:autofill {
 .login-required-btn {
     display: inline-block;
     padding: 14px 28px;
-    border-radius: 8px;
+    border-radius: 999px;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;

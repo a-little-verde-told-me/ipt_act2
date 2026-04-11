@@ -54,13 +54,49 @@
   </div>
 </main>
 
+<div class="message-overlay" id="messageSentOverlay" style="display: none;">
+    <div class="message-card">
+        <div class="message-icon">✓</div>
+        <h2>Message Sent</h2>
+        <p>Your message has been successfully sent. We will get back to you soon.</p>
+        <button type="button" class="success-btn" id="messageSentCloseBtn">OK</button>
+    </div>
+</div>
+
 <script>
   const contactForm = document.querySelector('.contact-form');
+  const messageOverlay = document.getElementById('messageSentOverlay');
+  const messageSentCloseBtn = document.getElementById('messageSentCloseBtn');
+
+  function showMessageOverlay() {
+    if (messageOverlay) {
+      messageOverlay.style.display = 'flex';
+    }
+  }
+
+  function hideMessageOverlay() {
+    if (messageOverlay) {
+      messageOverlay.style.display = 'none';
+    }
+  }
+
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!contactForm.reportValidity()) return;
-    alert('Message sent! We will get back to you soon.');
+    showMessageOverlay();
     contactForm.reset();
   });
+
+  if (messageSentCloseBtn) {
+    messageSentCloseBtn.addEventListener('click', hideMessageOverlay);
+  }
+
+  if (messageOverlay) {
+    messageOverlay.addEventListener('click', (e) => {
+      if (e.target === messageOverlay) {
+        hideMessageOverlay();
+      }
+    });
+  }
 </script>
 @endsection
