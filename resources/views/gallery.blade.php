@@ -21,47 +21,6 @@
     </div>
 
     <div class="gallery-grid">
-        @php
-            $events = [
-                [
-                    'name' => 'Rustic Wedding',
-                    'category' => 'Weddings',
-                    'image' => 'rustic_wedding.jpg',
-                    'slug' => 'rustic-wedding',
-                ],
-                [
-                    'name' => '18th Birthday',
-                    'category' => 'Birthdays',
-                    'image' => '18th_birthday.jpg',
-                    'slug' => '18th-birthday',
-                ],
-                [
-                    'name' => 'Corporate Gala',
-                    'category' => 'Others',
-                    'image' => 'corporate_gala.jpg',
-                    'slug' => 'corporate-gala',
-                ],
-                [
-                    'name' => 'Garden Wedding',
-                    'category' => 'Weddings',
-                    'image' => 'garden_wedding.jpg',
-                    'slug' => 'garden-wedding',
-                ],
-                [
-                    'name' => 'Debut Celebration',
-                    'category' => 'Birthdays',
-                    'image' => 'debut_celebration.jpg',
-                    'slug' => 'debut-celebration',
-                ],
-                [
-                    'name' => 'Anniversary Party',
-                    'category' => 'Others',
-                    'image' => 'anniversary_party.jpg',
-                    'slug' => 'anniversary-party',
-                ],
-            ];
-        @endphp
-
         @foreach($events as $event)
             <div class="event-card" data-category="{{ $event['category'] }}" data-name="{{ strtolower($event['name']) }}">
                 <button class="event-link" type="button" data-image="{{ asset('images/'.$event['image']) }}" data-title="{{ $event['name'] }}">
@@ -74,6 +33,12 @@
             </div>
         @endforeach
     </div>
+
+    @if ($events->hasPages())
+        <div class="pagination-wrapper">
+            {{ $events->links('pagination::custom') }}
+        </div>
+    @endif
 </div>
 
 <div class="lightbox" id="galleryLightbox" aria-hidden="true">

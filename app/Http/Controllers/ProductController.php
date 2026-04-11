@@ -76,7 +76,8 @@ class ProductController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $products = $query->get();
+        $perPage = 20;
+        $products = $query->paginate($perPage)->appends($request->except('page'));
 
         // Get unique categories for the filter dropdown
         $categories = Product::distinct()->pluck('category')->sort()->values();

@@ -48,19 +48,41 @@
     </div>
 
     @if(!empty($success))
-        <p style="margin-top:16px; text-align:center;">Order submitted successfully.</p>
+        <div class="success-overlay" id="successOverlay">
+            <div class="success-card">
+                <div class="success-icon">✓</div>
+                <h2>Order Placed Successfully!</h2>
+                <p>Thank you for your purchase. Your order has been confirmed.</p>
+                <div class="success-actions">
+                    <a href="{{ route('home') }}" class="success-btn btn-primary">Go to Home</a>
+                    <a href="{{ route('product') }}" class="success-btn btn-secondary">Continue Browsing</a>
+                </div>
+            </div>
+        </div>
     @endif
 </div>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const userId = @json(auth()->id());
+    const itemsUrl = @json(route('cart.items'));
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const shippingEl = document.getElementById('checkoutShipping');
     const totalEl = document.getElementById('checkoutTotal');
+    const fullNameInput = document.getElementById('fullName');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('address');
 
     function getCart() {
         try {
             return JSON.parse(localStorage.getItem(cartKey)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function getSelectedItems() {
+        try {
+            return JSON.parse(localStorage.getItem('fleur_selected_items')) || [];
         } catch (e) {
             return [];
         }
@@ -72,13 +94,60 @@
 
     function updateSummary() {
         const cart = getCart();
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const shipping = cart.length ? 150 : 0;
+        const selectedItems = getSelectedItems();
+        
+        let subtotal = 0;
+        cart.forEach((item, index) => {
+            if (selectedItems.includes(index)) {
+                subtotal += item.price * item.qty;
+            }
+        });
+        
+        const shipping = subtotal > 0 ? 150 : 0;
         subtotalEl.textContent = formatPrice(subtotal);
         shippingEl.textContent = formatPrice(shipping);
         totalEl.textContent = formatPrice(subtotal + shipping);
     }
 
+    function prefillUserDetails() {
+        const userData = @json($user);
+        if (userData && userData.id) {
+            if (userData.name && !fullNameInput.value) fullNameInput.value = userData.name;
+            if (userData.mobile && !phoneInput.value) phoneInput.value = userData.mobile;
+            if (userData.address && !addressInput.value) addressInput.value = userData.address;
+        }
+    }
+
+    prefillUserDetails();
     updateSummary();
+
+    // Handle form submission to remove ordered items from cart
+    const checkoutForm = document.querySelector('.checkout-form');
+    const successOverlay = document.getElementById('successOverlay');
+    
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get current cart and selected items
+            const cart = getCart();
+            const selectedItems = getSelectedItems();
+            
+            // Remove selected items from cart (in reverse order to maintain indices)
+            for (let i = selectedItems.length - 1; i >= 0; i--) {
+                const index = selectedItems[i];
+                if (cart[index]) {
+                    cart.splice(index, 1);
+                }
+            }
+            
+            // Save updated cart and clear selected items
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            localStorage.removeItem('fleur_selected_items');
+            
+            // Submit the form
+            this.submit();
+        });
+    }
 </script>
 @endsection
