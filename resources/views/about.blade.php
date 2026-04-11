@@ -9,8 +9,15 @@
             <h1>ABOUT FLEUR</h1>
             <p>FLEUR is a startup flower shop specializing in curated bouquets, event styling, and thoughtful gifts. We blend modern floral design with warm, local service to make every celebration bloom.</p>
         </div>
-        <div class="about-hero-image">
+        <div class="about-hero-image zoomable" id="aboutZoomTrigger">
             <img src="{{ asset('images/placeholder.jpg') }}" alt="Founder">
+        </div>
+    </div>
+
+    <div class="zoom-overlay" id="aboutZoomOverlay" aria-hidden="true">
+        <div class="zoom-overlay-content" role="dialog" aria-modal="true">
+            <button class="zoom-close" type="button" aria-label="Close">&times;</button>
+            <img id="aboutZoomImage" src="{{ asset('images/placeholder.jpg') }}" alt="Founder">
         </div>
     </div>
 
@@ -29,4 +36,34 @@
         <p>As a startup, we're obsessed with the details. Whether it's the way we validate your order form to make sure your message is perfect, or the way we source our flowers to ensure they last, we put our souls into every part of this system. We're here to help you celebrate the big wins, the "just because" moments, and everything in between.</p>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const aboutZoomTrigger = document.getElementById('aboutZoomTrigger');
+        const aboutZoomOverlay = document.getElementById('aboutZoomOverlay');
+        const aboutZoomClose = aboutZoomOverlay?.querySelector('.zoom-close');
+
+        if (aboutZoomTrigger && aboutZoomOverlay) {
+            aboutZoomTrigger.addEventListener('click', () => {
+                aboutZoomOverlay.classList.add('open');
+                aboutZoomOverlay.setAttribute('aria-hidden', 'false');
+            });
+
+            const closeOverlay = () => {
+                aboutZoomOverlay.classList.remove('open');
+                aboutZoomOverlay.setAttribute('aria-hidden', 'true');
+            };
+
+            aboutZoomClose?.addEventListener('click', closeOverlay);
+            aboutZoomOverlay.addEventListener('click', (event) => {
+                if (event.target === aboutZoomOverlay) closeOverlay();
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && aboutZoomOverlay.classList.contains('open')) {
+                    closeOverlay();
+                }
+            });
+        }
+    });
+</script>
 @endsection
