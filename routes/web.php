@@ -251,8 +251,24 @@ Route::get('/checkout', function () {
     return view('checkout', ['user' => $user]);
 })->name('checkout');
 
-Route::post('/checkout', function () {
+Route::post('/checkout', function (Request $request) {
     $user = Auth::user();
+
+    if ($user) {
+        $selectedItems = json_decode($request->input('selected_items', '[]'), true);
+        if (is_array($selectedItems) && count($selectedItems) > 0) {
+            $selectedIds = array_filter($selectedItems, function ($id) {
+                return is_numeric($id);
+            });
+
+            if (count($selectedIds) > 0) {
+                \App\Models\Cart::where('user_id', Auth::id())
+                    ->whereIn('id', $selectedIds)
+                    ->delete();
+            }
+        }
+    }
+
     return view('checkout', ['user' => $user, 'success' => true]);
 })->name('checkout.submit');
 

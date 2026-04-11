@@ -9,15 +9,31 @@
     <div class="search-section">
         <div class="search-bar">
             <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" placeholder="Search events...">
+            <input type="text" placeholder="Search events..." id="searchInput">
         </div>
     </div>
 
-    <div class="filter-section">
-        <button class="filter-btn active">All</button>
-        <button class="filter-btn">Weddings</button>
-        <button class="filter-btn">Birthdays</button>
-        <button class="filter-btn">Others</button>
+    <div class="filter-sort-section">
+        <div class="filter-group">
+            <label for="categorySelect">Category:</label>
+            <select id="categorySelect" class="filter-select">
+                <option value="">All Events</option>
+                <option value="Weddings">Weddings</option>
+                <option value="Birthdays">Birthdays</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        <div class="sort-group">
+            <label for="sortSelect">Sort:</label>
+            <select id="sortSelect" class="sort-select">
+                <option value="featured">Featured</option>
+                <option value="name-asc">A - Z</option>
+                <option value="name-desc">Z - A</option>
+            </select>
+        </div>
+        <div class="reset-group">
+            <button type="button" id="resetFilters" class="reset-btn">Reset</button>
+        </div>
     </div>
 
     <div class="gallery-grid">
@@ -50,32 +66,57 @@
 </div>
 
 <script>
-    const searchInput = document.querySelector('.search-bar input');
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const resetButton = document.getElementById('resetFilters');
     const eventCards = document.querySelectorAll('.event-card');
 
     function filterGallery(category, query) {
         eventCards.forEach(card => {
             const cardCategory = card.dataset.category;
             const cardName = card.dataset.name;
-            const categoryMatch = category === 'All' || cardCategory === category;
+            const categoryMatch = !category || category === 'All' || cardCategory === category;
             const searchMatch = !query || cardName.includes(query.toLowerCase());
             card.style.display = (categoryMatch && searchMatch) ? 'block' : 'none';
         });
     }
 
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            filterGallery(btn.textContent.trim(), searchInput.value.trim());
+    function sortGallery(order) {
+        const cards = Array.from(eventCards);
+        const container = document.querySelector('.gallery-grid');
+
+        if (!container) return;
+
+        cards.sort((a, b) => {
+            const nameA = a.dataset.name || '';
+            const nameB = b.dataset.name || '';
+            if (order === 'name-asc') return nameA.localeCompare(nameB);
+            if (order === 'name-desc') return nameB.localeCompare(nameA);
+            return 0;
         });
+
+        cards.forEach(card => container.appendChild(card));
+    }
+
+    function applyGalleryFilters() {
+        const category = categorySelect.value;
+        const query = searchInput.value.trim();
+        filterGallery(category, query);
+        sortGallery(sortSelect.value);
+    }
+
+    searchInput.addEventListener('input', applyGalleryFilters);
+    categorySelect.addEventListener('change', applyGalleryFilters);
+    sortSelect.addEventListener('change', applyGalleryFilters);
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        categorySelect.value = '';
+        sortSelect.value = 'featured';
+        applyGalleryFilters();
     });
 
-    searchInput.addEventListener('input', () => {
-        const active = document.querySelector('.filter-btn.active');
-        filterGallery(active.textContent.trim(), searchInput.value.trim());
-    });
+    applyGalleryFilters();
 
     const lightbox = document.getElementById('galleryLightbox');
     const lightboxImage = document.getElementById('galleryLightboxImage');
