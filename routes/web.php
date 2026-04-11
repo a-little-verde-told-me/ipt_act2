@@ -57,7 +57,7 @@ Route::get('/flowers', function (Request $request) {
         ['image' => 'flower32.jpg', 'name' => 'Alyssum'],
     ];
 
-    $perPage = 20;
+    $perPage = 10;
     $currentPage = LengthAwarePaginator::resolveCurrentPage();
     $currentItems = array_slice($flowers, ($currentPage - 1) * $perPage, $perPage);
 
@@ -115,7 +115,7 @@ Route::get('/gallery', function (Request $request) {
         ],
     ];
 
-    $perPage = 20;
+    $perPage = 10;
     $currentPage = LengthAwarePaginator::resolveCurrentPage();
     $currentItems = array_slice($events, ($currentPage - 1) * $perPage, $perPage);
 
