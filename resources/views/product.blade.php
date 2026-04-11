@@ -6,51 +6,82 @@
 <div class="products-page">
     <h1>PRODUCTS</h1>
 
-    <div class="products-grid">
-        @php
-            $products = [
-                ['name' => 'Blush Rose Bouquet', 'price' => 'PHP 2,200', 'image' => 'flower1.jpg'],
-                ['name' => 'Sunset Tulip Bundle', 'price' => 'PHP 1,900', 'image' => 'flower2.jpg'],
-                ['name' => 'Lavender Dream', 'price' => 'PHP 2,500', 'image' => 'flower3.jpg'],
-                ['name' => 'Classic Red Roses', 'price' => 'PHP 2,300', 'image' => 'flower4.jpg'],
-                ['name' => 'Golden Sunflower Set', 'price' => 'PHP 1,700', 'image' => 'flower5.jpg'],
-                ['name' => 'Orchid Luxe', 'price' => 'PHP 2,900', 'image' => 'flower6.jpg'],
-                ['name' => 'Peony Garden Vase', 'price' => 'PHP 2,700', 'image' => 'flower7.jpg'],
-                ['name' => 'Spring Wildflowers', 'price' => 'PHP 1,800', 'image' => 'flower8.jpg'],
-            ];
-        @endphp
+    <div class="search-section">
+        <form class="product-filters" id="productFilters">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" name="search" id="searchInput" placeholder="Search products..." value="{{ $activeSearch ?? '' }}">
+            </div>
 
-        @foreach($products as $product)
-            <div class="product-card">
+            <!-- Filters Row -->
+            <div class="filters-row">
+                <!-- Category Filter -->
+                <select name="category" id="categorySelect">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Sort Dropdown -->
+                <select name="sort" id="sortSelect">
+                    <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
+                    <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
+
+                <!-- Reset Button -->
+                <a href="{{ route('product') }}" class="reset-btn">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="products-grid">
+        @forelse($products as $product)
+            <div class="product-card" data-name="{{ strtolower($product->name) }}">
                 <div class="product-image">
-                    <img src="{{ asset('images/'.$product['image']) }}" alt="{{ $product['name'] }}">
+                    <img src="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}" alt="{{ $product->name }}">
                 </div>
                 <div class="product-info">
-                    <h3>{{ $product['name'] }}</h3>
-                    <p class="product-price">{{ $product['price'] }}</p>
+                    <h3>{{ $product->name }}</h3>
+                    <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
+                    <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                     <button
                         class="product-btn add-to-cart"
                         type="button"
-                        data-name="{{ $product['name'] }}"
-                        data-price="{{ $product['price'] }}"
-                        data-image="{{ asset('images/'.$product['image']) }}"
+                        data-name="{{ $product->name }}"
+                        data-price="{{ $product->price }}"
+                        data-image="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}"
                     >Add to Cart</button>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <p style="font-size: 1.1rem; margin: 0;">No results found or data is insufficient</p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">Try adjusting your filters or search terms.</p>
+            </div>
+        @endforelse
     </div>
+
+    @if ($products->hasPages())
+        <div class="pagination-wrapper">
+            {{ $products->links('pagination::custom') }}
+        </div>
+    @endif
 </div>
 
 <script>
     const cartKey = 'fleur_cart';
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
     const buttons = document.querySelectorAll('.add-to-cart');
 
     function parsePrice(priceText) {
-        const numeric = priceText.replace(/[^0-9.]/g, '');
+        const numeric = String(priceText).replace(/[^0-9.]/g, '');
         return numeric ? parseFloat(numeric) : 0;
     }
 
-    function getCart() {
+    function getCartGuest() {
         try {
             return JSON.parse(localStorage.getItem(cartKey)) || [];
         } catch (e) {
@@ -58,27 +89,191 @@
         }
     }
 
-    function saveCart(cart) {
+    function saveCartGuest(cart) {
         localStorage.setItem(cartKey, JSON.stringify(cart));
     }
 
+    async function getCartFromServer() {
+        if (!isAuthenticated) return getCartGuest();
+        try {
+            const response = await fetch('{{ route("api.cart.get") }}');
+            return await response.json();
+        } catch (e) {
+            console.error('Failed to fetch cart:', e);
+            return [];
+        }
+    }
+
+    // Load cart from server on page load
+    if (isAuthenticated) {
+        getCartFromServer().then(cart => {
+            saveCartGuest(cart);
+            window.dispatchEvent(new Event('cart-updated'));
+        });
+    }
+
     buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             const name = btn.dataset.name;
             const price = parsePrice(btn.dataset.price || '0');
             const image = btn.dataset.image;
-            const cart = getCart();
-            const existing = cart.find(item => item.name === name);
-            if (existing) {
-                existing.qty += 1;
+            
+            if (isAuthenticated) {
+                try {
+                    await fetch('{{ route("api.cart.add") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        },
+                        body: JSON.stringify({
+                            product_name: name,
+                            price: price,
+                            image_url: image,
+                            qty: 1,
+                        }),
+                    });
+                    
+                    const cart = getCartGuest();
+                    const existing = cart.find(item => item.name === name);
+                    if (existing) {
+                        existing.qty += 1;
+                    } else {
+                        cart.push({ name, price, image, qty: 1 });
+                    }
+                    saveCartGuest(cart);
+                } catch (e) {
+                    console.error('Failed to add to cart:', e);
+                }
             } else {
-                cart.push({ name, price, image, qty: 1 });
+                const cart = getCartGuest();
+                const existing = cart.find(item => item.name === name);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    cart.push({ name, price, image, qty: 1 });
+                }
+                saveCartGuest(cart);
             }
-            saveCart(cart);
+            
             const original = btn.textContent;
             btn.textContent = 'Added';
             setTimeout(() => { btn.textContent = original; }, 900);
+            window.dispatchEvent(new Event('cart-updated'));
         });
     });
+
+    // Automatic filtering, searching, and sorting
+    let filterTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const productFiltersForm = document.getElementById('productFilters');
+
+    function applyFilters() {
+        const formData = new FormData(productFiltersForm);
+        const params = new URLSearchParams(formData);
+
+        fetch(`{{ route('product') }}?${params.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Extract products grid and pagination from response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newGrid = doc.querySelector('.products-grid');
+            const currentGrid = document.querySelector('.products-grid');
+            const newPagination = doc.querySelector('.pagination-wrapper');
+            const currentPagination = document.querySelector('.pagination-wrapper');
+            
+            if (newGrid && currentGrid) {
+                currentGrid.innerHTML = newGrid.innerHTML;
+            }
+            
+            if (newPagination && currentPagination) {
+                currentPagination.innerHTML = newPagination.innerHTML;
+            } else if (newPagination && !currentPagination) {
+                const container = document.createElement('div');
+                container.className = 'pagination-wrapper';
+                container.innerHTML = newPagination.innerHTML;
+                document.querySelector('.products-page').appendChild(container);
+            }
+            
+            if (newGrid && currentGrid) {
+                // Reattach event listeners to new buttons
+                attachCartButtons();
+            }
+            
+            // Update URL without page reload
+            window.history.pushState({ page: 'product-filter' }, '', `{{ route('product') }}?${params.toString()}`);
+        })
+        .catch(error => console.error('Filter error:', error));
+    }
+
+    function attachCartButtons() {
+        const newButtons = document.querySelectorAll('.add-to-cart');
+        newButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const name = btn.dataset.name;
+                const price = parsePrice(btn.dataset.price || '0');
+                const image = btn.dataset.image;
+                
+                if (isAuthenticated) {
+                    try {
+                        await fetch('{{ route("api.cart.add") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            },
+                            body: JSON.stringify({
+                                product_name: name,
+                                price: price,
+                                image_url: image,
+                                qty: 1,
+                            }),
+                        });
+                        
+                        const cart = getCartGuest();
+                        const existing = cart.find(item => item.name === name);
+                        if (existing) {
+                            existing.qty += 1;
+                        } else {
+                            cart.push({ name, price, image, qty: 1 });
+                        }
+                        saveCartGuest(cart);
+                    } catch (e) {
+                        console.error('Failed to add to cart:', e);
+                    }
+                } else {
+                    const cart = getCartGuest();
+                    const existing = cart.find(item => item.name === name);
+                    if (existing) {
+                        existing.qty += 1;
+                    } else {
+                        cart.push({ name, price, image, qty: 1 });
+                    }
+                    saveCartGuest(cart);
+                }
+                
+                const original = btn.textContent;
+                btn.textContent = 'Added';
+                setTimeout(() => { btn.textContent = original; }, 900);
+                window.dispatchEvent(new Event('cart-updated'));
+            });
+        });
+    }
+
+    // Event listeners for automatic filtering
+    searchInput.addEventListener('input', () => {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
+    });
+
+    categorySelect.addEventListener('change', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
 </script>
 @endsection

@@ -1,5 +1,12 @@
 <?php
 
+use App\Models\User;
+use App\Models\Cart;
+use App\Http\Controllers\AdminProductController;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,43 +21,119 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-Route::get('/flowers', function () {
-    return view('flowers');
+Route::get('/flowers', function (Request $request) {
+    $flowers = [
+        ['image' => 'flower1.jpg', 'name' => 'Cosmos'],
+        ['image' => 'flower2.jpg', 'name' => 'Indian Paintbrush'],
+        ['image' => 'flower3.jpg', 'name' => 'Bluebonnet'],
+        ['image' => 'flower4.jpg', 'name' => 'Wild Bergamot'],
+        ['image' => 'flower5.jpg', 'name' => 'Dahlia'],
+        ['image' => 'flower6.jpg', 'name' => 'Zinnia'],
+        ['image' => 'flower7.jpg', 'name' => 'Ranunculus'],
+        ['image' => 'flower8.jpg', 'name' => 'Larkspur'],
+        ['image' => 'flower9.jpg', 'name' => 'Chrysanthemum'],
+        ['image' => 'flower10.jpg', 'name' => 'Anemone'],
+        ['image' => 'flower11.jpg', 'name' => 'Celosia'],
+        ['image' => 'flower12.jpg', 'name' => 'Gladiolus'],
+        ['image' => 'flower13.jpg', 'name' => 'Gomphrena'],
+        ['image' => 'flower14.jpg', 'name' => 'Sunflower'],
+        ['image' => 'flower15.jpg', 'name' => 'Craspedia'],
+        ['image' => 'flower16.jpg', 'name' => 'Gerbera Daisy'],
+        ['image' => 'flower17.jpg', 'name' => 'Snapdragon'],
+        ['image' => 'flower18.jpg', 'name' => 'Bells of Ireland'],
+        ['image' => 'flower19.jpg', 'name' => 'Stock'],
+        ['image' => 'flower20.jpg', 'name' => 'Strawflower'],
+        ['image' => 'flower21.jpg', 'name' => 'Nigella'],
+        ['image' => 'flower22.jpg', 'name' => 'Morning Glory'],
+        ['image' => 'flower23.jpg', 'name' => 'Lobelia'],
+        ['image' => 'flower24.jpg', 'name' => 'Verbena'],
+        ['image' => 'flower25.jpg', 'name' => 'Dusty Miller'],
+        ['image' => 'flower26.jpg', 'name' => 'Sweet Alyssum'],
+        ['image' => 'flower27.jpg', 'name' => 'Browallia'],
+        ['image' => 'flower28.jpg', 'name' => 'Torenia'],
+        ['image' => 'flower29.jpg', 'name' => 'Gazania'],
+        ['image' => 'flower30.jpg', 'name' => 'Nicotiana'],
+        ['image' => 'flower31.jpg', 'name' => 'Nasturtium'],
+        ['image' => 'flower32.jpg', 'name' => 'Alyssum'],
+    ];
+
+    $perPage = 20;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $currentItems = array_slice($flowers, ($currentPage - 1) * $perPage, $perPage);
+
+    $paginated = new LengthAwarePaginator(
+        $currentItems,
+        count($flowers),
+        $perPage,
+        $currentPage,
+        [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]
+    );
+
+    return view('flowers', ['flowers' => $paginated, 'allFlowers' => $flowers]);
 })->name('flowers');
 
-Route::get('/gallery', function () {
-    return view('gallery');
+Route::get('/gallery', function (Request $request) {
+    $events = [
+        [
+            'name' => 'Rustic Wedding',
+            'category' => 'Weddings',
+            'image' => 'rustic_wedding.jpg',
+            'slug' => 'rustic-wedding',
+        ],
+        [
+            'name' => '18th Birthday',
+            'category' => 'Birthdays',
+            'image' => '18th_birthday.jpg',
+            'slug' => '18th-birthday',
+        ],
+        [
+            'name' => 'Corporate Gala',
+            'category' => 'Others',
+            'image' => 'corporate_gala.jpg',
+            'slug' => 'corporate-gala',
+        ],
+        [
+            'name' => 'Garden Wedding',
+            'category' => 'Weddings',
+            'image' => 'garden_wedding.jpg',
+            'slug' => 'garden-wedding',
+        ],
+        [
+            'name' => 'Debut Celebration',
+            'category' => 'Birthdays',
+            'image' => 'debut_celebration.jpg',
+            'slug' => 'debut-celebration',
+        ],
+        [
+            'name' => 'Anniversary Party',
+            'category' => 'Others',
+            'image' => 'anniversary_party.jpg',
+            'slug' => 'anniversary-party',
+        ],
+    ];
+
+    $perPage = 20;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $currentItems = array_slice($events, ($currentPage - 1) * $perPage, $perPage);
+
+    $paginated = new LengthAwarePaginator(
+        $currentItems,
+        count($events),
+        $perPage,
+        $currentPage,
+        [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]
+    );
+
+    return view('gallery', ['events' => $paginated]);
 })->name('gallery');
 
-Route::get('/search', function (\Illuminate\Http\Request $request) {
-    $query = trim((string) $request->query('q', ''));
-    $page = max(1, (int) $request->query('page', 1));
-    $perPage = 10;
 
-    $viewMap = [
-        'home' => route('home'),
-        'about' => route('about'),
-        'contact' => route('contact'),
-        'flowers' => route('flowers'),
-        'gallery' => route('gallery'),
-        'login' => route('login'),
-        'registration' => route('registration'),
-        'product' => route('product'),
-        'profile' => route('profile'),
-        'order' => route('order'),
-        'cart' => route('cart'),
-        'checkout' => route('checkout'),
-        'search' => route('search'),
-        'filter' => route('filter'),
-        // View gallery is dynamic; include a sample entry.
-        'viewgallery' => route('gallery.view', ['event' => 'rustic-wedding']),
-    ];
-
-    $stopwords = [
-        'the','and','for','with','this','that','your','you','from','into','our','are','was','were',
-        'has','have','will','shall','also','more','only','not','but','than','then','them','they',
-        'about','page','form','contact','home','gallery','flowers','search','filter','login','registration'
-    ];
 
     $viewsDir = resource_path('views');
     $files = glob($viewsDir.'/*.blade.php') ?: [];
@@ -109,7 +192,7 @@ Route::get('/search', function (\Illuminate\Http\Request $request) {
                     'id' => $id++,
                     'title' => $name,
                     'blurb' => 'Flower available in our catalog.',
-                    'url' => route('flowers'),
+                    'url' => '/flowers',
                     'keywords' => strtolower($name).' flower bouquet',
                 ];
             }
@@ -129,7 +212,7 @@ Route::get('/search', function (\Illuminate\Http\Request $request) {
                     'id' => $id++,
                     'title' => $eventName,
                     'blurb' => $category.' event gallery.',
-                    'url' => route('gallery.view', ['event' => $slug]),
+                    'url' => '/view-gallery/'.$slug,
                     'keywords' => strtolower($eventName).' '.$category.' gallery event',
                 ];
             }
@@ -148,71 +231,12 @@ Route::get('/search', function (\Illuminate\Http\Request $request) {
                     'id' => $id++,
                     'title' => $name,
                     'blurb' => 'Product price: '.$price.'.',
-                    'url' => route('product'),
+                    'url' => '/product',
                     'keywords' => strtolower($name).' product bouquet '.$price,
                 ];
             }
         }
     }
-
-    $results = $items;
-    $tokens = [];
-
-    if ($query !== '') {
-        $tokens = preg_split('/\s+/', strtolower($query));
-        $results = array_filter($items, function ($item) use ($tokens) {
-            $hay = strtolower($item['title'].' '.$item['blurb'].' '.$item['keywords']);
-            foreach ($tokens as $token) {
-                if ($token === '') {
-                    continue;
-                }
-                if (str_contains($hay, $token)) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
-
-    $scored = array_map(function ($item) use ($tokens) {
-        $score = 0;
-        $hay = strtolower($item['title'].' '.$item['keywords']);
-        foreach ($tokens as $token) {
-            if ($token === '') {
-                continue;
-            }
-            if (str_contains($hay, $token)) {
-                $score++;
-            }
-        }
-        $item['score'] = $score;
-        return $item;
-    }, $results);
-
-    usort($scored, function ($a, $b) {
-        return $b['score'] <=> $a['score'];
-    });
-
-    $total = count($scored);
-    $totalPages = max(1, (int) ceil($total / $perPage));
-    $page = min($page, $totalPages);
-    $offset = ($page - 1) * $perPage;
-    $paged = array_slice($scored, $offset, $perPage);
-
-    return view('search', [
-        'query' => $query,
-        'items' => $items,
-        'results' => $paged,
-        'page' => $page,
-        'total' => $total,
-        'totalPages' => $totalPages,
-        'perPage' => $perPage,
-    ]);
-})->name('search');
-
-Route::get('/filter', function () {
-    return view('filter');
-})->name('filter');
 
 Route::get('/view-gallery/{event}', function (string $event) {
     return view('viewgallery', ['event' => $event]);
@@ -223,29 +247,191 @@ Route::get('/cart', function () {
 })->name('cart');
 
 Route::get('/checkout', function () {
-    return view('checkout');
+    $user = Auth::user();
+    return view('checkout', ['user' => $user]);
 })->name('checkout');
 
 Route::post('/checkout', function () {
-    return view('checkout', ['success' => true]);
+    $user = Auth::user();
+    return view('checkout', ['user' => $user, 'success' => true]);
 })->name('checkout.submit');
 
 Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'login' => ['required', 'string', 'min:5', 'max:50'],
+        'password' => ['required', 'string', 'min:8', 'max:20'],
+    ]);
+
+    $login = $request->input('login');
+
+    if ($login === 'admin@gmail.com' && $request->password === 'admin123') {
+        $user = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'username' => 'admin',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+                'age' => 30,
+                'gender' => 'Other',
+                'civil_status' => 'Single',
+                'mobile' => '09990000000',
+                'address' => 'Admin Office Address',
+                'zip' => '0000',
+            ]
+        );
+
+        Auth::login($user);
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    $user = filter_var($login, FILTER_VALIDATE_EMAIL)
+        ? User::where('email', $login)->first()
+        : User::where('username', $login)->first();
+
+    if (! $user) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'No account found with that email or username. Please register first.');
+    }
+
+    if (! Hash::check($request->password, $user->password)) {
+        return back()
+            ->withInput($request->only('login'))
+            ->with('error', 'Invalid password. Please try again.');
+    }
+
+    Auth::login($user);
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+    }
+
+    return redirect()->route('profile')->with('success', 'Welcome back, '.$user->name.'!');
+})->name('login.submit');
+
 Route::get('/registration', function () {
     return view('registration');
 })->name('registration');
 
-Route::get('/product', function () {
-    return view('product');
-})->name('product');
+Route::post('/registration', function (Request $request) {
+    $request->validate([
+        'name' => ['required', 'string', 'min:2', 'regex:/^[A-Za-z ]+$/'],
+        'username' => ['required', 'string', 'min:5', 'max:15', 'regex:/^[A-Za-z][A-Za-z0-9_]{4,14}$/', 'unique:users,username'],
+        'email' => ['required', 'email', 'unique:users,email'],
+        'password' => ['required', 'string', 'min:8', 'max:20', "regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[^\\s'\"]{8,20}$/"],
+        'confirm_password' => ['required', 'same:password'],
+        'age' => ['required', 'integer', 'between:18,60'],
+        'gender' => ['required', 'in:Male,Female,Other'],
+        'civil_status' => ['required', 'in:Single,Married,Separated,Widowed'],
+        'mobile' => ['required', 'regex:/^09\d{9}$/'],
+        'address' => ['required', 'string', 'min:50'],
+        'zip' => ['required', 'regex:/^\d{4}$/'],
+    ], [
+        'name.regex' => 'Full name may only contain letters and spaces.',
+        'username.regex' => 'Username must start with a letter and contain only letters, numbers, and underscore.',
+        'password.regex' => 'Password must be 8-20 chars, include uppercase, lowercase, and a number.',
+        'confirm_password.same' => 'Passwords do not match.',
+        'mobile.regex' => 'Mobile number must be 11 digits and start with 09.',
+        'zip.regex' => 'ZIP code must be exactly 4 digits.',
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'age' => $request->age,
+        'gender' => $request->gender,
+        'civil_status' => $request->civil_status,
+        'mobile' => $request->mobile,
+        'address' => $request->address,
+        'zip' => $request->zip,
+    ]);
+
+    Auth::login($user);
+
+    return redirect()->route('profile')->with('success', 'Account created successfully. You are now logged in.');
+})->name('registration.submit');
+
+Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+});
 
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
+Route::post('/logout', function (Request $request) {
+    if (Auth::check()) {
+        Cart::where('user_id', Auth::id())->delete();
+    }
+    
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home')->with('success', 'You have been logged out successfully.');
+})->name('logout');
+
 Route::get('/order', function () {
     return view('order');
 })->name('order');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/api/cart', function () {
+        $cartItems = Cart::where('user_id', Auth::id())->get()->map(function ($item) {
+            return [
+                'name' => $item->product_name,
+                'price' => (float) $item->price,
+                'image' => $item->image_url,
+                'qty' => $item->qty,
+            ];
+        })->values()->all();
+
+        return response()->json($cartItems);
+    })->name('api.cart.get');
+
+    Route::post('/api/cart', function (Request $request) {
+        $request->validate([
+            'product_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'image_url' => 'required|string|max:1000',
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        $existing = Cart::where('user_id', Auth::id())
+            ->where('product_name', $request->product_name)
+            ->first();
+
+        if ($existing) {
+            $existing->increment('qty', $request->qty);
+        } else {
+            Cart::create([
+                'user_id' => Auth::id(),
+                'product_name' => $request->product_name,
+                'price' => $request->price,
+                'image_url' => $request->image_url,
+                'qty' => $request->qty,
+            ]);
+        }
+
+        return response()->json(['status' => 'added']);
+    })->name('api.cart.add');
+
+    Route::delete('/api/cart', function () {
+        Cart::where('user_id', Auth::id())->delete();
+        return response()->json(['status' => 'cleared']);
+    })->name('api.cart.clear');
+});
