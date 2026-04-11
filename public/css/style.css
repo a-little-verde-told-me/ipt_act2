@@ -1629,15 +1629,15 @@ input[type="password"]:autofill {
 .cart-list {
     display: flex;
     flex-direction: column;
-    gap: 48px;
+    gap: 28px;
     margin-bottom: 32px;
 }
 
 .cart-item {
     display: grid;
-    grid-template-columns: 30px 100px 1fr auto auto auto;
+    grid-template-columns: 40px 100px minmax(220px, 1fr) 160px 120px 50px;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     background: var(--white);
     border: 1px solid #f0ece9;
     border-radius: 12px;
@@ -1646,13 +1646,23 @@ input[type="password"]:autofill {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.item-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-details {
+    min-width: 0;
+}
+
 .item-checkbox {
     width: 20px;
     height: 20px;
     min-width: 20px;
     cursor: pointer;
     accent-color: var(--accent-rose);
-    border-radius: 50%;
+    border-radius: 6px;
 }
 
 
@@ -1691,6 +1701,7 @@ input[type="password"]:autofill {
 }
 
 .item-qty {
+    width: fit-content;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1838,7 +1849,7 @@ input[type="password"]:autofill {
     }
 
     .cart-item {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 40px 80px 1fr;
         row-gap: 12px;
     }
 
@@ -1848,7 +1859,15 @@ input[type="password"]:autofill {
     }
 
     .item-qty, .item-total, .remove-btn {
-        grid-column: 2;
+        grid-column: 3;
+    }
+
+    .item-details h4 {
+        margin-bottom: 6px;
+    }
+
+    .item-total {
+        text-align: left;
     }
 }
 

@@ -73,45 +73,70 @@
 
 <script>
     const buttons = document.querySelectorAll('.add-to-cart');
-    const cartKey = 'fleur_cart';
+    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
 
     function parsePrice(priceText) {
         const numeric = String(priceText).replace(/[^0-9.]/g, '');
         return numeric ? parseFloat(numeric) : 0;
     }
 
-    function loadCart() {
-        try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
-        } catch (e) {
-            return [];
-        }
+    function refreshCartCount() {
+        if (!isAuthenticated) return;
+
+        fetch('{{ route("api.cart.count") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('cartCount');
+            if (!badge) return;
+            badge.textContent = data.count || 0;
+            badge.style.display = (data.count || 0) > 0 ? 'inline-flex' : 'none';
+        })
+        .catch(() => {});
     }
 
-    function saveCart(cart) {
-        localStorage.setItem(cartKey, JSON.stringify(cart));
-        window.dispatchEvent(new Event('cart-updated'));
-    }
+    window.addEventListener('cart-updated', refreshCartCount);
 
     function addToCart(name, price, image) {
-        const cart = loadCart();
-        const existing = cart.find(item => item.product_name === name || item.name === name);
-
-        if (existing) {
-            existing.qty += 1;
-            existing.product_name = existing.product_name || name;
-            existing.image_url = existing.image_url || existing.image || image;
-        } else {
-            cart.push({
-                id: Date.now() + Math.floor(Math.random() * 1000),
-                product_name: name,
-                price: parseFloat(price),
-                image_url: image || '{{ asset("images/placeholder.jpg") }}',
-                qty: 1,
-            });
+        if (!isAuthenticated) {
+            window.location.href = '{{ route("login") }}';
+            return;
         }
 
-        saveCart(cart);
+        fetch('{{ route("api.cart.add") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                product_name: name,
+                price: parseFloat(price),
+                image_url: image,
+                qty: 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'added') {
+                window.dispatchEvent(new CustomEvent('cart-updated'));
+                // Show success message
+                const btn = document.querySelector(`[data-name="${name}"]`);
+                const original = btn.textContent;
+                btn.textContent = 'Added';
+                setTimeout(() => { btn.textContent = original; }, 900);
+            } else {
+                alert('Failed to add to cart');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding to cart');
+        });
     }
 
     function handleAddToCartClick(btn) {
@@ -121,10 +146,6 @@
             const image = btn.dataset.image;
 
             addToCart(name, price, image);
-
-            const original = btn.textContent;
-            btn.textContent = 'Added';
-            setTimeout(() => { btn.textContent = original; }, 900);
         });
     }
 
@@ -134,6 +155,9 @@
     }
 
     buttons.forEach(handleAddToCartClick);
+
+    window.addEventListener('load', refreshCartCount);
+    refreshCartCount();
 
     // Automatic filtering, searching, and sorting
     let filterTimeout;
