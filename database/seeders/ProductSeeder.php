@@ -29,7 +29,7 @@ class ProductSeeder extends Seeder
             ['name' => 'Chrysanthemum', 'category' => 'Flower', 'price' => 75.00, 'description' => 'Full-bodied mum bloom.', 'image_url' => 'Chrysanthemum.jpg'],
             ['name' => 'Stargazer Lily', 'category' => 'Flower', 'price' => 160.00, 'description' => 'Starry stargazer lily stem.', 'image_url' => 'Stargazer Lily.jpg'],
             // Bouquets
-            ['name' => 'Rose Romance', 'category' => 'Bouquet', 'price' => 1299.00, 'description' => '12 red roses with greenery.', 'image_url' => 'PASTE_URL_HERE'],
+            ['name' => 'Rose Romance', 'category' => 'Bouquet', 'price' => 1299.00, 'description' => '12 red roses with greenery.', 'image_url' => 'Rose Romance.jpg'],
             ['name' => 'Blush Dreams', 'category' => 'Bouquet', 'price' => 1199.00, 'description' => 'Pink roses with baby’s breath.', 'image_url' => 'PASTE_URL_HERE'],
             ['name' => 'Sunshine Cheer', 'category' => 'Bouquet', 'price' => 1099.00, 'description' => 'Sunflowers and daisies mix.', 'image_url' => 'PASTE_URL_HERE'],
             ['name' => 'Elegant White', 'category' => 'Bouquet', 'price' => 1399.00, 'description' => 'White lilies and roses.', 'image_url' => 'PASTE_URL_HERE'],
