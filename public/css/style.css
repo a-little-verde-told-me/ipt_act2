@@ -102,6 +102,7 @@ header {
 }
 
 .cart-icon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1317,19 +1318,32 @@ input::-ms-clear,
 input::-ms-reveal,
 input::-moz-reveal,
 input::-webkit-password-reveal-button,
-input::-moz-password-reveal-button {
+input::-moz-password-reveal-button,
+input::-webkit-textfield-decoration-container,
+input::-webkit-textfield-decoration-button {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    visibility: hidden !important;
 }
 
+input[type="password"],
 input[type="password"]::-webkit-autofill-button,
 input[type="password"]::-webkit-credentials-auto-fill-button,
 input[type="password"]::-ms-reveal,
-input[type="password"]::-moz-reveal {
+input[type="password"]::-moz-reveal,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-textfield-decoration-button {
     display: none !important;
+    width: 0 !important;
+    height: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+}
+
+input[type="password"] {
+    -webkit-appearance: textfield !important;
+    appearance: textfield !important;
 }
 
 input:autofill::selection,
@@ -1365,7 +1379,7 @@ input[type="password"]:autofill {
 
 .password-field input {
     width: 100%;
-    padding-right: 48px;
+    padding-right: 14px;
 }
 
 .password-toggle {

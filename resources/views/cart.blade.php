@@ -186,8 +186,31 @@
         }, 0);
     }
 
+    const cartCountBadge = document.getElementById('cartCount');
+
     function formatPrice(value) {
         return `₱${value.toFixed(2)}`;
+    }
+
+    function refreshCartCount() {
+        if (!isAuthenticated || !cartCountBadge) return;
+
+        fetch('{{ route("api.cart.count") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const count = Number(data.count || 0);
+            cartCountBadge.textContent = count;
+            cartCountBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+        })
+        .catch(() => {
+            if (cartCountBadge) {
+                cartCountBadge.style.display = 'none';
+            }
+        });
     }
 
     function renderCart() {
@@ -235,6 +258,7 @@
         shippingEl.textContent = formatPrice(shipping);
         totalEl.textContent = formatPrice(totalSelected + shipping);
         updateCheckoutButton();
+        refreshCartCount();
     }
 
     function updateCheckoutButton() {
