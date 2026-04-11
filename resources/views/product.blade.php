@@ -32,7 +32,7 @@
                 </select>
 
                 <!-- Reset Button -->
-                <a href="{{ route('product') }}" class="reset-btn">Reset</a>
+                <button type="button" id="resetFilters" class="reset-btn">Reset</button>
             </div>
         </form>
     </div>
@@ -178,6 +178,7 @@
     const searchInput = document.getElementById('searchInput');
     const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
+    const resetButton = document.getElementById('resetFilters');
     const productFiltersForm = document.getElementById('productFilters');
 
     function applyFilters() {
@@ -231,6 +232,12 @@
 
     categorySelect.addEventListener('change', applyFilters);
     sortSelect.addEventListener('change', applyFilters);
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        categorySelect.value = '';
+        sortSelect.value = 'default';
+        applyFilters();
+    });
 
     // Login required overlay cancel button
     window.addEventListener('DOMContentLoaded', () => {
