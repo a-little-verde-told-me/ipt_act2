@@ -67,7 +67,7 @@
 
 <script>
     const cartKey = 'fleur_cart';
-    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }} === 'true';
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
     const buttons = document.querySelectorAll('.add-to-cart');
 
     function parsePrice(priceText) {
