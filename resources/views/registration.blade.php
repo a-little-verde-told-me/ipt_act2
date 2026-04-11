@@ -98,7 +98,7 @@
         e.preventDefault();
         validatePasswordMatch();
         if (!regForm.reportValidity()) return;
-        alert('Registration submitted.');
+        alert('Registered Successfully.');
         regForm.reset();
     });
 </script>
