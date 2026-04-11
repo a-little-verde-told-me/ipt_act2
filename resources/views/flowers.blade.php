@@ -102,7 +102,7 @@
         'white': ['snapdragon', 'sweet alyssum', 'torenia', 'alyssum']
     };
 
-    const itemsPerPage = 20;
+    const itemsPerPage = 10;
     let currentPage = 1;
     let filteredFlowers = [];
 
