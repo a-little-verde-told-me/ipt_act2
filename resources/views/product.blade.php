@@ -1,0 +1,197 @@
+﻿@extends('headerfooter')
+
+@section('title', 'Products | FLEUR')
+
+@section('content')
+<div class="products-page">
+    <h1>PRODUCTS</h1>
+
+    <div class="search-section">
+        <form class="product-filters" id="productFilters">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" name="search" id="searchInput" placeholder="Search products..." value="{{ $activeSearch ?? '' }}">
+            </div>
+
+            <!-- Filters Row -->
+            <div class="filters-row">
+                <!-- Category Filter -->
+                <select name="category" id="categorySelect">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Sort Dropdown -->
+                <select name="sort" id="sortSelect">
+                    <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
+                    <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
+
+                <!-- Reset Button -->
+                <a href="{{ route('product') }}" class="reset-btn">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="products-grid">
+        @forelse($products as $product)
+            <div class="product-card" data-name="{{ strtolower($product->name) }}">
+                <div class="product-image">
+                    <img src="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}" alt="{{ $product->name }}">
+                </div>
+                <div class="product-info">
+                    <h3>{{ $product->name }}</h3>
+                    <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
+                    <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
+                    <button
+                        class="product-btn add-to-cart"
+                        type="button"
+                        data-name="{{ $product->name }}"
+                        data-price="{{ $product->price }}"
+                        data-image="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}"
+                    >Add to Cart</button>
+                </div>
+            </div>
+        @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <p style="font-size: 1.1rem; margin: 0;">No results found or data is insufficient</p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">Try adjusting your filters or search terms.</p>
+            </div>
+        @endforelse
+    </div>
+
+    @if ($products->hasPages())
+        <div class="pagination-wrapper">
+            {{ $products->links('pagination::custom') }}
+        </div>
+    @endif
+</div>
+
+<script>
+    const buttons = document.querySelectorAll('.add-to-cart');
+    const cartKey = 'fleur_cart';
+
+    function parsePrice(priceText) {
+        const numeric = String(priceText).replace(/[^0-9.]/g, '');
+        return numeric ? parseFloat(numeric) : 0;
+    }
+
+    function loadCart() {
+        try {
+            return JSON.parse(localStorage.getItem(cartKey)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveCart(cart) {
+        localStorage.setItem(cartKey, JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+    }
+
+    function addToCart(name, price, image) {
+        const cart = loadCart();
+        const existing = cart.find(item => item.product_name === name || item.name === name);
+
+        if (existing) {
+            existing.qty += 1;
+            existing.product_name = existing.product_name || name;
+            existing.image_url = existing.image_url || existing.image || image;
+        } else {
+            cart.push({
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                product_name: name,
+                price: parseFloat(price),
+                image_url: image || '{{ asset("images/placeholder.jpg") }}',
+                qty: 1,
+            });
+        }
+
+        saveCart(cart);
+    }
+
+    function handleAddToCartClick(btn) {
+        btn.addEventListener('click', () => {
+            const name = btn.dataset.name;
+            const price = parsePrice(btn.dataset.price || '0');
+            const image = btn.dataset.image;
+
+            addToCart(name, price, image);
+
+            const original = btn.textContent;
+            btn.textContent = 'Added';
+            setTimeout(() => { btn.textContent = original; }, 900);
+        });
+    }
+
+    function attachCartButtons() {
+        const newButtons = document.querySelectorAll('.add-to-cart');
+        newButtons.forEach(handleAddToCartClick);
+    }
+
+    buttons.forEach(handleAddToCartClick);
+
+    // Automatic filtering, searching, and sorting
+    let filterTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const productFiltersForm = document.getElementById('productFilters');
+
+    function applyFilters() {
+        const formData = new FormData(productFiltersForm);
+        const params = new URLSearchParams(formData);
+
+        fetch(`{{ route('product') }}?${params.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Extract products grid and pagination from response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newGrid = doc.querySelector('.products-grid');
+            const currentGrid = document.querySelector('.products-grid');
+            const newPagination = doc.querySelector('.pagination-wrapper');
+            const currentPagination = document.querySelector('.pagination-wrapper');
+            
+            if (newGrid && currentGrid) {
+                currentGrid.innerHTML = newGrid.innerHTML;
+            }
+            
+            if (newPagination && currentPagination) {
+                currentPagination.innerHTML = newPagination.innerHTML;
+            } else if (newPagination && !currentPagination) {
+                const container = document.createElement('div');
+                container.className = 'pagination-wrapper';
+                container.innerHTML = newPagination.innerHTML;
+                document.querySelector('.products-page').appendChild(container);
+            }
+            
+            if (newGrid && currentGrid) {
+                // Reattach event listeners to new buttons
+                attachCartButtons();
+            }
+            
+            // Update URL without page reload
+            window.history.pushState({ page: 'product-filter' }, '', `{{ route('product') }}?${params.toString()}`);
+        })
+        .catch(error => console.error('Filter error:', error));
+    }
+
+    // Event listeners for automatic filtering
+    searchInput.addEventListener('input', () => {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
+    });
+
+    categorySelect.addEventListener('change', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
+</script>
+@endsection
