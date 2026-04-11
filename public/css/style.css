@@ -2129,6 +2129,96 @@ input[type="password"]:autofill {
     transform: translateY(-2px);
 }
 
+/* Login Required Overlay Styles */
+.login-required-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.login-required-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 48px 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+}
+
+.login-required-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: #fff3cd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #856404;
+    font-weight: bold;
+}
+
+.login-required-card h2 {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.login-required-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+.login-required-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-required-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.login-required-btn.btn-primary {
+    background: var(--accent-rose);
+    color: var(--white);
+}
+
+.login-required-btn.btn-primary:hover {
+    background: #8a3a45;
+    transform: translateY(-2px);
+}
+
+.login-required-btn.btn-secondary {
+    background: #f0f0f0;
+    color: var(--text-dark);
+    border: 1px solid #dddddd;
+}
+
+.login-required-btn.btn-secondary:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+}
+
 /* Login Modal Styles */
 .login-modal {
     display: none;

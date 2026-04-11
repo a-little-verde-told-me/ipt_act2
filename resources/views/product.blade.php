@@ -100,9 +100,23 @@
 
     window.addEventListener('cart-updated', refreshCartCount);
 
+    function showLoginRequiredOverlay() {
+        const overlay = document.getElementById('loginRequiredOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideLoginRequiredOverlay() {
+        const overlay = document.getElementById('loginRequiredOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
     function addToCart(name, price, image) {
         if (!isAuthenticated) {
-            window.location.href = '{{ route("login") }}';
+            showLoginRequiredOverlay();
             return;
         }
 
@@ -217,5 +231,27 @@
 
     categorySelect.addEventListener('change', applyFilters);
     sortSelect.addEventListener('change', applyFilters);
+
+    // Login required overlay cancel button
+    window.addEventListener('DOMContentLoaded', () => {
+        const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+        if (cancelLoginBtn) {
+            cancelLoginBtn.addEventListener('click', hideLoginRequiredOverlay);
+        }
+    });
 </script>
+
+<!-- Login Required Overlay -->
+<div class="login-required-overlay" id="loginRequiredOverlay" style="display: none;">
+    <div class="login-required-card">
+        <div class="login-required-icon">🔒</div>
+        <h2>Login Required</h2>
+        <p>Please login to add items to your cart.</p>
+        <div class="login-required-actions">
+            <a href="{{ route('login') }}" class="login-required-btn btn-primary">Login</a>
+            <button class="login-required-btn btn-secondary" id="cancelLoginBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
 @endsection
