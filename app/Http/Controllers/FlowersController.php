@@ -17,7 +17,10 @@ class FlowersController extends Controller
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
-        $flowers = $query->orderBy('name')->get();
+        $flowers = $query->orderBy('name')
+            ->get()
+            ->unique('name')
+            ->values();
 
         return view('flowers', [
             'flowers' => $flowers,

@@ -12,47 +12,6 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        if (Product::count() === 0) {
-            Product::insert([
-                [
-                    'name' => 'Sweet Petals',
-                    'category' => 'Signature',
-                    'price' => 1299.00,
-                    'image_url' => 'sweet_petals.jpg',
-                    'description' => 'Soft pink petals arranged for a delicate and romantic gift.',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'White Rose Elegance',
-                    'category' => 'Classic',
-                    'price' => 1599.00,
-                    'image_url' => 'white_rose.jpg',
-                    'description' => 'A timeless bouquet of white roses for elegant celebrations.',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'Rosy Charm',
-                    'category' => 'Romantic',
-                    'price' => 1399.00,
-                    'image_url' => 'rosy_charm.jpg',
-                    'description' => 'A charming mix of rosy blooms perfect for special moments.',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'Pink Delight',
-                    'category' => 'Fresh Picks',
-                    'price' => 1499.00,
-                    'image_url' => 'pink_delight.jpg',
-                    'description' => 'A cheerful pink arrangement with modern floral accents.',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-            ]);
-        }
-
         $query = Product::query();
 
         // Filter by category
@@ -73,13 +32,24 @@ class ProductController extends Controller
         } elseif ($sort === 'price_low') {
             $query->orderBy('price', 'asc');
         } else {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('name', 'asc');
         }
 
         $products = $query->get();
 
         // Get unique categories for the filter dropdown
         $categories = Product::distinct()->pluck('category')->sort()->values();
+
+        // Check if this is an AJAX request
+        if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return view('product', [
+                'products' => $products,
+                'categories' => $categories,
+                'activeCategory' => $request->get('category'),
+                'activeSearch' => $request->get('search'),
+                'activeSort' => $sort,
+            ]);
+        }
 
         return view('product', [
             'products' => $products,

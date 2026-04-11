@@ -10,7 +10,7 @@
             <p>FLEUR is a startup flower shop specializing in curated bouquets, event styling, and thoughtful gifts. We blend modern floral design with warm, local service to make every celebration bloom.</p>
         </div>
         <div class="about-hero-image">
-            <img src="{{ asset('images/founder.jpg') }}" alt="Founder">
+            <img src="{{ asset('images/placeholder.jpg') }}" alt="Founder">
         </div>
     </div>
 
