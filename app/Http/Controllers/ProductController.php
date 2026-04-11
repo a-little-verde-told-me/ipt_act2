@@ -16,17 +16,17 @@ class ProductController extends Controller
 
         // Filter by category
         if ($request->filled('category')) {
-            $query->where('category', $request->get('category'));
+            $query->where('category', $request->input('category'));
         }
 
         // Search by product name (case-insensitive)
         if ($request->filled('search')) {
-            $search = $request->get('search');
+            $search = $request->input('search');
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
         // Sort by price
-        $sort = $request->get('sort', 'default');
+        $sort = $request->input('sort', 'default');
         if ($sort === 'price_high') {
             $query->orderBy('price', 'desc');
         } elseif ($sort === 'price_low') {
@@ -45,8 +45,8 @@ class ProductController extends Controller
             return view('product', [
                 'products' => $products,
                 'categories' => $categories,
-                'activeCategory' => $request->get('category'),
-                'activeSearch' => $request->get('search'),
+                'activeCategory' => $request->input('category'),
+                'activeSearch' => $request->input('search'),
                 'activeSort' => $sort,
             ]);
         }
@@ -54,8 +54,8 @@ class ProductController extends Controller
         return view('product', [
             'products' => $products,
             'categories' => $categories,
-            'activeCategory' => $request->get('category'),
-            'activeSearch' => $request->get('search'),
+            'activeCategory' => $request->input('category'),
+            'activeSearch' => $request->input('search'),
             'activeSort' => $sort,
         ]);
     }

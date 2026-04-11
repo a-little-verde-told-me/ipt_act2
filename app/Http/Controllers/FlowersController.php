@@ -13,7 +13,7 @@ class FlowersController extends Controller
             ->whereRaw('LOWER(category) LIKE ?', ['%flower%']);
 
         if ($request->filled('search')) {
-            $search = $request->get('search');
+            $search = $request->input('search');
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
@@ -24,7 +24,7 @@ class FlowersController extends Controller
 
         return view('flowers', [
             'flowers' => $flowers,
-            'activeSearch' => $request->get('search'),
+            'activeSearch' => $request->input('search'),
         ]);
     }
 }

@@ -153,6 +153,31 @@
             grid-column: 1 / -1;
         }
     }
+
+    .product-image-link {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        width: 100%;
+        margin: 0;
+        transition: transform 0.2s ease;
+    }
+
+    .product-image-link:hover {
+        transform: scale(1.02);
+    }
+
+    .product-image-link:focus {
+        outline: 2px solid var(--accent-rose);
+        outline-offset: 2px;
+    }
+
+    .product-image-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
 </style>
 
 <div class="product-section">
@@ -195,9 +220,11 @@
                         ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('images/'.$product->image_url))
                         : asset('images/placeholder.jpg');
                 @endphp
-                <div class="product-image">
-                    <img src="{{ $productImage }}" alt="{{ $product->name }}">
-                </div>
+                <button class="product-image-link" type="button" data-image="{{ $productImage }}" data-title="{{ $product->name }}">
+                    <div class="product-image">
+                        <img class="product-image-img" src="{{ $productImage }}" alt="{{ $product->name }}">
+                    </div>
+                </button>
                 <div class="product-info">
                     <h3>{{ $product->name }}</h3>
                     <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
@@ -221,7 +248,48 @@
     </div>
 </div>
 
+<div class="lightbox" id="productLightbox" aria-hidden="true">
+    <div class="lightbox-content" role="dialog" aria-modal="true">
+        <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+        <img id="productLightboxImage" src="" alt="">
+        <p id="productLightboxTitle"></p>
+    </div>
+</div>
+
 <script>
+    // Lightbox functionality
+    const lightbox = document.getElementById('productLightbox');
+    const lightboxImage = document.getElementById('productLightboxImage');
+    const lightboxTitle = document.getElementById('productLightboxTitle');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+
+    document.querySelectorAll('.product-image-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+            lightboxImage.src = btn.dataset.image;
+            lightboxImage.alt = btn.dataset.title || 'Product image';
+            lightboxTitle.textContent = btn.dataset.title || '';
+            lightbox.classList.add('open');
+            lightbox.setAttribute('aria-hidden', 'false');
+        });
+    });
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightboxImage.src = '';
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+            closeLightbox();
+        }
+    });
+
     const cartKey = 'fleur_cart';
 
     function parsePrice(priceText) {
@@ -270,18 +338,59 @@
             btn.parentNode.replaceChild(newBtn, btn);
             
             newBtn.addEventListener('click', () => {
-                const name = newBtn.dataset.name;
-                const price = parsePrice(newBtn.dataset.price || '0');
-                const image = newBtn.dataset.image;
-                addToCart(name, price, image);
-                
-                const original = newBtn.textContent;
-                newBtn.textContent = 'Added';
-                newBtn.disabled = true;
-                setTimeout(() => { 
-                    newBtn.textContent = original;
-                    newBtn.disabled = false;
-                }, 900);
+                // Check if user is authenticated
+                @auth
+                    // User is authenticated, proceed with adding to cart
+                    const name = newBtn.dataset.name;
+                    const price = parsePrice(newBtn.dataset.price || '0');
+                    const image = newBtn.dataset.image;
+                    
+                    // Try to add to server-side cart first
+                    fetch('{{ route("cart.items.store") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        },
+                        body: JSON.stringify({
+                            product_id: newBtn.dataset.id,
+                            name: name,
+                            price: price,
+                            image_url: image,
+                            quantity: 1,
+                        }),
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Also update local cart for UI consistency
+                            addToCart(name, price, image);
+                            const original = newBtn.textContent;
+                            newBtn.textContent = 'Added';
+                            newBtn.disabled = true;
+                            setTimeout(() => { 
+                                newBtn.textContent = original;
+                                newBtn.disabled = false;
+                            }, 900);
+                        } else {
+                            throw new Error('Failed to add to cart');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Cart error:', error);
+                        // Fallback to local cart
+                        addToCart(name, price, image);
+                        const original = newBtn.textContent;
+                        newBtn.textContent = 'Added';
+                        newBtn.disabled = true;
+                        setTimeout(() => { 
+                            newBtn.textContent = original;
+                            newBtn.disabled = false;
+                        }, 900);
+                    });
+                @else
+                    // User is not authenticated, redirect to login
+                    window.location.href = '{{ route("login") }}';
+                @endauth
             });
         });
     }

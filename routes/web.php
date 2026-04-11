@@ -42,7 +42,7 @@ Route::get('/gallery', function () {
 })->name('gallery');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('api.cart.add');
 
-Route::get('/search', function (\Illuminate\Http\Request $request) {
+Route::get('/search', function (Request $request) {
     $query = trim((string) $request->query('q', ''));
     $page = max(1, (int) $request->query('page', 1));
     $perPage = 10;
@@ -250,11 +250,11 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/checkout', function () {
     return view('checkout');
-})->name('checkout');
+})->middleware('auth')->name('checkout');
 
 Route::post('/checkout', function () {
     return view('checkout', ['success' => true]);
-})->name('checkout.submit');
+})->middleware('auth')->name('checkout.submit');
 
 Route::get('/login', function () {
     return view('login');

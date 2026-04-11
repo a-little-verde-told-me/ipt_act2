@@ -11,6 +11,11 @@
 
     <div class="cart-layout">
         <div class="cart-list">
+            <div id="loginNotice" style="display: none; text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Please Login to View Your Cart</h3>
+                <p>You need to be logged in to view and manage your cart items.</p>
+                <a href="{{ route('login') }}" class="checkout-btn" style="display: inline-block; margin-top: 15px;">Login Now</a>
+            </div>
             <div class="cart-head">
                 <span>Product</span>
                 <span>Price</span>
