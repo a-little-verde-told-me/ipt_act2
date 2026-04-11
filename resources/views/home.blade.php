@@ -43,10 +43,10 @@
   <section class="featured-section">
     <div class="featured-title" style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-rose);">FEATURED BOUQUETS</div>
     <div class="bouquet-grid">
-      <div class="bouquet-card"><img class="bouquet-img" src="images/pink_delight.jpg" alt="Product Image"><div class="bouquet-name">Pink Delight Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="images/white_rose.jpg" alt="Product Image"><div class="bouquet-name">White Rose Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="images/rosy_charm.jpg" alt="Product Image"><div class="bouquet-name">Rosy Charm Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="images/sweet_petals.jpg" alt="Product Image"><div class="bouquet-name">Sweet Petals Bouquet</div></div>
+      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/pink_delight.jpg') }}" alt="Product Image"><div class="bouquet-name">Pink Delight</div></div>
+      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/white_rose.jpg') }}" alt="Product Image"><div class="bouquet-name">White Rose</div></div>
+      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/rosy_charm.jpg') }}" alt="Product Image"><div class="bouquet-name">Rosy Charm</div></div>
+      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/sweet_petals.jpg') }}" alt="Product Image"><div class="bouquet-name">Sweet Petals Bouquet</div></div>
     </div>
     <a href="{{ route('product') }}" class="shop-now">Shop Now</a>
   </section>

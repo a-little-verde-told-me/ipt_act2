@@ -63,7 +63,8 @@
 </div>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const userId = @json(auth()->id());
+    const itemsUrl = @json(route('cart.items'));
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const shippingEl = document.getElementById('checkoutShipping');
     const totalEl = document.getElementById('checkoutTotal');

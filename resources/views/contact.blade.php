@@ -26,7 +26,7 @@
     </form>
 
     <aside class="contact-info">
-      <div class="store-image">
+      <div class="store-image zoomable" id="contactZoomTrigger">
         <img src="{{ asset('images/store_image.jpg') }}" alt="Store Image">
       </div>
       <div class="info-section">
@@ -52,15 +52,52 @@
       </div>
     </aside>
   </div>
+
+  <div class="zoom-overlay" id="contactZoomOverlay" aria-hidden="true">
+      <div class="zoom-overlay-content" role="dialog" aria-modal="true">
+          <button class="zoom-close" type="button" aria-label="Close">&times;</button>
+          <img id="contactZoomImage" src="{{ asset('images/store_image.jpg') }}" alt="Store Image">
+      </div>
+  </div>
 </main>
 
 <script>
-  const contactForm = document.querySelector('.contact-form');
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!contactForm.reportValidity()) return;
-    alert('Message sent! We will get back to you soon.');
-    contactForm.reset();
+  document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!contactForm.reportValidity()) return;
+        alert('Message sent! We will get back to you soon.');
+        contactForm.reset();
+      });
+    }
+
+    const contactZoomTrigger = document.getElementById('contactZoomTrigger');
+    const contactZoomOverlay = document.getElementById('contactZoomOverlay');
+    const contactZoomClose = contactZoomOverlay?.querySelector('.zoom-close');
+
+    if (contactZoomTrigger && contactZoomOverlay) {
+      contactZoomTrigger.addEventListener('click', () => {
+        contactZoomOverlay.classList.add('open');
+        contactZoomOverlay.setAttribute('aria-hidden', 'false');
+      });
+
+      const closeContactOverlay = () => {
+        contactZoomOverlay.classList.remove('open');
+        contactZoomOverlay.setAttribute('aria-hidden', 'true');
+      };
+
+      contactZoomClose?.addEventListener('click', closeContactOverlay);
+      contactZoomOverlay.addEventListener('click', (event) => {
+        if (event.target === contactZoomOverlay) closeContactOverlay();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && contactZoomOverlay.classList.contains('open')) {
+          closeContactOverlay();
+        }
+      });
+    }
   });
 </script>
 @endsection

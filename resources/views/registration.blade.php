@@ -67,6 +67,7 @@
 
                 
             </div>
+            @error('gender') <p class="field-error">{{ $message }}</p> @enderror
 
             <div class="form-column">
 

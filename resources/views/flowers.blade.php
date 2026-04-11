@@ -7,10 +7,20 @@
     <h1 class="page-title">FLOWERS</h1>
 
     <div class="search-section">
-        <div class="search-bar">
-            <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input type="text" placeholder="Search flowers..." id="flowerSearch">
-        </div>
+        <form method="GET" action="{{ route('flowers') }}" class="product-filters">
+            <div class="product-search-row">
+                <div class="search-bar">
+                    <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="search" placeholder="Search flowers..." value="{{ $activeSearch ?? '' }}">
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="filters-right">
+                    <button type="submit" class="product-filter-btn">Search</button>
+                    <a href="{{ route('flowers') }}" class="product-filter-reset">Reset</a>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="filter-sort-section">
@@ -53,7 +63,20 @@
                     <h3>{{ $flower['name'] }}</h3>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                <p style="font-size: 1.1rem; margin: 0;">No flowers are listed yet.</p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">Add flower products in the database to show them here.</p>
+            </div>
+        @endforelse
+    </div>
+
+    <div class="customize-cta">
+        <div>
+            <h2>Want a personalized bouquet?</h2>
+            <p>Mix and match from our available flowers and tell us your theme, colors, and budget.</p>
+        </div>
+        <a href="{{ route('customize') }}" class="cta-button">Customize Now</a>
     </div>
 
     @if ($flowers->hasPages())

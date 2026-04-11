@@ -8,6 +8,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FlowersController;
 
 Route::get('/', function () {
     return view('home');
@@ -132,7 +135,7 @@ Route::get('/gallery', function (Request $request) {
 
     return view('gallery', ['events' => $paginated]);
 })->name('gallery');
-
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('api.cart.add');
 
 
     $viewsDir = resource_path('views');
@@ -242,9 +245,13 @@ Route::get('/view-gallery/{event}', function (string $event) {
     return view('viewgallery', ['event' => $event]);
 })->name('gallery.view');
 
-Route::get('/cart', function () {
-    return view('cart');
-})->name('cart');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::get('/cart/items', [CartController::class, 'items'])->name('cart.items');
+Route::middleware('auth')->group(function () {
+    Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
+    Route::patch('/cart/items/{id}', [CartController::class, 'update'])->name('cart.items.update');
+    Route::delete('/cart/items/{id}', [CartController::class, 'destroy'])->name('cart.items.destroy');
+});
 
 Route::get('/checkout', function () {
     $user = Auth::user();

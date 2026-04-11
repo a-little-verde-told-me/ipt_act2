@@ -51,9 +51,14 @@
 </div>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const userId = @json(auth()->id());
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const itemsUrl = @json(route('cart.items'));
+    const updateBase = @json(url('/cart/items'));
+    const imageBase = @json(asset('images/'));
     const rowsEl = document.getElementById('cartRows');
     const emptyEl = document.getElementById('emptyCart');
+    const loginNotice = document.getElementById('loginNotice');
     const subtotalEl = document.getElementById('cartSubtotal');
     const shippingEl = document.getElementById('cartShipping');
     const totalEl = document.getElementById('cartTotal');
@@ -98,11 +103,26 @@
         return `₱${value.toFixed(2)}`;
     }
 
-    function renderCart() {
-        const cart = getCart();
+    async function fetchCart() {
+        const res = await fetch(itemsUrl, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('Failed');
+        return res.json();
+    }
+
+    function renderCart(items, totals) {
         rowsEl.innerHTML = '';
 
-        if (cart.length === 0) {
+        if (!userId) {
+            loginNotice.style.display = 'block';
+            emptyEl.style.display = 'none';
+            subtotalEl.textContent = formatPrice(0);
+            shippingEl.textContent = formatPrice(0);
+            totalEl.textContent = formatPrice(0);
+            return;
+        }
+
+        loginNotice.style.display = 'none';
+        if (items.length === 0) {
             emptyEl.style.display = 'block';
         } else {
             emptyEl.style.display = 'none';
