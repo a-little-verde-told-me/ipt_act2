@@ -143,8 +143,7 @@ header {
 }
 
 .logout-btn:hover {
-    background: var(--accent-rose);
-    color: var(--white);
+    background: #8a3a45;
 }
 
 .nav-links a {
@@ -300,7 +299,7 @@ header {
     border: 1px solid #dddddd;
     display: flex;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 14px 18px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     margin-bottom: 0;
@@ -327,7 +326,7 @@ header {
 .product-filters .filter-btn,
 .product-filters .reset-btn {
     padding: 10px 18px;
-    border-radius: 6px;
+    border-radius: 999px;
     font-weight: 600;
     text-decoration: none;
     border: none;
@@ -480,7 +479,7 @@ header {
     padding: 12px 45px;
     background: #444; /* Dark button like screenshot */
     color: var(--white);
-    border-radius: 4px;
+    border-radius: 999px;
     text-decoration: none;
     font-weight: 600;
 }
@@ -715,7 +714,7 @@ footer {
     background: #fff;
     border: 1px solid #dddddd;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 14px 18px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
@@ -724,8 +723,8 @@ footer {
     padding: 10px 18px;
     background: #fff;
     border: 1px solid #dddddd;
-    border-radius: 8px;
-    color: #333;
+    border-radius: 999px;
+    background: #666;
     font-weight: 600;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
@@ -782,7 +781,7 @@ footer {
 .sort-select {
     padding: 10px 14px;
     border: 1px solid #dddddd;
-    border-radius: 8px;
+    border-radius: 999px;
     background: #fff;
     color: #333;
     font-family: 'Poppins', sans-serif;
@@ -1218,9 +1217,9 @@ footer {
     align-self: end;
     padding: 8px 14px;
     border: none;
-    background: #444;
+    background: #666;
     color: #fff;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
 }
 
@@ -1263,6 +1262,79 @@ footer {
 .auth-card h1 {
     font-size: 2rem;
     margin-bottom: 20px;
+}
+
+.profile-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 18px 28px;
+    margin-bottom: 28px;
+}
+
+.profile-row {
+    background: #faf3f3;
+    border: 1px solid #f2d8d8;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #8a3a45;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.profile-value {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    justify-content: flex-start;
+}
+
+.profile-actions .secondary-link {
+    color: var(--accent-rose);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-actions .secondary-link:hover {
+    text-decoration: underline;
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-rose);
+    background: var(--accent-rose);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #8a3a45;
+}
+
+@media (max-width: 900px) {
+    .profile-summary {
+        grid-template-columns: 1fr;
+    }
 }
 
 .auth-form {
@@ -2278,7 +2350,7 @@ input[type="password"]:autofill {
 .modal-btn {
     display: inline-block;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 50%;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;

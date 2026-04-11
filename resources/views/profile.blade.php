@@ -13,22 +13,22 @@
 
         @auth
             <div class="profile-summary">
-                <p><strong>Name:</strong> {{ auth()->user()->name }}</p>
-                <p><strong>Username:</strong> {{ auth()->user()->username }}</p>
-                <p><strong>Email:</strong> {{ auth()->user()->email }}</p>
-                <p><strong>Age:</strong> {{ auth()->user()->age }}</p>
-                <p><strong>Gender:</strong> {{ auth()->user()->gender }}</p>
-                <p><strong>Civil Status:</strong> {{ auth()->user()->civil_status }}</p>
-                <p><strong>Mobile:</strong> {{ auth()->user()->mobile }}</p>
-                <p><strong>Address:</strong> {{ auth()->user()->address }}</p>
-                <p><strong>ZIP Code:</strong> {{ auth()->user()->zip }}</p>
+                <div class="profile-row"><span class="profile-label">Name</span><span class="profile-value">{{ auth()->user()->name }}</span></div>
+                <div class="profile-row"><span class="profile-label">Username</span><span class="profile-value">{{ auth()->user()->username }}</span></div>
+                <div class="profile-row"><span class="profile-label">Email</span><span class="profile-value">{{ auth()->user()->email }}</span></div>
+                <div class="profile-row"><span class="profile-label">Age</span><span class="profile-value">{{ auth()->user()->age }}</span></div>
+                <div class="profile-row"><span class="profile-label">Gender</span><span class="profile-value">{{ auth()->user()->gender }}</span></div>
+                <div class="profile-row"><span class="profile-label">Civil Status</span><span class="profile-value">{{ auth()->user()->civil_status }}</span></div>
+                <div class="profile-row"><span class="profile-label">Mobile</span><span class="profile-value">{{ auth()->user()->mobile }}</span></div>
+                <div class="profile-row"><span class="profile-label">Address</span><span class="profile-value">{{ auth()->user()->address }}</span></div>
+                <div class="profile-row"><span class="profile-label">ZIP Code</span><span class="profile-value">{{ auth()->user()->zip }}</span></div>
             </div>
             <div class="profile-actions">
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
                     <button type="submit" class="logout-btn">Log Out</button>
                 </form>
-                <a href="{{ route('home') }}" class="text-rose-700 hover:underline">Return to Home</a>
+                <a href="{{ route('home') }}" class="secondary-link">Return to Home</a>
             </div>
         @else
             <p class="form-error">You are not logged in. Please <a href="{{ route('login') }}">sign in</a> or <a href="{{ route('registration') }}">register</a>.</p>

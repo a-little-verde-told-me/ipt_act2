@@ -30,10 +30,10 @@
                 <input id="loginPassword" type="password" name="password" autocomplete="off" required minlength="8" maxlength="20"
                        title="Enter your password. Admin may use admin123.">
                 <button type="button" class="password-toggle" data-target="loginPassword" aria-label="Show password">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         <circle cx="12" cy="12" r="3"/>
-                    </svg>
+                    </svg> -->
                 </button>
             </div>
             @error('password') <p class="field-error">{{ $message }}</p> @enderror

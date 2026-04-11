@@ -41,10 +41,6 @@
                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s'\"]{8,20}$"
                            title="8-20 chars, at least 1 uppercase, 1 lowercase, 1 number, no spaces, no quotes">
                     <button type="button" class="password-toggle" data-target="regPassword" aria-label="Show password">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
                     </button>
                 </div>
                 @error('password') <p class="field-error">{{ $message }}</p> @enderror
@@ -53,10 +49,6 @@
                 <div class="password-field">
                     <input id="confirmPassword" type="password" name="confirm_password" autocomplete="off" required minlength="8" maxlength="20">
                     <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Show password">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
                     </button>
                 </div>
                 @error('confirm_password') <p class="field-error">{{ $message }}</p> @enderror

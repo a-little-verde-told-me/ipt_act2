@@ -17,7 +17,7 @@
             <!-- Filters Row -->
             <div class="filters-row">
                 <!-- Category Filter -->
-                <select name="category" id="categorySelect">
+                <select name="category" id="categorySelect" style="border-radius: 999px">
                     <option value="">All Categories</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -25,7 +25,7 @@
                 </select>
 
                 <!-- Sort Dropdown -->
-                <select name="sort" id="sortSelect">
+                <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
                     <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
