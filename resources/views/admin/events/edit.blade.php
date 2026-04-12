@@ -1,0 +1,35 @@
+@extends('admin.layout')
+
+@section('title', 'Edit Event | FLEUR Admin')
+
+@section('content')
+<div class="admin-form-page">
+    <div class="admin-header">
+        <h1>Edit Event</h1>
+        <a href="{{ route('admin.events.index') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    @if($errors->any())
+        <div class="form-error">Please fix the errors below.</div>
+    @endif
+
+    <form action="{{ route('admin.events.update', $event) }}" method="post" class="admin-form">
+        @csrf
+        @method('PUT')
+
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" value="{{ old('name', $event->name) }}" required>
+        @error('name') <p class="field-error">{{ $message }}</p> @enderror
+
+        <label for="category">Category</label>
+        <input id="category" name="category" type="text" value="{{ old('category', $event->category) }}" required>
+        @error('category') <p class="field-error">{{ $message }}</p> @enderror
+
+        <label for="image">Image URL</label>
+        <input id="image" name="image" type="url" value="{{ old('image', $event->image) }}">
+        @error('image') <p class="field-error">{{ $message }}</p> @enderror
+
+        <button type="submit" class="btn btn-primary">Update Event</button>
+    </form>
+</div>
+@endsection

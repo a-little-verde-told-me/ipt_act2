@@ -1,4 +1,4 @@
-@extends('headerfooter')
+@extends('admin.layout')
 
 @section('title', 'Add Product | FLEUR Admin')
 

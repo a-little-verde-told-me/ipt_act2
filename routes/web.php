@@ -4,6 +4,8 @@ use App\Models\User;
 use App\Models\Flower;
 use App\Models\Event;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\AdminFlowerController;
+use App\Http\Controllers\AdminEventController;
 use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -234,7 +236,7 @@ Route::post('/login', function (Request $request) {
     Auth::login($user);
 
     if ($user->role === 'admin') {
-        return redirect()->route('admin.products.index')->with('success', 'Welcome back, admin '.$user->name.'!');
+        return redirect()->route('admin.dashboard')->with('success', 'Welcome back, admin '.$user->name.'!');
     }
 
     return redirect()->route('profile')->with('success', 'Welcome back, '.$user->name.'!');
@@ -287,12 +289,34 @@ Route::post('/registration', function (Request $request) {
 Route::get('/product', [\App\Http\Controllers\ProductController::class, 'index'])->name('product');
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', function () {
+        if (! Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        return view('admin.dashboard');
+    })->name('dashboard');
+
     Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [AdminProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+
+    Route::get('/flowers', [AdminFlowerController::class, 'index'])->name('flowers.index');
+    Route::get('/flowers/create', [AdminFlowerController::class, 'create'])->name('flowers.create');
+    Route::post('/flowers', [AdminFlowerController::class, 'store'])->name('flowers.store');
+    Route::get('/flowers/{flower}/edit', [AdminFlowerController::class, 'edit'])->name('flowers.edit');
+    Route::put('/flowers/{flower}', [AdminFlowerController::class, 'update'])->name('flowers.update');
+    Route::delete('/flowers/{flower}', [AdminFlowerController::class, 'destroy'])->name('flowers.destroy');
+
+    Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [AdminEventController::class, 'create'])->name('events.create');
+    Route::post('/events', [AdminEventController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [AdminEventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [AdminEventController::class, 'destroy'])->name('events.destroy');
 });
 
 Route::get('/profile', function () {
