@@ -1125,6 +1125,17 @@ footer {
     box-shadow: 0 0 0 3px rgba(166, 68, 82, 0.12);
 }
 
+.customize-form label.invalid span {
+    color: var(--accent-rose);
+}
+
+.customize-form label.invalid select,
+.customize-form label.invalid input,
+.customize-form label.invalid textarea {
+    border-color: #bf3d4b;
+    box-shadow: 0 0 0 4px rgba(191, 61, 75, 0.14);
+}
+
 .customize-form textarea {
     min-height: 170px;
     resize: vertical;

@@ -47,10 +47,24 @@ Route::get('/services', function () {
 
 Route::get('/customize', function (Request $request) {
     $success = $request->session()->get('customize_success', false);
-    return view('customize', ['success' => $success]);
+    $loginRequired = $request->session()->get('customize_login_required', false);
+    return view('customize', ['success' => $success, 'loginRequired' => $loginRequired]);
 })->name('customize');
 
 Route::post('/customize', function (Request $request) {
+    if (!Auth::check()) {
+        $request->session()->flash('customize_login_required', true);
+        return redirect()->route('customize');
+    }
+
+    $request->validate([
+        'occasion' => 'required|string',
+        'budget' => 'required|string',
+        'flowers' => 'required|string',
+        'colors' => 'required|string',
+        'notes' => 'nullable|string',
+    ]);
+
     $request->session()->flash('customize_success', true);
     return redirect()->route('customize');
 })->name('customize.submit');
