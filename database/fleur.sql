@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 12, 2026 at 07:52 AM
+-- Generation Time: Apr 12, 2026 at 02:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -72,13 +72,11 @@ INSERT INTO `cart_items` (`id`, `user_id`, `product_name`, `price`, `image_url`,
 (45, 4, 'Pink Delight', 1499.00, 'http://127.0.0.1:8000/images/pink_delight.jpg', 1, '2026-04-11 06:31:00', '2026-04-11 06:31:00'),
 (51, 5, 'Rosy Charm', 1399.00, 'http://127.0.0.1:8000/images/rosy_charm.jpg', 1, '2026-04-11 07:04:32', '2026-04-11 07:04:32'),
 (52, 5, 'White Rose Elegance', 1599.00, 'http://127.0.0.1:8000/images/white_rose.jpg', 1, '2026-04-11 07:04:33', '2026-04-11 07:04:33'),
-(53, 1, 'Daisy Kiss Bouquet', 1099.00, 'http://127.0.0.1:8000/images/products/daisy-kiss-bouquet.webp', 1, '2026-04-11 21:15:00', '2026-04-11 21:24:44'),
-(54, 1, 'Emilia Bouquet', 1399.00, 'http://127.0.0.1:8000/images/products/emilia-bouquet.webp', 1, '2026-04-11 21:15:01', '2026-04-11 21:15:01'),
-(55, 1, 'Citrus Kiss Bouquet', 1299.00, 'http://127.0.0.1:8000/images/products/citrus-kiss-bouquet.webp', 2, '2026-04-11 21:15:02', '2026-04-11 21:15:12'),
-(56, 1, 'Love In Bloom Bouquet', 1499.00, 'http://127.0.0.1:8000/images/products/love-in-bloom-bouquet.jpg', 1, '2026-04-11 21:15:03', '2026-04-11 21:15:03'),
-(57, 1, 'Simple Sweet Bouquet', 1099.00, 'http://127.0.0.1:8000/images/products/simple-sweet-bouquet.webp', 1, '2026-04-11 21:15:06', '2026-04-11 21:15:06'),
-(58, 1, 'Stargazing Bloom Bouquet', 1599.00, 'http://127.0.0.1:8000/images/products/stargazing-bloom-bouquet.jpg', 1, '2026-04-11 21:15:07', '2026-04-11 21:15:07'),
-(59, 1, 'White Rose Bouquet', 1299.00, 'http://127.0.0.1:8000/images/products/white-rose-bouquet.jpg', 1, '2026-04-11 21:15:09', '2026-04-11 21:15:09');
+(66, 8, 'Blooming Embrace Bouquet', 1499.00, 'http://127.0.0.1:8000/images/products/blooming-embrace-bouquet.webp', 1, '2026-04-12 02:50:11', '2026-04-12 02:50:11'),
+(67, 8, 'Emilia Bouquet', 1399.00, 'http://127.0.0.1:8000/images/products/emilia-bouquet.webp', 1, '2026-04-12 02:50:13', '2026-04-12 02:50:13'),
+(70, 1, 'Citrus Kiss Bouquet', 1299.00, 'http://127.0.0.1:8000/images/products/citrus-kiss-bouquet.webp', 1, '2026-04-12 03:19:53', '2026-04-12 03:19:53'),
+(71, 1, 'Daisy Kiss Bouquet', 1099.00, 'http://127.0.0.1:8000/images/products/daisy-kiss-bouquet.webp', 1, '2026-04-12 03:19:54', '2026-04-12 03:19:54'),
+(72, 1, 'Emilia Bouquet', 1399.00, 'http://127.0.0.1:8000/images/products/emilia-bouquet.webp', 1, '2026-04-12 03:19:55', '2026-04-12 03:19:55');
 
 -- --------------------------------------------------------
 
@@ -324,7 +322,7 @@ INSERT INTO `products` (`id`, `name`, `category`, `price`, `image_url`, `descrip
 (10, 'Love In Bloom Bouquet', 'Bouquet', 1499.00, 'products/love-in-bloom-bouquet.jpg', 'A tender bouquet crafted for special love moments.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
 (11, 'Peachy Glow Bouquet', 'Bouquet', 1299.00, 'products/peachy-glow-bouquet.jpg', 'A soft peach-hued bouquet with warm, elegant charm.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
 (12, 'Pink Delight Bouquet', 'Bouquet', 1199.00, 'products/pink-delight-bouquet.jpg', 'A playful pink arrangement bursting with joyful petals.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(13, 'Pink Love Bouquet', 'Bouquet', 1299.00, 'products/pink-love-bouquet.webp', 'A dreamy pink bouquet made for romantic surprises.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
+(13, 'Pink Love Bouquet', 'Bouquet', 1299.00, 'products/pink-love-bouquet.webp', 'A dreamy pink bouquet made for romantic surprises.', '2026-04-11 20:57:20', '2026-04-12 01:04:42'),
 (14, 'Pink Sweet Bouquet', 'Bouquet', 1199.00, 'products/pink-sweet-bouquet.webp', 'A sweet blush arrangement with delicate floral accents.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
 (15, 'Rose Romance', 'Bouquet', 1599.00, 'products/Rose Romance.jpg', 'A timeless romantic bouquet of luxurious rose blooms.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
 (16, 'Rosy Charm Bouquet', 'Bouquet', 1249.00, 'products/rosy-charm-bouquet.jpg', 'A charming mix of rosy tones for elegant gifting.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
@@ -357,7 +355,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('VP2px9e1yfT5K2IT9ttDKbjesipVZp2zZkm9AZb2', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVzd4TTNjNjJYdTNvRVhxQVBqSHYzZUN4UjN2RGRkd0o0SXFJU3ozNCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9mbG93ZXJzIjtzOjU6InJvdXRlIjtzOjc6ImZsb3dlcnMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1775973045);
+('3HrbudMsXi9Y3om2mDqifsbwigMm8Px46KjJrOMv', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidTZzNXRXVHVmNnpFdEpVa3BTVGJISklZTkR0NURWUHBMRVlZWVJOaSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7czo1OiJyb3V0ZSI7czoxNToiYWRtaW4uZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mjt9', 1775988399),
+('sT6bBwu7ly6ru51SNVDZIRMGUcoZf3RBiXsDwQxH', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidVdBOGUzODdyZWVXZklkcmdsaExVUzF2UW9aWklOWmpUcG1ycFczQiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9fQ==', 1775992823);
 
 -- --------------------------------------------------------
 
@@ -394,7 +393,8 @@ INSERT INTO `users` (`id`, `name`, `username`, `email`, `role`, `email_verified_
 (3, 'Jane Doe', 'jane_doe', 'janedoe@gmail.com', 'user', NULL, '$2y$12$gHC6YCD4GWVVqs30sQBxm.OelzRKwYzOdMrDDGQvTINkCa2Wm/tGW', 25, 'Female', 'Single', '09876543210', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-10 22:21:37', '2026-04-10 22:21:37'),
 (4, 'John Doe', 'johndoe', 'johndoe@gmail.com', 'user', NULL, '$2y$12$zy2WP0mlrhfOAdmUUarSi.VG9XrlsDRJ4j8aZD3PWt1SXj7fd3lsu', 25, 'Male', 'Single', '09987654321', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-11 06:27:08', '2026-04-11 06:27:08'),
 (5, 'Arman Salon', 'armansalon', 'armansalon@gmail.com', 'user', NULL, '$2y$12$AG15FSV7j531ut8CfO.iq.aePgI/x/2rwIGPx8RwQT36G6TA.Gxga', 18, 'Male', 'Single', '09998765432', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-11 07:03:18', '2026-04-11 07:03:18'),
-(6, 'Test User', 'testuser', 'test@example.com', 'user', '2026-04-11 20:45:19', '$2y$12$AMd3AX7KlaCuyeg3rvnf1OudOMyD3YHY2yJS1cgDefhxmDtyRIpWK', 25, 'Other', 'Single', '09171234567', '123 Test Street', '1000', '698RKFOrT2', '2026-04-11 20:45:19', '2026-04-11 20:57:20');
+(6, 'Test User', 'testuser', 'test@example.com', 'user', '2026-04-11 20:45:19', '$2y$12$AMd3AX7KlaCuyeg3rvnf1OudOMyD3YHY2yJS1cgDefhxmDtyRIpWK', 25, 'Other', 'Single', '09171234567', '123 Test Street', '1000', '698RKFOrT2', '2026-04-11 20:45:19', '2026-04-11 20:57:20'),
+(8, 'maya hawke', 'mayabird', 'mayabird@gmail.com', 'user', NULL, '$2y$12$Q9Qq6KOUmRrxU9AlhNWJ9ud/oZqdA8SESmI189fB7b7FHiGOdj2HC', 18, 'Female', 'Single', '09999867643', '#123 Vidal, Tonton, Lingayen, Pangasinan, Philippines', '2401', NULL, '2026-04-12 02:47:28', '2026-04-12 02:47:28');
 
 --
 -- Indexes for dumped tables
@@ -505,13 +505,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `event_images`
@@ -529,7 +529,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `flowers`
 --
 ALTER TABLE `flowers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -547,13 +547,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
