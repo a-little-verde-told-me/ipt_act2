@@ -12,9 +12,9 @@
         <a class="filter-btn active" href="{{ route('gallery') }}">Back to Gallery</a>
     </div>
 
-    @if($event)
+    @if($event && $images)
         <div class="gallery-grid">
-            @foreach($event->images as $image)
+            @foreach($images as $image)
                 <div class="event-card">
                     <button class="event-link" type="button" data-image="{{ asset('images/gallery/'.$image->image) }}" data-title="{{ $event->name }}">
                         <img class="event-image" src="{{ asset('images/gallery/'.$image->image) }}" alt="{{ $event->name }} photo">
@@ -22,6 +22,12 @@
                 </div>
             @endforeach
         </div>
+
+        @if ($images->hasPages())
+            <div class="pagination-wrapper">
+                {{ $images->links('pagination::custom') }}
+            </div>
+        @endif
     @else
         <p style="text-align:center; margin-top: 18px;">
             No gallery found for this event.

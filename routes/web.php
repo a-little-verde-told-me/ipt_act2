@@ -150,9 +150,19 @@ Route::get('/services', function () {
         }
     }
 
-Route::get('/view-gallery/{event}', function (string $event) {
+Route::get('/view-gallery/{event}', function (Request $request, string $event) {
+    $perPage = 9;
     $eventData = Event::where('slug', $event)->first();
-    return view('viewgallery', ['event' => $eventData]);
+    $images = null;
+
+    if ($eventData) {
+        $images = $eventData->images()->paginate($perPage)->appends($request->except('page'));
+    }
+
+    return view('viewgallery', [
+        'event' => $eventData,
+        'images' => $images,
+    ]);
 })->name('gallery.view');
 
 Route::get('/cart', function () {
