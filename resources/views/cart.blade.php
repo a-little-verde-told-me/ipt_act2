@@ -6,7 +6,13 @@
 <div class="cart-page">
     <div class="cart-header">
         <h1>MY CART</h1>
-        <a class="continue-link" href="{{ route('product') }}">← Continue Browsing</a>
+        <label class="select-all-label">
+                <input type="checkbox" id="selectAllCheckbox">
+                <span>Select All</span>
+            </label>
+        <div class="cart-header-right">
+            <a class="continue-link" href="{{ route('product') }}">← Continue Browsing</a>
+        </div>
     </div>
 
     <div class="cart-layout">
@@ -57,6 +63,7 @@
     const shippingEl = document.getElementById('cartShipping');
     const totalEl = document.getElementById('cartTotal');
     const checkoutBtn = document.getElementById('checkoutBtn');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const isAuthenticated = "{{ Auth::check() }}" === "1";
     const selectedItemsKey = 'fleur_selected_items';
     let cartItems = [];
@@ -178,6 +185,29 @@
         }
         saveSelectedItems(selectedItems);
         renderCart();
+        updateSelectAllCheckbox();
+    }
+
+    function selectAllItems() {
+        selectedItems = cartItems.map(item => item.id);
+        saveSelectedItems(selectedItems);
+        renderCart();
+    }
+
+    function unselectAllItems() {
+        selectedItems = [];
+        saveSelectedItems(selectedItems);
+        renderCart();
+    }
+
+    function updateSelectAllCheckbox() {
+        if (!selectAllCheckbox) return;
+        
+        const totalItems = cartItems.length;
+        const selectedCount = selectedItems.length;
+        
+        selectAllCheckbox.checked = totalItems > 0 && selectedCount === totalItems;
+        selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalItems;
     }
 
     function getSelectedSubtotal() {
@@ -259,6 +289,7 @@
         totalEl.textContent = formatPrice(totalSelected + shipping);
         updateCheckoutButton();
         refreshCartCount();
+        updateSelectAllCheckbox();
     }
 
     function updateCheckoutButton() {
@@ -298,6 +329,17 @@
         const itemId = parseInt(checkbox.dataset.id, 10);
         toggleSelection(itemId, checkbox.checked);
     });
+
+    // Select All checkbox event listener
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                selectAllItems();
+            } else {
+                unselectAllItems();
+            }
+        });
+    }
 
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', (e) => {
