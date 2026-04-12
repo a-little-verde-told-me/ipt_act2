@@ -8,23 +8,33 @@
 
   <div class="hero-content">
     <div class="slide active">
-      <img src="{{ asset('images/slide1.png') }}" alt="Vibrant Mixed Bouquet">
+      <img src="{{ asset('images/slide1.jpg') }}" alt="Vibrant Mixed Bouquet">
     </div>
     <div class="slide">
-      <img src="{{ asset('images/slide2.png') }}" alt="Romantic Rose Bouquet">
+      <img src="{{ asset('images/slide2.jpg') }}" alt="Romantic Rose Bouquet">
     </div>
     <div class="slide">
-      <img src="{{ asset('images/slide3.png') }}" alt="Spring Mixed Flowers">
+      <img src="{{ asset('images/slide3.jpg') }}" alt="Spring Mixed Flowers">
     </div>
     <div class="slide">
-      <img src="{{ asset('images/slide4.png') }}" alt="Luxury Floral Arrangement">
+      <img src="{{ asset('images/slide4.jpg') }}" alt="Luxury Floral Arrangement">
     </div>
     <div class="slide">
-      <img src="{{ asset('images/slide5.png') }}" alt="Pastel Garden Bouquet">
+      <img src="{{ asset('images/slide5.jpg') }}" alt="Pastel Garden Bouquet">
     </div>
     <div class="slide">
-      <img src="{{ asset('images/slide6.png') }}" alt="Sunrise Tulip Bundle">
+      <img src="{{ asset('images/slide6.jpg') }}" alt="Sunrise Tulip Bundle">
     </div>
+  </div>
+
+  <!-- Dark Overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Welcome Text -->
+  <div class="hero-text">
+    <h1>Welcome to FLEUR</h1>
+    <p>Discover the beauty of fresh flowers and exquisite bouquets</p>
+    <a href="{{ route('product') }}" class="hero-cta">Shop Now</a>
   </div>
 
   <button class="slider-arrow right" type="button" aria-label="Next">&rsaquo;</button>
