@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    $featuredProducts = \App\Models\Product::limit(4)->get();
+    return view('home', ['featuredProducts' => $featuredProducts]);
 })->name('home'); 
 
 Route::get('/about', function () {

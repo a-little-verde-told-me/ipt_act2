@@ -51,12 +51,39 @@
 
 
   <section class="featured-section">
-    <div class="featured-title" style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-rose);">FEATURED BOUQUETS</div>
+    <div class="featured-header">
+      <h2 class="featured-title">FEATURED BOUQUETS</h2>
+      <p class="featured-subtitle">Handpicked selections for every occasion</p>
+    </div>
     <div class="bouquet-grid">
-      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/products/pink-delight-bouquet.jpg') }}" alt="Product Image"><div class="bouquet-name">Pink Delight Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/products/white-rose-bouquet.jpg') }}" alt="Product Image"><div class="bouquet-name">White Rose Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/products/rosy-charm-bouquet.jpg') }}" alt="Product Image"><div class="bouquet-name">Rosy Charm Bouquet</div></div>
-      <div class="bouquet-card"><img class="bouquet-img" src="{{ asset('images/products/sweet-petals-bouquet.jpg') }}" alt="Product Image"><div class="bouquet-name">Sweet Petals Bouquet</div></div>
+      @forelse($featuredProducts ?? [] as $product)
+        <div class="bouquet-card">
+          <div class="bouquet-card-inner">
+            <div class="bouquet-image-wrapper">
+              <img class="bouquet-img" 
+                   src="{{ $product->image_url ? asset('images/' . $product->image_url) : asset('images/placeholder.jpg') }}" 
+                   alt="{{ $product->name }}"
+                   onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+              <div class="bouquet-overlay">
+                <a href="{{ route('product') }}" class="bouquet-cta">View Details</a>
+              </div>
+            </div>
+            <div class="bouquet-info">
+              <h3 class="bouquet-name">{{ $product->name }}</h3>
+              <p class="bouquet-category">{{ $product->category }}</p>
+              <div class="bouquet-footer">
+                <span class="bouquet-price">₱{{ number_format($product->price, 2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      @empty
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted);">
+          <p>Featured bouquets coming soon!</p>
+        </div>
+      @endforelse
+    </div>
+  </section>
 
   <script>
 const slides = document.querySelectorAll('.slide');
