@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="services-page">
-    <h1>SERVICES</h1>
+    <h1 style="color: #8a3a45; font-size: 2.5rem;">SERVICES</h1>
 
     <div class="services-grid">
         <!-- Flower Delivery Service -->

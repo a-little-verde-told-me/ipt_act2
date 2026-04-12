@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="checkout-page">
-    <h1 class="page-title">CHECKOUT</h1>
+    <h1 class="page-title" style="color: #8a3a45; font-size: 2.5rem;">CHECKOUT</h1>
 
     <div class="checkout-header">
         <a href="{{ route('cart') }}" class="back-to-cart-btn">← Back to Cart</a>

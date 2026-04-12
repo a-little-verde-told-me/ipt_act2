@@ -5,7 +5,7 @@
 @section('content')
 <div class="auth-page">
     <div class="auth-card">
-        <h1>Registration</h1>
+        <h1 style="color: #8a3a45; font-size: 2.5rem;">Registration</h1>
 
         <form class="auth-form form-grid" id="registrationForm" action="{{ route('registration.submit') }}" method="post" novalidate>
             @csrf

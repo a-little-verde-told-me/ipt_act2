@@ -45,7 +45,15 @@ Route::get('/services', function () {
     return view('services');
 })->name('services');
 
+Route::get('/customize', function (Request $request) {
+    $success = $request->session()->get('customize_success', false);
+    return view('customize', ['success' => $success]);
+})->name('customize');
 
+Route::post('/customize', function (Request $request) {
+    $request->session()->flash('customize_success', true);
+    return redirect()->route('customize');
+})->name('customize.submit');
 
     $viewsDir = resource_path('views');
     $files = glob($viewsDir.'/*.blade.php') ?: [];

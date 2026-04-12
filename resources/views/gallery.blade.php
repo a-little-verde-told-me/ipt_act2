@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="gallery-container">
-    <h1 class="page-title">PHOTO GALLERY</h1>
+    <h1 class="page-title" style="color: #8a3a45; font-size: 2.5rem;">PHOTO GALLERY</h1>
 
     <div class="search-section">
         <div class="search-bar">

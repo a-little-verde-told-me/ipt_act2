@@ -21,6 +21,7 @@
             <a href="{{ route('flowers') }}" class="{{ request()->routeIs('flowers') ? 'active-link' : '' }}">Flowers</a>
             <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'active-link' : '' }}">Gallery</a>
             <a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active-link' : '' }}">Products</a>
+            <a href="{{ route('customize') }}" class="{{ request()->routeIs('customize') ? 'active-link' : '' }}">Customize</a>
             <a href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'active-link' : '' }}">Services</a>
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active-link' : '' }}">About</a>
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active-link' : '' }}">Contact Us</a>

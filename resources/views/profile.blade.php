@@ -5,7 +5,7 @@
 @section('content')
 <div class="auth-page">
     <div class="auth-card">
-        <h1>My Profile</h1>
+        <h1 style="color: #8a3a45; font-size: 2.5rem;">My Profile</h1>
 
         @if(session('success'))
             <p class="form-success">{{ session('success') }}</p>

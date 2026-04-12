@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="gallery-container">
-    <h1 class="page-title">
+    <h1 class="page-title" style="color: #8a3a45; font-size: 2.5rem;">
         {{ $event ? strtoupper($event->name).' GALLERY' : 'EVENT GALLERY' }}
     </h1>
 

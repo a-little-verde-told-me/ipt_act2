@@ -5,7 +5,7 @@
 @section('content')
 <div class="cart-page">
     <div class="cart-header">
-        <h1>MY CART</h1>
+        <h1 style="color: #8a3a45; font-size: 2.5rem;">MY CART</h1>
         <label class="select-all-label">
                 <input type="checkbox" id="selectAllCheckbox">
                 <span>Select All</span>

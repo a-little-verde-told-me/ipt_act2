@@ -5,7 +5,7 @@
 @section('content')
 <div class="auth-page auth-page-login">
     <div class="auth-card">
-        <h1>Login</h1>
+        <h1 style="color: #8a3a45; font-size: 2.5rem;">Login</h1>
         <form class="auth-form auth-form-single" action="{{ route('login.submit') }}" method="post" novalidate autocomplete="off">
             @csrf
 

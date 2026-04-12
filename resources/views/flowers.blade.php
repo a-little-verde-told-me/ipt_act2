@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="products-page" data-all-flowers="{{ json_encode($allFlowers) }}">
-    <h1 class="page-title">FLOWERS</h1>
+    <h1 class="page-title" style="color: #8a3a45; font-size: 2.5rem;">FLOWERS</h1>
     <p class="page-subtitle">Flowers available in our collection for customization</p>
     
     <div class="search-section">

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="products-page">
-    <h1>PRODUCTS</h1>
+    <h1 style="color: #8a3a45; font-size: 2.5rem;">PRODUCTS</h1>
 
     <div class="search-section">
         <form class="product-filters" id="productFilters">

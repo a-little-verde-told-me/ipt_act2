@@ -4,7 +4,7 @@
 
 @section('content')
 <main class="contact-page">
-  <h1 class="page-title">GET IN TOUCH</h1>
+  <h1 class="page-title" style="color: #8a3a45; font-size: 2.5rem;">GET IN TOUCH</h1>
 
   <div class="contact-grid">
     <form class="contact-form" action="#" method="post">

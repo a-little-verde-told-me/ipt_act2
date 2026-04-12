@@ -6,7 +6,7 @@
 <div class="about-page">
     <div class="about-hero">
         <div class="about-hero-text">
-            <h1>ABOUT FLEUR</h1>
+            <h1 style="color: #8a3a45; font-size: 2.5rem;">ABOUT FLEUR</h1>
             <p>FLEUR is a startup flower shop specializing in curated bouquets, event styling, and thoughtful gifts. We blend modern floral design with warm, local service to make every celebration bloom.</p>
         </div>
         <div class="about-hero-image">
