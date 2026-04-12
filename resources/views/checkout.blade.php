@@ -33,6 +33,7 @@
 
         <aside class="checkout-summary">
             <h3>Order Summary</h3>
+            <div id="buyNowSummary" class="buy-now-summary"></div>
             <div class="summary-row">
                 <span>Subtotal</span>
                 <span id="checkoutSubtotal">₱ 0.00</span>
@@ -82,6 +83,8 @@
     const notesInput = document.getElementById('notes');
     const selectedItemsInput = document.getElementById('selectedItemsInput');
     const checkoutForm = document.querySelector('.checkout-form');
+    const buyNowSummary = document.getElementById('buyNowSummary');
+    const buyNowItem = getBuyNowItem();
 
     function loadSelectedItems() {
         try {
@@ -101,6 +104,32 @@
 
     function formatPrice(value) {
         return `₱ ${value.toFixed(2)}`;
+    }
+
+    function loadBuyNowItem() {
+        try {
+            return JSON.parse(localStorage.getItem('fleur_buy_now_item')) || null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function clearBuyNowItem() {
+        localStorage.removeItem('fleur_buy_now_item');
+    }
+
+    function isBuyNowFlow() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('buy_now') === '1';
+    }
+
+    function getBuyNowItem() {
+        const item = loadBuyNowItem();
+        if (!isBuyNowFlow()) {
+            clearBuyNowItem();
+            return null;
+        }
+        return item;
     }
 
     function refreshCartCount() {
@@ -145,14 +174,27 @@
     }
 
     function updateSummary(cart) {
-        const selectedItems = loadSelectedItems();
         let subtotal = 0;
 
-        cart.forEach(item => {
-            if (selectedItems.includes(item.id)) {
-                subtotal += item.price * item.qty;
-            }
-        });
+        if (buyNowItem) {
+            const totalPrice = buyNowItem.price * buyNowItem.qty;
+            subtotal = totalPrice;
+            buyNowSummary.innerHTML = `
+                <div class="buy-now-item">
+                    <strong>${buyNowItem.name}</strong>
+                    <div>${buyNowItem.qty} × ${formatPrice(buyNowItem.price)}</div>
+                </div>
+            `;
+        } else {
+            const selectedItems = loadSelectedItems();
+            buyNowSummary.innerHTML = '';
+
+            cart.forEach(item => {
+                if (selectedItems.includes(item.id)) {
+                    subtotal += item.price * item.qty;
+                }
+            });
+        }
 
         const shipping = subtotal > 0 ? 150 : 0;
         subtotalEl.textContent = formatPrice(subtotal);
@@ -184,10 +226,14 @@
         refreshCartCount();
         setTimeout(refreshCartCount, 200);
 
-        fetchCart().then(cart => {
-            ensureSelection(cart);
-            updateSummary(cart);
-        });
+        if (buyNowItem) {
+            updateSummary([]);
+        } else {
+            fetchCart().then(cart => {
+                ensureSelection(cart);
+                updateSummary(cart);
+            });
+        }
     });
 
     if (checkoutForm) {
@@ -197,6 +243,9 @@
                 selectedItemsInput.value = JSON.stringify(selectedItems);
             }
             saveSelectedItems([]);
+            if (buyNowItem) {
+                clearBuyNowItem();
+            }
         });
     }
 </script>

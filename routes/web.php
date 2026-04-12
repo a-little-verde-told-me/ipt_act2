@@ -38,6 +38,10 @@ Route::get('/gallery', function (Request $request) {
     return view('gallery', ['events' => $paginated]);
 })->name('gallery');
 
+Route::get('/services', function () {
+    return view('services');
+})->name('services');
+
 
 
     $viewsDir = resource_path('views');

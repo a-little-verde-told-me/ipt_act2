@@ -446,7 +446,7 @@ header {
 }
 
 .product-info {
-    padding: 24px;
+    padding: 24px 24px 16px;
 }
 
 .product-info h3 {
@@ -466,7 +466,8 @@ header {
     font-size: 1.4rem;
     font-weight: 800;
     color: var(--accent-rose);
-    margin-bottom: 18px;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .product-btn {
@@ -1700,7 +1701,7 @@ input[type="password"]:autofill {
 }
 
 .product-info {
-    padding: 14px;
+    padding: 14px 14px 14px;
     text-align: center;
 }
 
@@ -1712,7 +1713,8 @@ input[type="password"]:autofill {
 .product-price {
     font-weight: 700;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .product-btn {

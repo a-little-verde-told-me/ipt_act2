@@ -36,22 +36,23 @@
             @php
                 $imagePath = $product->image_url;
                 $encodedPath = $imagePath ? implode('/', array_map('rawurlencode', explode('/', $imagePath))) : null;
+                $productImageUrl = $imagePath ? asset('images/'.$encodedPath) : asset('images/placeholder.jpg');
             @endphp
-            <div class="product-card" data-name="{{ strtolower($product->name) }}">
+            <div class="product-card"
+                 data-id="{{ $product->id }}"
+                 data-name="{{ strtolower($product->name) }}"
+                 data-title="{{ $product->name }}"
+                 data-price="{{ $product->price }}"
+                 data-description="{{ $product->description ?? 'Beautiful fresh flowers for every occasion.' }}"
+                 data-image="{{ $productImageUrl }}"
+            >
                 <div class="product-image">
-                    <img src="{{ $imagePath ? asset('images/'.$encodedPath) : asset('images/placeholder.jpg') }}" alt="{{ $product->name }}">
+                    <img src="{{ $productImageUrl }}" alt="{{ $product->name }}">
                 </div>
                 <div class="product-info">
                     <h3>{{ $product->name }}</h3>
                     <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
-                    <button
-                        class="product-btn add-to-cart"
-                        type="button"
-                        data-name="{{ $product->name }}"
-                        data-price="{{ $product->price }}"
-                        data-image="{{ $imagePath ? asset('images/'.$encodedPath) : asset('images/placeholder.jpg') }}"
-                    >Add to Cart</button>
                 </div>
             </div>
         @empty
@@ -62,6 +63,154 @@
         @endforelse
     </div>
 
+    <div class="product-detail-overlay" id="productDetailOverlay" style="display:none;">
+        <div class="product-detail-card">
+            <button type="button" class="product-detail-close" id="overlayCloseBtn" aria-label="Close detail modal">×</button>
+            <div class="product-detail-content">
+                <div class="product-detail-image">
+                    <img id="overlayProductImage" src="" alt="Product image">
+                </div>
+                <div class="product-detail-meta">
+                    <h2 id="overlayProductName">Product Name</h2>
+                    <p id="overlayProductDescription">Product description goes here.</p>
+                    <p class="product-detail-price" id="overlayProductPrice">₱0.00</p>
+                    <div class="quantity-control">
+                        <button type="button" id="overlayDecrement" class="qty-btn">−</button>
+                        <input type="number" id="overlayQuantity" min="1" value="1" aria-label="Quantity">
+                        <button type="button" id="overlayIncrement" class="qty-btn">+</button>
+                    </div>
+                    <div class="product-detail-actions">
+                        <button type="button" class="btn btn-primary" id="overlayAddToCart">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary" id="overlayBuyNow">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body.no-scroll {
+            overflow: hidden;
+        }
+        .product-detail-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(16, 12, 8, 0.65);
+            padding: 20px;
+        }
+        .product-detail-card {
+            width: min(100%, 920px);
+            max-width: 920px;
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 32px 85px rgba(16, 12, 8, 0.16);
+            overflow: hidden;
+            position: relative;
+        }
+        .product-detail-close {
+            position: absolute;
+            right: 18px;
+            top: 18px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: #f6f1ef;
+            color: #72333e;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        .product-detail-content {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+            padding: 32px;
+        }
+        .product-detail-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            object-fit: cover;
+        }
+        .product-detail-meta h2 {
+            margin: 0 0 14px;
+            font-size: 2rem;
+            letter-spacing: 0.02em;
+            color: #3d1c29;
+        }
+        .product-detail-meta p {
+            margin: 0 0 18px;
+            color: #5f5b58;
+            line-height: 1.75;
+        }
+        .product-detail-price {
+            margin-top: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7b2d38;
+        }
+        .quantity-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e5e1dd;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+        .qty-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: #f8f5f2;
+            color: #462b2f;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        #overlayQuantity {
+            width: 72px;
+            border: none;
+            outline: none;
+            text-align: center;
+            font-size: 1rem;
+            padding: 0 10px;
+        }
+        .product-detail-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .product-detail-actions .btn {
+            min-width: 160px;
+            padding: 14px 18px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .product-detail-actions .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-primary {
+            background: #8f3641;
+            color: #fff;
+        }
+        .btn-secondary {
+            background: #f3ece8;
+            color: #4f3d3b;
+        }
+        @media (max-width: 880px) {
+            .product-detail-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     @if ($products->hasPages())
         <div class="pagination-wrapper">
             {{ $products->links('pagination::custom') }}
@@ -70,8 +219,21 @@
 </div>
 
 <script>
+    const productDetailOverlay = document.getElementById('productDetailOverlay');
+    const overlayImage = document.getElementById('overlayProductImage');
+    const overlayName = document.getElementById('overlayProductName');
+    const overlayDesc = document.getElementById('overlayProductDescription');
+    const overlayPrice = document.getElementById('overlayProductPrice');
+    const overlayQtyInput = document.getElementById('overlayQuantity');
+    const overlayAddBtn = document.getElementById('overlayAddToCart');
+    const overlayBuyBtn = document.getElementById('overlayBuyNow');
+    const overlayCloseBtn = document.getElementById('overlayCloseBtn');
+    const overlayDecrement = document.getElementById('overlayDecrement');
+    const overlayIncrement = document.getElementById('overlayIncrement');
+    const productCards = document.querySelectorAll('.product-card');
     const buttons = document.querySelectorAll('.add-to-cart');
     const isAuthenticated = "{{ Auth::check() }}" === "1";
+    const buyNowStorageKey = 'fleur_buy_now_item';
 
     function parsePrice(priceText) {
         const numeric = String(priceText).replace(/[^0-9.]/g, '');
@@ -112,7 +274,7 @@
         }
     }
 
-    function addToCart(name, price, image) {
+    function addToCart(name, price, image, qty = 1) {
         if (!isAuthenticated) {
             showLoginRequiredOverlay();
             return;
@@ -129,7 +291,7 @@
                 product_name: name,
                 price: parseFloat(price),
                 image_url: image,
-                qty: 1
+                qty: parseInt(qty, 10) || 1
             })
         })
         .then(response => response.json())
@@ -138,9 +300,14 @@
                 window.dispatchEvent(new CustomEvent('cart-updated'));
                 // Show success message
                 const btn = document.querySelector(`[data-name="${name}"]`);
-                const original = btn.textContent;
-                btn.textContent = 'Added';
-                setTimeout(() => { btn.textContent = original; }, 900);
+                if (btn) {
+                    const original = btn.textContent;
+                    btn.textContent = 'Added';
+                    setTimeout(() => { btn.textContent = original; }, 900);
+                }
+                if (qty && productDetailOverlay && productDetailOverlay.style.display === 'flex') {
+                    overlayClose();
+                }
             } else {
                 alert('Failed to add to cart');
             }
@@ -151,13 +318,79 @@
         });
     }
 
+    function overlayClose() {
+        if (!productDetailOverlay) return;
+        productDetailOverlay.style.display = 'none';
+        document.body.classList.remove('no-scroll');
+    }
+
+    function openProductOverlay(card) {
+        const name = card.dataset.title || card.dataset.name;
+        const price = parsePrice(card.dataset.price || '0');
+        const image = card.dataset.image;
+        const description = card.dataset.description || 'Beautiful fresh flowers for every occasion.';
+
+        overlayImage.src = image;
+        overlayImage.alt = name;
+        overlayName.textContent = name;
+        overlayDesc.textContent = description;
+        overlayPrice.textContent = `₱${price.toFixed(2)}`;
+        overlayQtyInput.value = 1;
+        overlayQtyInput.dataset.productName = name;
+        overlayQtyInput.dataset.productPrice = price;
+        overlayQtyInput.dataset.productImage = image;
+
+        if (productDetailOverlay) {
+            productDetailOverlay.style.display = 'flex';
+            document.body.classList.add('no-scroll');
+        }
+    }
+
+    function setOverlayQuantity(value) {
+        const qty = Math.max(1, parseInt(value, 10) || 1);
+        overlayQtyInput.value = qty;
+    }
+
+    function overlayBuyNow() {
+        if (!isAuthenticated) {
+            showLoginRequiredOverlay();
+            return;
+        }
+
+        const name = overlayQtyInput.dataset.productName;
+        const price = parsePrice(overlayQtyInput.dataset.productPrice || '0');
+        const image = overlayQtyInput.dataset.productImage;
+        const qty = parseInt(overlayQtyInput.value, 10) || 1;
+
+        localStorage.setItem(buyNowStorageKey, JSON.stringify({
+            name,
+            price,
+            image,
+            qty,
+        }));
+
+        window.location.href = '{{ route('checkout') }}?buy_now=1';
+    }
+
     function handleAddToCartClick(btn) {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
+            event.stopPropagation();
             const name = btn.dataset.name;
             const price = parsePrice(btn.dataset.price || '0');
             const image = btn.dataset.image;
 
             addToCart(name, price, image);
+        });
+    }
+
+function attachCardDetailListeners() {
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', (event) => {
+                if (event.target.closest('.product-btn')) {
+                    return;
+                }
+                openProductOverlay(card);
+            });
         });
     }
 
@@ -167,6 +400,32 @@
     }
 
     buttons.forEach(handleAddToCartClick);
+    attachCardDetailListeners();
+
+    if (overlayCloseBtn) overlayCloseBtn.addEventListener('click', overlayClose);
+    if (productDetailOverlay) {
+        productDetailOverlay.addEventListener('click', (event) => {
+            if (event.target === productDetailOverlay) {
+                overlayClose();
+            }
+        });
+    }
+    if (overlayDecrement) overlayDecrement.addEventListener('click', () => setOverlayQuantity(parseInt(overlayQtyInput.value, 10) - 1));
+    if (overlayIncrement) overlayIncrement.addEventListener('click', () => setOverlayQuantity(parseInt(overlayQtyInput.value, 10) + 1));
+    if (overlayAddBtn) overlayAddBtn.addEventListener('click', () => {
+        const name = overlayQtyInput.dataset.productName;
+        const price = parsePrice(overlayQtyInput.dataset.productPrice || '0');
+        const image = overlayQtyInput.dataset.productImage;
+        const qty = parseInt(overlayQtyInput.value, 10) || 1;
+        addToCart(name, price, image, qty);
+    });
+    if (overlayBuyBtn) overlayBuyBtn.addEventListener('click', overlayBuyNow);
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            overlayClose();
+        }
+    });
 
     window.addEventListener('load', refreshCartCount);
     refreshCartCount();
@@ -213,8 +472,9 @@
             }
             
             if (newGrid && currentGrid) {
-                // Reattach event listeners to new buttons
+                // Reattach event listeners to new buttons and product cards
                 attachCartButtons();
+                attachCardDetailListeners();
             }
             
             // Update URL without page reload
