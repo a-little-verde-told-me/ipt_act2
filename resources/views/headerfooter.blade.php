@@ -56,42 +56,57 @@
     </footer>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    const clearCartOnLogout = "{{ session('clear_cart', false) }}" === "1";
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
+
+    function initCartHeader() {
         function getCartCount() {
-            try {
-                const cart = JSON.parse(localStorage.getItem('fleur_cart')) || [];
-                return cart.reduce((sum, item) => sum + ((item.qty || item.quantity) || 0), 0);
-            } catch (e) {
-                return 0;
-            }
+            if (!isAuthenticated) return 0;
+
+            fetch('{{ route("api.cart.count") }}', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateCartBadge(data.count || 0);
+            })
+            .catch(error => {
+                console.error('Error getting cart count:', error);
+                updateCartBadge(0);
+            });
+            return 0;
         }
 
-        function updateCartBadge() {
+        function updateCartBadge(count) {
             const badge = document.getElementById('cartCount');
             if (!badge) return;
-            const count = getCartCount();
             badge.textContent = count;
             badge.style.display = count > 0 ? 'inline-flex' : 'none';
         }
 
-        updateCartBadge();
+        window.updateCartBadge = updateCartBadge;
+        window.refreshCartCount = getCartCount;
 
-        window.addEventListener('cart-updated', updateCartBadge);
+        getCartCount();
+        setTimeout(getCartCount, 100);
+        setTimeout(getCartCount, 400);
+        setTimeout(getCartCount, 800);
+        window.addEventListener('load', getCartCount);
+        window.addEventListener('DOMContentLoaded', getCartCount);
+        window.addEventListener('cart-updated', getCartCount);
 
-        const clearCartOnLogout = @json(session('clear_cart', false));
         if (clearCartOnLogout) {
-            localStorage.removeItem('fleur_cart');
-            localStorage.removeItem('fleur_selected_items');
-            updateCartBadge();
-            window.dispatchEvent(new Event('cart-updated'));
+            updateCartBadge(0);
         }
+    }
 
-        document.addEventListener('storage', (event) => {
-            if (event.key === 'fleur_cart') {
-                updateCartBadge();
-            }
-        });
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCartHeader);
+    } else {
+        initCartHeader();
+    }
 </script>
 </body>
 </html>

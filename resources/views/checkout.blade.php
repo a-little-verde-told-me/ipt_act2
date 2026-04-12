@@ -13,6 +13,7 @@
     <div class="checkout-layout">
         <form class="checkout-form" action="{{ route('checkout.submit') }}" method="post">
             @csrf
+            <input type="hidden" name="selected_items" id="selectedItemsInput" value="[]">
             <h3>Shipping Details</h3>
 
             <label for="fullName">Full Name</label>
@@ -71,7 +72,7 @@
 </script>
 
 <script>
-    const cartKey = 'fleur_cart';
+    const selectedItemsKey = 'fleur_selected_items';
     const subtotalEl = document.getElementById('checkoutSubtotal');
     const shippingEl = document.getElementById('checkoutShipping');
     const totalEl = document.getElementById('checkoutTotal');
@@ -79,20 +80,22 @@
     const phoneInput = document.getElementById('phone');
     const addressInput = document.getElementById('address');
     const notesInput = document.getElementById('notes');
+    const selectedItemsInput = document.getElementById('selectedItemsInput');
+    const checkoutForm = document.querySelector('.checkout-form');
 
-    function loadCart() {
+    function loadSelectedItems() {
         try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
+            return JSON.parse(localStorage.getItem(selectedItemsKey)) || [];
         } catch (e) {
             return [];
         }
     }
 
-    function getSelectedItems() {
-        try {
-            return JSON.parse(localStorage.getItem('fleur_selected_items')) || [];
-        } catch (e) {
-            return [];
+    function saveSelectedItems(items) {
+        if (items.length > 0) {
+            localStorage.setItem(selectedItemsKey, JSON.stringify(items));
+        } else {
+            localStorage.removeItem(selectedItemsKey);
         }
     }
 
@@ -100,9 +103,49 @@
         return `₱ ${value.toFixed(2)}`;
     }
 
-    function updateSummary() {
-        const cart = loadCart();
-        const selectedItems = getSelectedItems();
+    function refreshCartCount() {
+        fetch('{{ route("api.cart.count") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('cartCount');
+            if (!badge) return;
+            badge.textContent = data.count || 0;
+            badge.style.display = (data.count || 0) > 0 ? 'inline-flex' : 'none';
+        })
+        .catch(() => {});
+    }
+
+    window.addEventListener('cart-updated', refreshCartCount);
+    window.addEventListener('DOMContentLoaded', refreshCartCount);
+    setTimeout(refreshCartCount, 100);
+    setTimeout(refreshCartCount, 300);
+    setTimeout(() => {
+        if (window.refreshCartCount) {
+            window.refreshCartCount();
+        }
+        refreshCartCount();
+    }, 500);
+
+    function fetchCart() {
+        if (!userData || !userData.id) {
+            return Promise.resolve([]);
+        }
+
+        return fetch('{{ route("api.cart.get") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.ok ? response.json() : [])
+        .catch(() => []);
+    }
+
+    function updateSummary(cart) {
+        const selectedItems = loadSelectedItems();
         let subtotal = 0;
 
         cart.forEach(item => {
@@ -117,14 +160,15 @@
         totalEl.textContent = formatPrice(subtotal + shipping);
     }
 
-    function ensureSelection() {
-        const cart = loadCart();
-        let selectedItems = getSelectedItems();
+    function ensureSelection(cart) {
+        let selectedItems = loadSelectedItems();
+        selectedItems = selectedItems.filter(id => cart.some(item => item.id === id));
 
         if (cart.length > 0 && selectedItems.length === 0) {
             selectedItems = cart.map(item => item.id);
-            localStorage.setItem('fleur_selected_items', JSON.stringify(selectedItems));
         }
+
+        saveSelectedItems(selectedItems);
     }
 
     function prefillUserDetails() {
@@ -136,20 +180,23 @@
     }
 
     window.addEventListener('load', () => {
-        ensureSelection();
         prefillUserDetails();
-        updateSummary();
-    });
+        refreshCartCount();
+        setTimeout(refreshCartCount, 200);
 
-    const checkoutForm = document.querySelector('.checkout-form');
+        fetchCart().then(cart => {
+            ensureSelection(cart);
+            updateSummary(cart);
+        });
+    });
 
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function() {
-            const cart = loadCart();
-            const selectedItems = getSelectedItems();
-            const remainingCart = cart.filter(item => !selectedItems.includes(item.id));
-            localStorage.setItem(cartKey, JSON.stringify(remainingCart));
-            localStorage.removeItem('fleur_selected_items');
+            const selectedItems = loadSelectedItems();
+            if (selectedItemsInput) {
+                selectedItemsInput.value = JSON.stringify(selectedItems);
+            }
+            saveSelectedItems([]);
         });
     }
 </script>

@@ -1,12 +1,8 @@
 <?php
 
-<<<<<<< Updated upstream
-use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-=======
 use App\Models\User;
+use App\Models\Flower;
+use App\Models\Event;
 use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
@@ -28,113 +24,16 @@ Route::get('/contact', function () {
 })->name('contact');
 
 Route::get('/flowers', function (Request $request) {
-    $flowers = [
-        ['image' => 'flower1.jpg', 'name' => 'Cosmos'],
-        ['image' => 'flower2.jpg', 'name' => 'Indian Paintbrush'],
-        ['image' => 'flower3.jpg', 'name' => 'Bluebonnet'],
-        ['image' => 'flower4.jpg', 'name' => 'Wild Bergamot'],
-        ['image' => 'flower5.jpg', 'name' => 'Dahlia'],
-        ['image' => 'flower6.jpg', 'name' => 'Zinnia'],
-        ['image' => 'flower7.jpg', 'name' => 'Ranunculus'],
-        ['image' => 'flower8.jpg', 'name' => 'Larkspur'],
-        ['image' => 'flower9.jpg', 'name' => 'Chrysanthemum'],
-        ['image' => 'flower10.jpg', 'name' => 'Anemone'],
-        ['image' => 'flower11.jpg', 'name' => 'Celosia'],
-        ['image' => 'flower12.jpg', 'name' => 'Gladiolus'],
-        ['image' => 'flower13.jpg', 'name' => 'Gomphrena'],
-        ['image' => 'flower14.jpg', 'name' => 'Sunflower'],
-        ['image' => 'flower15.jpg', 'name' => 'Craspedia'],
-        ['image' => 'flower16.jpg', 'name' => 'Gerbera Daisy'],
-        ['image' => 'flower17.jpg', 'name' => 'Snapdragon'],
-        ['image' => 'flower18.jpg', 'name' => 'Bells of Ireland'],
-        ['image' => 'flower19.jpg', 'name' => 'Stock'],
-        ['image' => 'flower20.jpg', 'name' => 'Strawflower'],
-        ['image' => 'flower21.jpg', 'name' => 'Nigella'],
-        ['image' => 'flower22.jpg', 'name' => 'Morning Glory'],
-        ['image' => 'flower23.jpg', 'name' => 'Lobelia'],
-        ['image' => 'flower24.jpg', 'name' => 'Verbena'],
-        ['image' => 'flower25.jpg', 'name' => 'Dusty Miller'],
-        ['image' => 'flower26.jpg', 'name' => 'Sweet Alyssum'],
-        ['image' => 'flower27.jpg', 'name' => 'Browallia'],
-        ['image' => 'flower28.jpg', 'name' => 'Torenia'],
-        ['image' => 'flower29.jpg', 'name' => 'Gazania'],
-        ['image' => 'flower30.jpg', 'name' => 'Nicotiana'],
-        ['image' => 'flower31.jpg', 'name' => 'Nasturtium'],
-        ['image' => 'flower32.jpg', 'name' => 'Alyssum'],
-    ];
+    $perPage = 10;
+    $paginated = Flower::paginate($perPage);
+    $allFlowers = Flower::all()->toArray();
 
-    $perPage = 20;
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $currentItems = array_slice($flowers, ($currentPage - 1) * $perPage, $perPage);
-
-    $paginated = new LengthAwarePaginator(
-        $currentItems,
-        count($flowers),
-        $perPage,
-        $currentPage,
-        [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]
-    );
-
-    return view('flowers', ['flowers' => $paginated, 'allFlowers' => $flowers]);
+    return view('flowers', ['flowers' => $paginated, 'allFlowers' => $allFlowers]);
 })->name('flowers');
 
 Route::get('/gallery', function (Request $request) {
-    $events = [
-        [
-            'name' => 'Rustic Wedding',
-            'category' => 'Weddings',
-            'image' => 'rustic_wedding.jpg',
-            'slug' => 'rustic-wedding',
-        ],
-        [
-            'name' => '18th Birthday',
-            'category' => 'Birthdays',
-            'image' => '18th_birthday.jpg',
-            'slug' => '18th-birthday',
-        ],
-        [
-            'name' => 'Corporate Gala',
-            'category' => 'Others',
-            'image' => 'corporate_gala.jpg',
-            'slug' => 'corporate-gala',
-        ],
-        [
-            'name' => 'Garden Wedding',
-            'category' => 'Weddings',
-            'image' => 'garden_wedding.jpg',
-            'slug' => 'garden-wedding',
-        ],
-        [
-            'name' => 'Debut Celebration',
-            'category' => 'Birthdays',
-            'image' => 'debut_celebration.jpg',
-            'slug' => 'debut-celebration',
-        ],
-        [
-            'name' => 'Anniversary Party',
-            'category' => 'Others',
-            'image' => 'anniversary_party.jpg',
-            'slug' => 'anniversary-party',
-        ],
-    ];
-
-    $perPage = 20;
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $currentItems = array_slice($events, ($currentPage - 1) * $perPage, $perPage);
-
-    $paginated = new LengthAwarePaginator(
-        $currentItems,
-        count($events),
-        $perPage,
-        $currentPage,
-        [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]
-    );
+    $perPage = 10;
+    $paginated = Event::paginate($perPage);
 
     return view('gallery', ['events' => $paginated]);
 })->name('gallery');
@@ -245,7 +144,8 @@ Route::get('/gallery', function (Request $request) {
     }
 
 Route::get('/view-gallery/{event}', function (string $event) {
-    return view('viewgallery', ['event' => $event]);
+    $eventData = Event::where('slug', $event)->first();
+    return view('viewgallery', ['event' => $eventData]);
 })->name('gallery.view');
 
 Route::get('/cart', function () {
@@ -257,8 +157,24 @@ Route::get('/checkout', function () {
     return view('checkout', ['user' => $user]);
 })->name('checkout');
 
-Route::post('/checkout', function () {
+Route::post('/checkout', function (Request $request) {
     $user = Auth::user();
+
+    if ($user) {
+        $selectedItems = json_decode($request->input('selected_items', '[]'), true);
+        if (is_array($selectedItems) && count($selectedItems) > 0) {
+            $selectedIds = array_filter($selectedItems, function ($id) {
+                return is_numeric($id);
+            });
+
+            if (count($selectedIds) > 0) {
+                \App\Models\Cart::where('user_id', Auth::id())
+                    ->whereIn('id', $selectedIds)
+                    ->delete();
+            }
+        }
+    }
+
     return view('checkout', ['user' => $user, 'success' => true]);
 })->name('checkout.submit');
 
@@ -400,5 +316,4 @@ Route::middleware('auth')->prefix('api/cart')->group(function () {
     Route::put('/{cart}', [CartController::class, 'updateQty'])->name('api.cart.update');
     Route::delete('/{cart}', [CartController::class, 'removeItem'])->name('api.cart.remove');
     Route::delete('/', [CartController::class, 'clearCart'])->name('api.cart.clear');
->>>>>>> Stashed changes
 });

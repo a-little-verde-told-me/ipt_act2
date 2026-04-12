@@ -17,7 +17,7 @@
             <!-- Filters Row -->
             <div class="filters-row">
                 <!-- Category Filter -->
-                <select name="category" id="categorySelect">
+                <select name="category" id="categorySelect" style="border-radius: 999px">
                     <option value="">All Categories</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -25,23 +25,27 @@
                 </select>
 
                 <!-- Sort Dropdown -->
-                <select name="sort" id="sortSelect">
+                <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
                     <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
                 </select>
 
                 <!-- Reset Button -->
-                <a href="{{ route('product') }}" class="reset-btn">Reset</a>
+                <button type="button" id="resetFilters" class="reset-btn">Reset</button>
             </div>
         </form>
     </div>
 
     <div class="products-grid">
         @forelse($products as $product)
+            @php
+                $imagePath = $product->image_url;
+                $encodedPath = $imagePath ? implode('/', array_map('rawurlencode', explode('/', $imagePath))) : null;
+            @endphp
             <div class="product-card" data-name="{{ strtolower($product->name) }}">
                 <div class="product-image">
-                    <img src="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}" alt="{{ $product->name }}">
+                    <img src="{{ $imagePath ? asset('images/'.$encodedPath) : asset('images/placeholder.jpg') }}" alt="{{ $product->name }}">
                 </div>
                 <div class="product-info">
                     <h3>{{ $product->name }}</h3>
@@ -52,7 +56,7 @@
                         type="button"
                         data-name="{{ $product->name }}"
                         data-price="{{ $product->price }}"
-                        data-image="{{ $product->image_url ? asset('images/'.$product->image_url) : asset('images/placeholder.jpg') }}"
+                        data-image="{{ $imagePath ? asset('images/'.$encodedPath) : asset('images/placeholder.jpg') }}"
                     >Add to Cart</button>
                 </div>
             </div>
@@ -73,45 +77,84 @@
 
 <script>
     const buttons = document.querySelectorAll('.add-to-cart');
-    const cartKey = 'fleur_cart';
+    const isAuthenticated = "{{ Auth::check() }}" === "1";
 
     function parsePrice(priceText) {
         const numeric = String(priceText).replace(/[^0-9.]/g, '');
         return numeric ? parseFloat(numeric) : 0;
     }
 
-    function loadCart() {
-        try {
-            return JSON.parse(localStorage.getItem(cartKey)) || [];
-        } catch (e) {
-            return [];
+    function refreshCartCount() {
+        if (!isAuthenticated) return;
+
+        fetch('{{ route("api.cart.count") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('cartCount');
+            if (!badge) return;
+            badge.textContent = data.count || 0;
+            badge.style.display = (data.count || 0) > 0 ? 'inline-flex' : 'none';
+        })
+        .catch(() => {});
+    }
+
+    window.addEventListener('cart-updated', refreshCartCount);
+
+    function showLoginRequiredOverlay() {
+        const overlay = document.getElementById('loginRequiredOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
         }
     }
 
-    function saveCart(cart) {
-        localStorage.setItem(cartKey, JSON.stringify(cart));
-        window.dispatchEvent(new Event('cart-updated'));
+    function hideLoginRequiredOverlay() {
+        const overlay = document.getElementById('loginRequiredOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
     }
 
     function addToCart(name, price, image) {
-        const cart = loadCart();
-        const existing = cart.find(item => item.product_name === name || item.name === name);
-
-        if (existing) {
-            existing.qty += 1;
-            existing.product_name = existing.product_name || name;
-            existing.image_url = existing.image_url || existing.image || image;
-        } else {
-            cart.push({
-                id: Date.now() + Math.floor(Math.random() * 1000),
-                product_name: name,
-                price: parseFloat(price),
-                image_url: image || '{{ asset("images/placeholder.jpg") }}',
-                qty: 1,
-            });
+        if (!isAuthenticated) {
+            showLoginRequiredOverlay();
+            return;
         }
 
-        saveCart(cart);
+        fetch('{{ route("api.cart.add") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                product_name: name,
+                price: parseFloat(price),
+                image_url: image,
+                qty: 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'added') {
+                window.dispatchEvent(new CustomEvent('cart-updated'));
+                // Show success message
+                const btn = document.querySelector(`[data-name="${name}"]`);
+                const original = btn.textContent;
+                btn.textContent = 'Added';
+                setTimeout(() => { btn.textContent = original; }, 900);
+            } else {
+                alert('Failed to add to cart');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding to cart');
+        });
     }
 
     function handleAddToCartClick(btn) {
@@ -121,10 +164,6 @@
             const image = btn.dataset.image;
 
             addToCart(name, price, image);
-
-            const original = btn.textContent;
-            btn.textContent = 'Added';
-            setTimeout(() => { btn.textContent = original; }, 900);
         });
     }
 
@@ -135,11 +174,15 @@
 
     buttons.forEach(handleAddToCartClick);
 
+    window.addEventListener('load', refreshCartCount);
+    refreshCartCount();
+
     // Automatic filtering, searching, and sorting
     let filterTimeout;
     const searchInput = document.getElementById('searchInput');
     const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
+    const resetButton = document.getElementById('resetFilters');
     const productFiltersForm = document.getElementById('productFilters');
 
     function applyFilters() {
@@ -193,5 +236,33 @@
 
     categorySelect.addEventListener('change', applyFilters);
     sortSelect.addEventListener('change', applyFilters);
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        categorySelect.value = '';
+        sortSelect.value = 'default';
+        applyFilters();
+    });
+
+    // Login required overlay cancel button
+    window.addEventListener('DOMContentLoaded', () => {
+        const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+        if (cancelLoginBtn) {
+            cancelLoginBtn.addEventListener('click', hideLoginRequiredOverlay);
+        }
+    });
 </script>
+
+<!-- Login Required Overlay -->
+<div class="login-required-overlay" id="loginRequiredOverlay" style="display: none;">
+    <div class="login-required-card">
+        <div class="login-required-icon">🔒</div>
+        <h2>Login Required</h2>
+        <p>Please login to add items to your cart.</p>
+        <div class="login-required-actions">
+            <a href="{{ route('login') }}" class="login-required-btn btn-primary">Login</a>
+            <button class="login-required-btn btn-secondary" id="cancelLoginBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
 @endsection

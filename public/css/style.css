@@ -102,6 +102,7 @@ header {
 }
 
 .cart-icon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -142,8 +143,7 @@ header {
 }
 
 .logout-btn:hover {
-    background: var(--accent-rose);
-    color: var(--white);
+    background: #8a3a45;
 }
 
 .nav-links a {
@@ -299,7 +299,7 @@ header {
     border: 1px solid #dddddd;
     display: flex;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 14px 18px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     margin-bottom: 0;
@@ -326,7 +326,7 @@ header {
 .product-filters .filter-btn,
 .product-filters .reset-btn {
     padding: 10px 18px;
-    border-radius: 6px;
+    border-radius: 999px;
     font-weight: 600;
     text-decoration: none;
     border: none;
@@ -479,7 +479,7 @@ header {
     padding: 12px 45px;
     background: #444; /* Dark button like screenshot */
     color: var(--white);
-    border-radius: 4px;
+    border-radius: 999px;
     text-decoration: none;
     font-weight: 600;
 }
@@ -714,7 +714,7 @@ footer {
     background: #fff;
     border: 1px solid #dddddd;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 14px 18px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
@@ -723,8 +723,8 @@ footer {
     padding: 10px 18px;
     background: #fff;
     border: 1px solid #dddddd;
-    border-radius: 8px;
-    color: #333;
+    border-radius: 999px;
+    background: #666;
     font-weight: 600;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
@@ -781,7 +781,7 @@ footer {
 .sort-select {
     padding: 10px 14px;
     border: 1px solid #dddddd;
-    border-radius: 8px;
+    border-radius: 999px;
     background: #fff;
     color: #333;
     font-family: 'Poppins', sans-serif;
@@ -1217,9 +1217,9 @@ footer {
     align-self: end;
     padding: 8px 14px;
     border: none;
-    background: #444;
+    background: #666;
     color: #fff;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
 }
 
@@ -1262,6 +1262,79 @@ footer {
 .auth-card h1 {
     font-size: 2rem;
     margin-bottom: 20px;
+}
+
+.profile-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 18px 28px;
+    margin-bottom: 28px;
+}
+
+.profile-row {
+    background: #faf3f3;
+    border: 1px solid #f2d8d8;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #8a3a45;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.profile-value {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    justify-content: flex-start;
+}
+
+.profile-actions .secondary-link {
+    color: var(--accent-rose);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-actions .secondary-link:hover {
+    text-decoration: underline;
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-rose);
+    background: var(--accent-rose);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #8a3a45;
+}
+
+@media (max-width: 900px) {
+    .profile-summary {
+        grid-template-columns: 1fr;
+    }
 }
 
 .auth-form {
@@ -1317,19 +1390,32 @@ input::-ms-clear,
 input::-ms-reveal,
 input::-moz-reveal,
 input::-webkit-password-reveal-button,
-input::-moz-password-reveal-button {
+input::-moz-password-reveal-button,
+input::-webkit-textfield-decoration-container,
+input::-webkit-textfield-decoration-button {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    visibility: hidden !important;
 }
 
+input[type="password"],
 input[type="password"]::-webkit-autofill-button,
 input[type="password"]::-webkit-credentials-auto-fill-button,
 input[type="password"]::-ms-reveal,
-input[type="password"]::-moz-reveal {
+input[type="password"]::-moz-reveal,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-textfield-decoration-button {
     display: none !important;
+    width: 0 !important;
+    height: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+}
+
+input[type="password"] {
+    -webkit-appearance: textfield !important;
+    appearance: textfield !important;
 }
 
 input:autofill::selection,
@@ -1365,7 +1451,7 @@ input[type="password"]:autofill {
 
 .password-field input {
     width: 100%;
-    padding-right: 48px;
+    padding-right: 14px;
 }
 
 .password-toggle {
@@ -1567,7 +1653,7 @@ input[type="password"]:autofill {
     background: #4d4d4d;
     color: #fff;
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.85rem;
@@ -1629,15 +1715,15 @@ input[type="password"]:autofill {
 .cart-list {
     display: flex;
     flex-direction: column;
-    gap: 48px;
+    gap: 28px;
     margin-bottom: 32px;
 }
 
 .cart-item {
     display: grid;
-    grid-template-columns: 30px 100px 1fr auto auto auto;
+    grid-template-columns: 40px 100px minmax(220px, 1fr) 160px 120px 50px;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     background: var(--white);
     border: 1px solid #f0ece9;
     border-radius: 12px;
@@ -1646,13 +1732,23 @@ input[type="password"]:autofill {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.item-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-details {
+    min-width: 0;
+}
+
 .item-checkbox {
     width: 20px;
     height: 20px;
     min-width: 20px;
     cursor: pointer;
     accent-color: var(--accent-rose);
-    border-radius: 50%;
+    border-radius: 6px;
 }
 
 
@@ -1691,6 +1787,7 @@ input[type="password"]:autofill {
 }
 
 .item-qty {
+    width: fit-content;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1838,7 +1935,7 @@ input[type="password"]:autofill {
     }
 
     .cart-item {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 40px 80px 1fr;
         row-gap: 12px;
     }
 
@@ -1848,7 +1945,15 @@ input[type="password"]:autofill {
     }
 
     .item-qty, .item-total, .remove-btn {
-        grid-column: 2;
+        grid-column: 3;
+    }
+
+    .item-details h4 {
+        margin-bottom: 6px;
+    }
+
+    .item-total {
+        text-align: left;
     }
 }
 
@@ -2032,6 +2137,60 @@ input[type="password"]:autofill {
     animation: slideUp 0.3s ease;
 }
 
+.message-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.message-card {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 40px 36px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+    animation: slideUp 0.25s ease;
+}
+
+.message-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    background: #fbe9e9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #b33a48;
+    font-weight: bold;
+}
+
+.message-card h2 {
+    font-size: 1.65rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.message-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 26px;
+    line-height: 1.6;
+}
+
+.message-card .success-btn {
+    width: 100%;
+    max-width: none;
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(30px);
@@ -2110,6 +2269,96 @@ input[type="password"]:autofill {
     transform: translateY(-2px);
 }
 
+/* Login Required Overlay Styles */
+.login-required-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.login-required-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 48px 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+}
+
+.login-required-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: #fff3cd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #856404;
+    font-weight: bold;
+}
+
+.login-required-card h2 {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.login-required-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+.login-required-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-required-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.login-required-btn.btn-primary {
+    background: var(--accent-rose);
+    color: var(--white);
+}
+
+.login-required-btn.btn-primary:hover {
+    background: #8a3a45;
+    transform: translateY(-2px);
+}
+
+.login-required-btn.btn-secondary {
+    background: #f0f0f0;
+    color: var(--text-dark);
+    border: 1px solid #dddddd;
+}
+
+.login-required-btn.btn-secondary:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+}
+
 /* Login Modal Styles */
 .login-modal {
     display: none;
@@ -2155,7 +2404,7 @@ input[type="password"]:autofill {
 .modal-btn {
     display: inline-block;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 50%;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
