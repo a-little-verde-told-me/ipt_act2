@@ -16,14 +16,6 @@
 
             <!-- Filters Row -->
             <div class="filters-row">
-                <!-- Category Filter -->
-                <select name="category" id="categorySelect" style="border-radius: 999px">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
-
                 <!-- Sort Dropdown -->
                 <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
@@ -176,7 +168,6 @@
     // Automatic filtering, searching, and sorting
     let filterTimeout;
     const searchInput = document.getElementById('searchInput');
-    const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
     const resetButton = document.getElementById('resetFilters');
     const productFiltersForm = document.getElementById('productFilters');
@@ -230,11 +221,9 @@
         filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
     });
 
-    categorySelect.addEventListener('change', applyFilters);
     sortSelect.addEventListener('change', applyFilters);
     resetButton.addEventListener('click', () => {
         searchInput.value = '';
-        categorySelect.value = '';
         sortSelect.value = 'default';
         applyFilters();
     });
