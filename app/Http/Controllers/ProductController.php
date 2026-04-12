@@ -55,10 +55,8 @@ class ProductController extends Controller
 
         $query = Product::query();
 
-        // Filter by category
-        if ($request->filled('category')) {
-            $query->where('category', $request->get('category'));
-        }
+        // Only show bouquets
+        $query->where('category', 'Bouquet');
 
         // Search by product name (case-insensitive)
         if ($request->filled('search')) {
@@ -84,8 +82,6 @@ class ProductController extends Controller
 
         return view('product', [
             'products' => $products,
-            'categories' => $categories,
-            'activeCategory' => $request->get('category'),
             'activeSearch' => $request->get('search'),
             'activeSort' => $sort,
         ]);
