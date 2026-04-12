@@ -55,8 +55,10 @@ class ProductController extends Controller
 
         $query = Product::query();
 
-        // Default filter to show only bouquets
-        $query->where('category', 'Bouquet');
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category', $request->get('category'));
+        }
 
         // Search by product name (case-insensitive)
         if ($request->filled('search')) {
@@ -82,6 +84,8 @@ class ProductController extends Controller
 
         return view('product', [
             'products' => $products,
+            'categories' => $categories,
+            'activeCategory' => $request->get('category'),
             'activeSearch' => $request->get('search'),
             'activeSort' => $sort,
         ]);
