@@ -87,12 +87,19 @@
             </div>
         </div>
     </div>
+
+    <div id="customizePageData"
+         data-customize-success="{{ !empty($success) ? 'true' : 'false' }}"
+         data-login-required="{{ session('customize_login_required', false) ? 'true' : 'false' }}"
+         data-authenticated="{{ auth()->check() ? 'true' : 'false' }}"
+         style="display:none;"></div>
 </div>
 
 <script>
-    const customizeSuccess = {{ json_encode(!empty($success)) }};
-    const loginRequired = {{ json_encode(session('customize_login_required', false)) }};
-    const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+    const dataEl = document.getElementById('customizePageData');
+    const customizeSuccess = dataEl?.dataset.customizeSuccess === 'true';
+    const loginRequired = dataEl?.dataset.loginRequired === 'true';
+    const isAuthenticated = dataEl?.dataset.authenticated === 'true';
     const overlay = document.getElementById('customizeOverlay');
     const overlayClose = document.getElementById('overlayClose');
     const overlayCloseBtn = document.getElementById('overlayCloseBtn');
@@ -101,6 +108,7 @@
     const customizeForm = document.querySelector('.customize-form');
 
     function closeOverlay() {
+        if (!overlay) return;
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
     }
