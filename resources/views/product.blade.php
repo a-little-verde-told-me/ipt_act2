@@ -16,19 +16,13 @@
 
             <!-- Filters Row -->
             <div class="filters-row">
-                <!-- Category Filter -->
-                <select name="category" id="categorySelect" style="border-radius: 999px">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ ($activeCategory ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
-
                 <!-- Sort Dropdown -->
                 <select name="sort" id="sortSelect" style="border-radius: 999px">
-                    <option value="default" {{ ($activeSort ?? 'default') === 'default' ? 'selected' : '' }}>Sort by</option>
+                    <option value="newest" {{ ($activeSort ?? 'newest') === 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                    <option value="name_asc" {{ ($activeSort ?? '') === 'name_asc' ? 'selected' : '' }}>Name: A-Z</option>
+                    <option value="name_desc" {{ ($activeSort ?? '') === 'name_desc' ? 'selected' : '' }}>Name: Z-A</option>
                 </select>
 
                 <!-- Reset Button -->
@@ -180,7 +174,6 @@
     // Automatic filtering, searching, and sorting
     let filterTimeout;
     const searchInput = document.getElementById('searchInput');
-    const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
     const resetButton = document.getElementById('resetFilters');
     const productFiltersForm = document.getElementById('productFilters');
@@ -234,12 +227,10 @@
         filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
     });
 
-    categorySelect.addEventListener('change', applyFilters);
     sortSelect.addEventListener('change', applyFilters);
     resetButton.addEventListener('click', () => {
         searchInput.value = '';
-        categorySelect.value = '';
-        sortSelect.value = 'default';
+        sortSelect.value = 'newest';
         applyFilters();
     });
 
