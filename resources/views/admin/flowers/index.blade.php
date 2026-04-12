@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-page">
     <div class="admin-header">
-        <h1>Admin Flower Management</h1>
+        <div>
+            <h1>Admin Flower Management</h1>
+            <p class="admin-page-header">Maintain your flower collection with fast updates for names, colors, and image references.</p>
+        </div>
         <a href="{{ route('admin.flowers.create') }}" class="btn btn-primary">Add Flower</a>
     </div>
 

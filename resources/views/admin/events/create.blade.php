@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-form-page">
     <div class="admin-header">
-        <h1>Add Event</h1>
+        <div>
+            <h1>Add Event</h1>
+            <p class="admin-subtext">Create a new event listing with category and image details for the event gallery.</p>
+        </div>
         <a href="{{ route('admin.events.index') }}" class="btn btn-secondary">Back to List</a>
     </div>
 
@@ -25,7 +28,7 @@
         @error('category') <p class="field-error">{{ $message }}</p> @enderror
 
         <label for="image">Image URL</label>
-        <input id="image" name="image" type="url" value="{{ old('image') }}">
+        <input id="image" name="image" type="text" value="{{ old('image') }}" placeholder="e.g. products/pink-love-bouquet.webp">
         @error('image') <p class="field-error">{{ $message }}</p> @enderror
 
         <button type="submit" class="btn btn-primary">Create Event</button>

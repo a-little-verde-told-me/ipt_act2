@@ -44,7 +44,7 @@ class AdminEventController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:100'],
-            'image' => ['nullable', 'url', 'max:1000'],
+            'image' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $data['slug'] = Str::slug($data['name']);
@@ -68,7 +68,7 @@ class AdminEventController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:100'],
-            'image' => ['nullable', 'url', 'max:1000'],
+            'image' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $data['slug'] = Str::slug($data['name']);

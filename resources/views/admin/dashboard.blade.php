@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-page">
     <div class="admin-header">
-        <h1>Admin Dashboard</h1>
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p class="admin-page-header">Access product, flower, and event management tools from a simplified dashboard designed for admin workflow.</p>
+        </div>
     </div>
 
     <div class="admin-dashboard-grid">

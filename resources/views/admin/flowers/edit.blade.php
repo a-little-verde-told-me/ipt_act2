@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-form-page">
     <div class="admin-header">
-        <h1>Edit Flower</h1>
+        <div>
+            <h1>Edit Flower</h1>
+            <p class="admin-subtext">Update the flower's display details and image to keep the collection fresh.</p>
+        </div>
         <a href="{{ route('admin.flowers.index') }}" class="btn btn-secondary">Back to List</a>
     </div>
 
@@ -26,7 +29,7 @@
         @error('color') <p class="field-error">{{ $message }}</p> @enderror
 
         <label for="image">Image URL</label>
-        <input id="image" name="image" type="url" value="{{ old('image', $flower->image) }}">
+        <input id="image" name="image" type="text" value="{{ old('image', $flower->image) }}" placeholder="e.g. flowers/red-tulips.jpg">
         @error('image') <p class="field-error">{{ $message }}</p> @enderror
 
         <button type="submit" class="btn btn-primary">Update Flower</button>

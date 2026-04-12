@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-page">
     <div class="admin-header">
-        <h1>Admin Product Management</h1>
+        <div>
+            <h1>Admin Product Management</h1>
+            <p class="admin-page-header">Quickly manage your product catalog with easy editing, pricing updates, and image control in one table view.</p>
+        </div>
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
     </div>
 

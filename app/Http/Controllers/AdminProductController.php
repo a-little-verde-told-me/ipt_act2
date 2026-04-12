@@ -46,7 +46,7 @@ class AdminProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:100'],
             'price' => ['required', 'numeric', 'min:0'],
-            'image_url' => ['nullable', 'url', 'max:1000'],
+            'image_url' => ['nullable', 'string', 'max:1000'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
 
@@ -72,7 +72,7 @@ class AdminProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:100'],
             'price' => ['required', 'numeric', 'min:0'],
-            'image_url' => ['nullable', 'url', 'max:1000'],
+            'image_url' => ['nullable', 'string', 'max:1000'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
 

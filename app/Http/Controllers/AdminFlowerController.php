@@ -44,7 +44,7 @@ class AdminFlowerController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'color' => ['nullable', 'string', 'max:100'],
-            'image' => ['nullable', 'url', 'max:1000'],
+            'image' => ['nullable', 'string', 'max:1000'],
         ]);
 
         Flower::create($data);
@@ -66,7 +66,7 @@ class AdminFlowerController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'color' => ['nullable', 'string', 'max:100'],
-            'image' => ['nullable', 'url', 'max:1000'],
+            'image' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $flower->update($data);

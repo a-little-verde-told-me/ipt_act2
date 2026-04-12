@@ -2331,38 +2331,106 @@ input[type="password"]:autofill {
     gap: 12px;
 }
 
-.success-btn {
-    display: inline-block;
+.success-btn,
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 14px 28px;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 999px;
+    font-weight: 700;
     font-size: 0.95rem;
     text-decoration: none;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    min-height: 48px;
+    letter-spacing: 0.01em;
+    text-transform: none;
+}
+
+.btn-primary,
+.success-btn {
+    background: var(--accent-rose);
+    color: var(--white);
+    box-shadow: 0 10px 24px rgba(143, 54, 65, 0.18);
     border: none;
 }
 
-.btn-primary {
-    background: var(--accent-rose);
-    color: var(--white);
-}
-
-.btn-primary:hover {
+.btn-primary:hover,
+.success-btn:hover {
     background: #8a3a45;
     transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background: #f0f0f0;
-    color: var(--text-dark);
-    border: 1px solid #dddddd;
+    background: #f6efec;
+    color: #5c4848;
+    border: 1px solid rgba(147, 106, 106, 0.24);
+    box-shadow: none;
 }
 
 .btn-secondary:hover {
-    background: #e8e8e8;
+    background: #f1e7e4;
     transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: #bf3d4b;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(191, 61, 75, 0.18);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #9e323f;
+    transform: translateY(-2px);
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(143, 54, 65, 0.18);
+}
+
+.admin-actions .btn {
+    min-width: 120px;
+    padding: 12px 22px;
+}
+
+.inline-form {
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-secondary:hover {
+    background: #f1e7e4;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: #bf3d4b;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(191, 61, 75, 0.18);
+}
+
+.btn-danger:hover {
+    background: #9e323f;
+    transform: translateY(-2px);
+}
+
+.admin-actions .btn {
+    min-width: 110px;
+    padding: 12px 20px;
+}
+
+.inline-form {
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 /* Login Required Overlay Styles */
@@ -2711,6 +2779,20 @@ input[type="password"]:autofill {
     color: #38272b;
 }
 
+.admin-page-header {
+    margin-bottom: 18px;
+    color: #5a4a48;
+    line-height: 1.7;
+    font-size: 0.98rem;
+    max-width: 820px;
+}
+
+.admin-subtext {
+    margin: 16px 0 0;
+    color: #72615f;
+    line-height: 1.75;
+}
+
 .admin-dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -2760,13 +2842,20 @@ input[type="password"]:autofill {
 }
 
 .admin-table th {
-    background: #faf5f2;
+    background: linear-gradient(90deg, #f8f2f1 0%, #fbf7f6 100%);
     font-weight: 700;
     color: #4c3f3b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.92rem;
 }
 
 .admin-table tbody tr:hover {
-    background: #fbf5f3;
+    background: #fff4f2;
+}
+
+.admin-table td {
+    vertical-align: middle;
 }
 
 .admin-actions {
@@ -2795,12 +2884,13 @@ input[type="password"]:autofill {
 .admin-form input,
 .admin-form textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border: 1px solid #e6dfda;
-    border-radius: 12px;
-    background: #faf7f4;
+    border-radius: 16px;
+    background: #fcf7f2;
     color: #2f2925;
     font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .admin-form textarea {

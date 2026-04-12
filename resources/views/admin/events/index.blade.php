@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-page">
     <div class="admin-header">
-        <h1>Admin Event Management</h1>
+        <div>
+            <h1>Admin Event Management</h1>
+            <p class="admin-page-header">Update event listings and image references so your gallery and schedules stay accurate.</p>
+        </div>
         <a href="{{ route('admin.events.create') }}" class="btn btn-primary">Add Event</a>
     </div>
 

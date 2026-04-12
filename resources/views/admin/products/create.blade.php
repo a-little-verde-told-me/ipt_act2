@@ -5,7 +5,10 @@
 @section('content')
 <div class="admin-form-page">
     <div class="admin-header">
-        <h1>Add Product</h1>
+        <div>
+            <h1>Add Product</h1>
+            <p class="admin-subtext">Fill in the product details below to add a new item to the store catalog.</p>
+        </div>
         <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Back to List</a>
     </div>
 
@@ -29,7 +32,7 @@
         @error('price') <p class="field-error">{{ $message }}</p> @enderror
 
         <label for="image_url">Image URL</label>
-        <input id="image_url" name="image_url" type="url" value="{{ old('image_url') }}">
+        <input id="image_url" name="image_url" type="text" value="{{ old('image_url') }}" placeholder="e.g. products/pink-love-bouquet.webp">
         @error('image_url') <p class="field-error">{{ $message }}</p> @enderror
 
         <label for="description">Description</label>
