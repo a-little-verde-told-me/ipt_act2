@@ -32,7 +32,7 @@
 
   <!-- Welcome Text -->
   <div class="hero-text">
-    <h1>Welcome to FLEUR</h1>
+    <h1 style="color: #fff;">Welcome to FLEUR</h1>
     <p>Discover the beauty of fresh flowers and exquisite bouquets</p>
     <a href="{{ route('product') }}" class="hero-cta">Shop Now</a>
   </div>

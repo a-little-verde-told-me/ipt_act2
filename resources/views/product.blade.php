@@ -208,6 +208,8 @@
                 container.className = 'pagination-wrapper';
                 container.innerHTML = newPagination.innerHTML;
                 document.querySelector('.products-page').appendChild(container);
+            } else if (!newPagination && currentPagination) {
+                currentPagination.remove();
             }
             
             if (newGrid && currentGrid) {
