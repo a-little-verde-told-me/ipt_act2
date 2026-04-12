@@ -16,12 +16,12 @@ class ProductController extends Controller
 
         // Search by product name (case-insensitive)
         if ($request->filled('search')) {
-            $search = $request->get('search');
+            $search = $request->query('search');
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
         // Sort logic
-        $sort = $request->get('sort', 'newest');
+        $sort = $request->query('sort', 'newest');
         match($sort) {
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
@@ -35,7 +35,7 @@ class ProductController extends Controller
 
         return view('product', [
             'products' => $products,
-            'activeSearch' => $request->get('search'),
+            'activeSearch' => $request->query('search'),
             'activeSort' => $sort,
         ]);
     }

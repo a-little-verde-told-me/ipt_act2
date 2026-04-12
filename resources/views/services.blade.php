@@ -10,7 +10,7 @@
         <!-- Flower Delivery Service -->
         <div class="service-card">
             <div class="service-image">
-                <img src="{{ asset('images/services/flower-delivery.jpg') }}" alt="Flower Delivery Service" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                <img src="{{ asset('images/services/flower-delivery.jpg') }}" alt="Flower Delivery Service">
             </div>
             <div class="service-content">
                 <h2>Flower Delivery</h2>
@@ -30,7 +30,7 @@
         <!-- Customized Flower Bouquet Service -->
         <div class="service-card">
             <div class="service-image">
-                <img src="{{ asset('images/services/customized-bouquets.jpg') }}" alt="Customized Flower Bouquet" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                <img src="{{ asset('images/services/customized-bouquets.jpg') }}" alt="Customized Flower Bouquet">
             </div>
             <div class="service-content">
                 <h2>Customized Flower Bouquet</h2>
@@ -50,7 +50,7 @@
         <!-- Event Arrangements Service -->
         <div class="service-card">
             <div class="service-image">
-                <img src="{{ asset('images/services/event-arrangement.jpg') }}" alt="Event Flower Arrangements" onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                <img src="{{ asset('images/services/event-arrangement.jpg') }}" alt="Event Flower Arrangements">
             </div>
             <div class="service-content">
                 <h2>Event Arrangements</h2>

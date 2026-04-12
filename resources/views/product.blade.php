@@ -369,7 +369,7 @@
             qty,
         }));
 
-        window.location.href = '{{ route('checkout') }}?buy_now=1';
+        window.location.href = "{{ route('checkout') }}?buy_now=1";
     }
 
     function handleAddToCartClick(btn) {

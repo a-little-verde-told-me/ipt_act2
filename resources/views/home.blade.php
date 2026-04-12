@@ -62,8 +62,7 @@
             <div class="bouquet-image-wrapper">
               <img class="bouquet-img" 
                    src="{{ $product->image_url ? asset('images/' . $product->image_url) : asset('images/placeholder.jpg') }}" 
-                   alt="{{ $product->name }}"
-                   onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                   alt="{{ $product->name }}">
               <div class="bouquet-overlay">
                 <a href="{{ route('product') }}" class="bouquet-cta">View Details</a>
               </div>
