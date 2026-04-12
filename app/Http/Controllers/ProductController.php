@@ -16,7 +16,7 @@ class ProductController extends Controller
             Product::insert([
                 [
                     'name' => 'Sweet Petals',
-                    'category' => 'Signature',
+                    'category' => 'Bouquet',
                     'price' => 1299.00,
                     'image_url' => 'sweet_petals.jpg',
                     'description' => 'Soft pink petals arranged for a delicate and romantic gift.',
@@ -25,7 +25,7 @@ class ProductController extends Controller
                 ],
                 [
                     'name' => 'White Rose Elegance',
-                    'category' => 'Classic',
+                    'category' => 'Bouquet',
                     'price' => 1599.00,
                     'image_url' => 'white_rose.jpg',
                     'description' => 'A timeless bouquet of white roses for elegant celebrations.',
@@ -34,7 +34,7 @@ class ProductController extends Controller
                 ],
                 [
                     'name' => 'Rosy Charm',
-                    'category' => 'Romantic',
+                    'category' => 'Bouquet',
                     'price' => 1399.00,
                     'image_url' => 'rosy_charm.jpg',
                     'description' => 'A charming mix of rosy blooms perfect for special moments.',
@@ -43,7 +43,7 @@ class ProductController extends Controller
                 ],
                 [
                     'name' => 'Pink Delight',
-                    'category' => 'Fresh Picks',
+                    'category' => 'Bouquet',
                     'price' => 1499.00,
                     'image_url' => 'pink_delight.jpg',
                     'description' => 'A cheerful pink arrangement with modern floral accents.',
