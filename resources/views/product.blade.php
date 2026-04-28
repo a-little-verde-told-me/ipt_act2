@@ -16,6 +16,14 @@
 
             <!-- Filters Row -->
             <div class="filters-row">
+                <!-- Category Filter -->
+                <select name="category" id="categorySelect" style="border-radius: 999px">
+                    <option value="" {{ empty($activeCategory) ? 'selected' : '' }}>All Categories</option>
+                    @foreach($categoryOptions as $value => $label)
+                        <option value="{{ $value }}" {{ ($activeCategory ?? '') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+
                 <!-- Sort Dropdown -->
                 <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="newest" {{ ($activeSort ?? 'newest') === 'newest' ? 'selected' : '' }}>Newest</option>
@@ -489,9 +497,13 @@ function attachCardDetailListeners() {
         filterTimeout = setTimeout(applyFilters, 500); // Debounce for 500ms
     });
 
+    const categorySelect = document.getElementById('categorySelect');
+
     sortSelect.addEventListener('change', applyFilters);
+    categorySelect.addEventListener('change', applyFilters);
     resetButton.addEventListener('click', () => {
         searchInput.value = '';
+        categorySelect.value = '';
         sortSelect.value = 'newest';
         applyFilters();
     });

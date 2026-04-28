@@ -20,6 +20,19 @@ class ProductController extends Controller
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
+        // Category filter options
+        $categoryMap = [
+            'bouquets' => 'Bouquet',
+            'ribbons' => 'Ribbons',
+            'wrapping_paper' => 'Wrapping Paper',
+            'sweet_treats' => 'Sweet Treats',
+        ];
+
+        $activeCategory = $request->query('category');
+        if ($activeCategory && isset($categoryMap[$activeCategory])) {
+            $query->where('category', $categoryMap[$activeCategory]);
+        }
+
         // Sort logic
         $sort = $request->query('sort', 'newest');
         match($sort) {
@@ -37,6 +50,8 @@ class ProductController extends Controller
             'products' => $products,
             'activeSearch' => $request->query('search'),
             'activeSort' => $sort,
+            'activeCategory' => $activeCategory,
+            'categoryOptions' => $categoryMap,
         ]);
     }
 }
