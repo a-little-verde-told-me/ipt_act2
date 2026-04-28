@@ -380,6 +380,10 @@
     @endif
 </div>
 
+<script type="application/json" id="productReviewsData">
+{!! json_encode($productReviews ?? []) !!}
+</script>
+
 <script>
     const productDetailOverlay = document.getElementById('productDetailOverlay');
     const overlayImage = document.getElementById('overlayProductImage');
@@ -400,7 +404,7 @@
     const buttons = document.querySelectorAll('.add-to-cart');
     const isAuthenticated = "{{ Auth::check() }}" === "1";
     const buyNowStorageKey = 'fleur_buy_now_item';
-    const productReviews = {!! json_encode($productReviews) !!};
+    let productReviews = {};
 
     let overlayReviewPage = 1;
     let overlayReviewProductId = null;
@@ -648,6 +652,19 @@ function attachCardDetailListeners() {
         newButtons.forEach(handleAddToCartClick);
     }
 
+    function initializeProductReviews() {
+        const productReviewsElement = document.getElementById('productReviewsData');
+        if (productReviewsElement) {
+            try {
+                productReviews = JSON.parse(productReviewsElement.textContent);
+            } catch (e) {
+                console.warn('Failed to parse product reviews:', e);
+                productReviews = {};
+            }
+        }
+    }
+
+    initializeProductReviews();
     buttons.forEach(handleAddToCartClick);
     attachCardDetailListeners();
 
@@ -733,6 +750,14 @@ function attachCardDetailListeners() {
             }
             
             if (newGrid && currentGrid) {
+                // Extract and update product reviews data from response
+                const newReviewsScript = doc.querySelector('script#productReviewsData');
+                const currentReviewsScript = document.getElementById('productReviewsData');
+                if (newReviewsScript && currentReviewsScript) {
+                    currentReviewsScript.textContent = newReviewsScript.textContent;
+                    initializeProductReviews();
+                }
+                
                 // Reattach event listeners to new buttons and product cards
                 attachCartButtons();
                 attachCardDetailListeners();
