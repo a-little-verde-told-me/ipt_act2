@@ -34,6 +34,18 @@ class ProductSeeder extends Seeder
             ['name' => 'Sweet Petals Bouquet', 'category' => 'Bouquet', 'price' => 1199.00, 'description' => 'A delicate pastel arrangement with airy, fragrant petals.', 'image_url' => 'products/sweet-petals-bouquet.jpg'],
             ['name' => 'White Rose Bouquet', 'category' => 'Bouquet', 'price' => 1299.00, 'description' => 'A classic bouquet of pure white roses for refined style.', 'image_url' => 'products/white-rose-bouquet.jpg'],
             ['name' => 'Wildest Dreams Bouquet', 'category' => 'Bouquet', 'price' => 1499.00, 'description' => 'A dreamy bouquet of dramatic blooms and lush greenery.', 'image_url' => 'products/wildest-dreams-bouquet.webp'],
+            // Ribbons
+            ['name' => 'Satin Ribbon - Red', 'category' => 'Ribbons', 'price' => 99.00, 'description' => 'Elegant red satin ribbon for wrapping bouquets.', 'image_url' => 'products/satin-ribbon-red.jpg'],
+            ['name' => 'Satin Ribbon - White', 'category' => 'Ribbons', 'price' => 99.00, 'description' => 'Classic white satin ribbon for elegant touches.', 'image_url' => 'products/satin-ribbon-white.jpg'],
+            ['name' => 'Satin Ribbon - Pink', 'category' => 'Ribbons', 'price' => 99.00, 'description' => 'Soft pink satin ribbon for romantic arrangements.', 'image_url' => 'products/satin-ribbon-pink.jpg'],
+            // Wrapping Paper
+            ['name' => 'Floral Wrapping Paper', 'category' => 'Wrapping Paper', 'price' => 149.00, 'description' => 'Beautiful floral printed wrapping paper.', 'image_url' => 'products/floral-wrapping-paper.jpg'],
+            ['name' => 'Plain Kraft Paper', 'category' => 'Wrapping Paper', 'price' => 79.00, 'description' => 'Simple kraft paper for natural wrapping.', 'image_url' => 'products/plain-kraft-paper.jpg'],
+            ['name' => 'Gift Wrap Set', 'category' => 'Wrapping Paper', 'price' => 199.00, 'description' => 'Assorted wrapping papers for various occasions.', 'image_url' => 'products/gift-wrap-set.jpg'],
+            // Sweet Treats
+            ['name' => 'Chocolate Truffles', 'category' => 'Sweet Treats', 'price' => 299.00, 'description' => 'Delicious handmade chocolate truffles.', 'image_url' => 'products/chocolate-truffles.jpg'],
+            ['name' => 'Macarons Assortment', 'category' => 'Sweet Treats', 'price' => 399.00, 'description' => 'Colorful French macarons in various flavors.', 'image_url' => 'products/macaron-assortment.jpg'],
+            ['name' => 'Gourmet Cookies', 'category' => 'Sweet Treats', 'price' => 249.00, 'description' => 'Freshly baked gourmet cookies.', 'image_url' => 'products/gourmet-cookies.jpg'],
         ];
 
         foreach ($items as $item) {

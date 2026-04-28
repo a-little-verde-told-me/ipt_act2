@@ -28,6 +28,7 @@
                 <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="newest" {{ ($activeSort ?? 'newest') === 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="popular" {{ ($activeSort ?? '') === 'popular' ? 'selected' : '' }}>Most Popular</option>
+                    <option value="highest_rated" {{ ($activeSort ?? '') === 'highest_rated' ? 'selected' : '' }}>Highest Rated</option>
                     <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
                     <option value="name_asc" {{ ($activeSort ?? '') === 'name_asc' ? 'selected' : '' }}>Name: A-Z</option>

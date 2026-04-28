@@ -35,14 +35,19 @@ class ProductController extends Controller
 
         // Sort logic
         $sort = $request->query('sort', 'newest');
-        match($sort) {
-            'popular' => $query->orderBy('views', 'desc'),
-            'price_low' => $query->orderBy('price', 'asc'),
-            'price_high' => $query->orderBy('price', 'desc'),
-            'name_asc' => $query->orderBy('name', 'asc'),
-            'name_desc' => $query->orderBy('name', 'desc'),
-            default => $query->orderBy('created_at', 'desc'),
-        };
+        if ($sort === 'highest_rated') {
+            $query->withAvg('ratings', 'rating')
+                ->orderBy('ratings_avg_rating', 'desc');
+        } else {
+            match($sort) {
+                'popular' => $query->orderBy('views', 'desc'),
+                'price_low' => $query->orderBy('price', 'asc'),
+                'price_high' => $query->orderBy('price', 'desc'),
+                'name_asc' => $query->orderBy('name', 'asc'),
+                'name_desc' => $query->orderBy('name', 'desc'),
+                default => $query->orderBy('created_at', 'desc'),
+            };
+        }
 
         $perPage = 10;
         $products = $query->paginate($perPage)->appends($request->except('page'));

@@ -29,7 +29,7 @@
 
     @if ($orders->count() > 0)
         @foreach($orders as $order)
-            <div class="order-card order-full-card">
+            <div class="order-full-card">
                 <div class="order-card-grid">
                     <section class="order-section order-items-card">
                         <h2>Order items</h2>
@@ -74,57 +74,56 @@
                 </div>
 
                 @if($order->status === 'completed')
-                    <div class="order-section order-rating-card">
-                    <h2>Rate completed products</h2>
-                    <div class="rating-card-group">
-                        @foreach($order->items as $item)
-                            @php
-                                $product = $productsByName[$item->product_name] ?? null;
-                                $alreadyRated = $product && in_array($item->id, $ratedOrderItemIds);
-                            @endphp
-                            <div class="rating-card">
-                                <div class="rating-card-header">
-                                    <div class="order-item">
+                    <div class="order-rating-section">
+                        <h2>Rate completed products</h2>
+                        <div class="rating-item-group">
+                            @foreach($order->items as $item)
+                                @php
+                                    $product = $productsByName[$item->product_name] ?? null;
+                                    $alreadyRated = $product && in_array($item->id, $ratedOrderItemIds);
+                                @endphp
+                                <div class="rating-item">
+                                    <div class="rating-item-header">
                                         <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}" class="order-item-image">
                                         <div>
                                             <div class="order-item-title">{{ $item->product_name }}</div>
                                             <div class="order-item-qty">Qty: {{ $item->qty }}</div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="rating-card-body">
-                                    @if($product)
-                                        @if($alreadyRated)
-                                            <div class="rating-status">You already rated this product.</div>
+                                    <div class="rating-item-body">
+                                        @if($product)
+                                            @if($alreadyRated)
+                                                <div class="rating-status">You already rated this product.</div>
+                                            @else
+                                                <form action="{{ route('order.rate', $order) }}" method="post" class="rating-form">
+                                                    @csrf
+                                                    <input type="hidden" name="order_item_id" value="{{ $item->id }}">
+                                                    <div class="rating-control">
+                                                        <label for="rating-{{ $item->id }}">Rating</label>
+                                                        <select name="rating" id="rating-{{ $item->id }}" required>
+                                                            <option value="">Choose</option>
+                                                            @for($i = 1; $i <= 5; $i++)
+                                                                <option value="{{ $i }}">{{ $i }} star{{ $i > 1 ? 's' : '' }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
+                                                    <div class="rating-control">
+                                                        <label for="review-{{ $item->id }}">Review (optional)</label>
+                                                        <textarea id="review-{{ $item->id }}" name="review" rows="3" placeholder="Share your thoughts..."></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                                                </form>
+                                            @endif
                                         @else
-                                            <form action="{{ route('order.rate', $order) }}" method="post" class="rating-form">
-                                                @csrf
-                                                <input type="hidden" name="order_item_id" value="{{ $item->id }}">
-                                                <div class="rating-control">
-                                                    <label for="rating-{{ $item->id }}">Rating</label>
-                                                    <select name="rating" id="rating-{{ $item->id }}" required>
-                                                        <option value="">Choose</option>
-                                                        @for($i = 1; $i <= 5; $i++)
-                                                            <option value="{{ $i }}">{{ $i }} star{{ $i > 1 ? 's' : '' }}</option>
-                                                        @endfor
-                                                    </select>
-                                                </div>
-                                                <div class="rating-control">
-                                                    <label for="review-{{ $item->id }}">Review (optional)</label>
-                                                    <textarea id="review-{{ $item->id }}" name="review" rows="3" placeholder="Share your thoughts..."></textarea>
-                                                </div>
-                                                <button type="submit" class="btn btn-primary">Submit Rating</button>
-                                            </form>
+                                            <div class="rating-status">This product is no longer available for rating.</div>
                                         @endif
-                                    @else
-                                        <div class="rating-status">This product is no longer available for rating.</div>
-                                    @endif
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         @endforeach
     @else
         <div class="order-card order-empty-card">
@@ -180,6 +179,7 @@
         padding: 0;
         border-radius: 30px;
         overflow: hidden;
+        margin-bottom: 32px;
     }
 
     .order-card-grid {
@@ -209,35 +209,34 @@
         justify-content: space-between;
     }
 
-    .order-rating-card {
-        background: #fff7f5;
-        border: 1px solid #f1dedc;
-        border-radius: 28px;
-        padding: 26px;
-        box-shadow: 0 16px 40px rgba(144, 107, 106, 0.08);
-        margin-top: 24px;
+    .order-rating-section {
+        padding: 2rem;
+        background: #fff;
+        border-bottom: 1px solid #f1e4df;
     }
 
-    .rating-card-group {
+    .rating-item-group {
         display: grid;
         gap: 18px;
     }
 
-    .rating-card {
+    .rating-item {
         background: #ffffff;
         border: 1px solid #f1e2df;
         border-radius: 24px;
-        overflow: hidden;
+        padding: 20px;
     }
 
-    .rating-card-header {
-        padding: 18px 22px;
+    .rating-item-header {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-bottom: 16px;
         border-bottom: 1px solid #f2e3e0;
-        background: #fffaf7;
     }
 
-    .rating-card-body {
-        padding: 20px 22px 22px;
+    .rating-item-body {
+        padding-top: 16px;
     }
 
     .rating-form {
@@ -289,7 +288,7 @@
         font-weight: 600;
     }
 
-    .rating-card .btn-primary {
+    .rating-form .btn-primary {
         width: fit-content;
         min-width: 160px;
         padding: 12px 22px;
