@@ -2125,6 +2125,238 @@ input[type="password"]:autofill {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.order-page {
+    padding: 4rem 6%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.order-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.order-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent-rose);
+}
+
+.order-hero p {
+    color: var(--text-muted);
+    max-width: 680px;
+}
+
+.order-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-rose);
+    color: #fff;
+    padding: 0.9rem 1.4rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.order-cta:hover {
+    background: #8a3a45;
+}
+
+.order-flash {
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    background: #e6f7e8;
+    border: 1px solid #b8e6c1;
+    color: #1a5d2b;
+    margin-bottom: 1.5rem;
+}
+
+.order-card {
+    background: var(--white);
+    border: 1px solid #e5e1dd;
+    border-radius: 28px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.order-summary-card {
+    margin-bottom: 1.5rem;
+}
+
+.order-summary-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.order-tag {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-rose);
+}
+
+.order-tagline {
+    margin: 0.35rem 0 0;
+    color: var(--text-muted);
+}
+
+.order-status-block {
+    text-align: right;
+}
+
+.order-status-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.order-status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: #f8f4f3;
+    color: var(--accent-rose);
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.order-steps-card {
+    margin-bottom: 1.5rem;
+}
+
+.order-steps {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.order-step {
+    flex: 1 1 150px;
+    min-width: 150px;
+    padding: 1rem;
+    border-radius: 18px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.order-step.active {
+    background: var(--accent-rose);
+    color: #fff;
+    border: 1px solid #7f3f44;
+}
+
+.order-step.inactive {
+    background: #f7f5f3;
+    color: #6b6b6b;
+    border: 1px solid #e5e1dd;
+}
+
+.order-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 2fr) 380px;
+}
+
+.order-items-card h2,
+.order-sidebar-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-rose);
+}
+
+.order-items {
+    display: grid;
+    gap: 1rem;
+}
+
+.order-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #fcf8f7;
+    border-radius: 18px;
+    align-items: center;
+}
+
+.order-item-image {
+    width: 84px;
+    height: 84px;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.order-item-title {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.order-item-qty {
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+}
+
+.order-item-price {
+    font-weight: 700;
+    color: var(--accent-rose);
+    margin-left: auto;
+}
+
+.order-shipping-details {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--text-dark);
+}
+
+.order-totals {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e1dd;
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-top: 0.75rem;
+}
+
+.order-total-row:first-child {
+    margin-top: 0;
+}
+
+.order-total-row.total {
+    color: var(--accent-rose);
+    font-size: 1.1rem;
+}
+
+.order-empty-card {
+    text-align: center;
+}
+
+.order-empty-card h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.order-empty-card p {
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+}
+
 .item-select {
     display: flex;
     justify-content: center;

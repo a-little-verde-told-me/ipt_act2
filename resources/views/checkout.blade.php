@@ -14,19 +14,20 @@
         <form class="checkout-form" action="{{ route('checkout.submit') }}" method="post">
             @csrf
             <input type="hidden" name="selected_items" id="selectedItemsInput" value="[]">
+            <input type="hidden" name="buy_now_item" id="buyNowItemInput" value="">
             <h3>Shipping Details</h3>
 
             <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" required>
+            <input id="fullName" name="full_name" type="text" required>
 
             <label for="phone">Mobile Number</label>
-            <input id="phone" type="text" required>
+            <input id="phone" name="phone" type="text" required>
 
             <label for="address">Address</label>
-            <textarea id="address" rows="3" required></textarea>
+            <textarea id="address" name="address" rows="3" required></textarea>
 
             <label for="notes">Order Notes</label>
-            <textarea id="notes" rows="3"></textarea>
+            <textarea id="notes" name="notes" rows="3"></textarea>
 
             <button type="submit" class="submit-btn">Place Order</button>
         </form>
@@ -82,6 +83,7 @@
     const addressInput = document.getElementById('address');
     const notesInput = document.getElementById('notes');
     const selectedItemsInput = document.getElementById('selectedItemsInput');
+    const buyNowItemInput = document.getElementById('buyNowItemInput');
     const checkoutForm = document.querySelector('.checkout-form');
     const buyNowSummary = document.getElementById('buyNowSummary');
     const buyNowItem = getBuyNowItem();
@@ -241,6 +243,9 @@
             const selectedItems = loadSelectedItems();
             if (selectedItemsInput) {
                 selectedItemsInput.value = JSON.stringify(selectedItems);
+            }
+            if (buyNowItemInput) {
+                buyNowItemInput.value = buyNowItem ? JSON.stringify(buyNowItem) : '';
             }
             saveSelectedItems([]);
             if (buyNowItem) {

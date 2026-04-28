@@ -19,6 +19,7 @@
                 <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'active-link' : '' }}">Products</a>
                 <a href="{{ route('admin.flowers.index') }}" class="{{ request()->routeIs('admin.flowers.*') ? 'active-link' : '' }}">Flowers</a>
                 <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.*') ? 'active-link' : '' }}">Events</a>
+                <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active-link' : '' }}">Orders</a>
             </nav>
             <div class="admin-actions">
                 <form action="{{ route('logout') }}" method="post" class="inline-form">

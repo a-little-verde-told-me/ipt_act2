@@ -21,8 +21,6 @@ class Product extends Model
         'image_url',
         'description',
         'views',
-        'rating',
-        'rating_count',
     ];
 
     /**
@@ -33,4 +31,19 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
     ];
+
+    public function ratings()
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating') ?? 0;
+    }
+
+    public function ratingCount()
+    {
+        return $this->ratings()->count();
+    }
 }

@@ -54,6 +54,8 @@
                  data-price="{{ $product->price }}"
                  data-description="{{ $product->description ?? 'Beautiful fresh flowers for every occasion.' }}"
                  data-image="{{ $productImageUrl }}"
+                 data-rating="{{ number_format($product->averageRating(), 1) }}"
+                 data-review-count="{{ $product->ratingCount() }}"
             >
                 <div class="product-image">
                     <img src="{{ $productImageUrl }}" alt="{{ $product->name }}">
@@ -63,11 +65,11 @@
                     <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                 </div>
-                @if($product->rating > 0)
+                @if($product->ratingCount() > 0)
                     <div class="product-rating">
                         <span class="rating-star">★</span>
-                        <span class="rating-value">{{ number_format($product->rating, 1) }}</span>
-                        <span class="rating-count">({{ $product->rating_count }})</span>
+                        <span class="rating-value">{{ number_format($product->averageRating(), 1) }}</span>
+                        <span class="rating-count">({{ $product->ratingCount() }})</span>
                     </div>
                 @endif
             </div>
@@ -82,22 +84,37 @@
     <div class="product-detail-overlay" id="productDetailOverlay" style="display:none;">
         <div class="product-detail-card">
             <button type="button" class="product-detail-close" id="overlayCloseBtn" aria-label="Close detail modal">×</button>
-            <div class="product-detail-content">
-                <div class="product-detail-image">
-                    <img id="overlayProductImage" src="" alt="Product image">
-                </div>
-                <div class="product-detail-meta">
-                    <h2 id="overlayProductName">Product Name</h2>
-                    <p id="overlayProductDescription">Product description goes here.</p>
-                    <p class="product-detail-price" id="overlayProductPrice">₱0.00</p>
-                    <div class="quantity-control">
-                        <button type="button" id="overlayDecrement" class="qty-btn">−</button>
-                        <input type="number" id="overlayQuantity" min="1" value="1" aria-label="Quantity">
-                        <button type="button" id="overlayIncrement" class="qty-btn">+</button>
+            <div class="product-detail-body">
+                <div class="product-detail-content">
+                    <div class="product-detail-image">
+                        <img id="overlayProductImage" src="" alt="Product image">
                     </div>
-                    <div class="product-detail-actions">
-                        <button type="button" class="btn btn-primary" id="overlayAddToCart">Add to Cart</button>
-                        <button type="button" class="btn btn-secondary" id="overlayBuyNow">Buy Now</button>
+                    <div class="product-detail-meta">
+                        <h2 id="overlayProductName">Product Name</h2>
+                        <p id="overlayProductDescription">Product description goes here.</p>
+                        <p class="product-detail-price" id="overlayProductPrice">₱0.00</p>
+                        <div class="quantity-control">
+                            <button type="button" id="overlayDecrement" class="qty-btn">−</button>
+                            <input type="number" id="overlayQuantity" min="1" value="1" aria-label="Quantity">
+                            <button type="button" id="overlayIncrement" class="qty-btn">+</button>
+                        </div>
+                        <div class="product-detail-actions">
+                            <button type="button" class="btn btn-primary" id="overlayAddToCart">Add to Cart</button>
+                            <button type="button" class="btn btn-secondary" id="overlayBuyNow">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-review-section">
+                    <div class="review-header">
+                        <div class="review-summary">
+                            <span class="rating-star">★</span>
+                            <span id="overlayProductRatingValue">0.0</span>
+                            <span id="overlayProductRatingCount">(0 reviews)</span>
+                        </div>
+                    </div>
+                    <div class="review-list" id="overlayReviewList">
+                        <div class="review-empty">No customer reviews yet. Be the first to rate this bouquet.</div>
                     </div>
                 </div>
             </div>
@@ -151,11 +168,66 @@
         .product-detail-card {
             width: min(100%, 920px);
             max-width: 920px;
+            max-height: calc(100vh - 40px);
             background: #fff;
             border-radius: 28px;
             box-shadow: 0 32px 85px rgba(16, 12, 8, 0.16);
             overflow: hidden;
             position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-detail-body {
+            overflow-y: auto;
+            max-height: calc(100vh - 40px);
+            padding: 32px;
+            box-sizing: border-box;
+        }
+        .product-detail-content {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        .product-review-section {
+            padding-top: 20px;
+            border-top: 1px solid #efe9e6;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .review-header h3 {
+            margin: 0;
+            color: #3d1c29;
+        }
+        .review-summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #54303c;
+            font-weight: 600;
+        }
+        .review-list {
+            display: grid;
+            gap: 14px;
+        }
+        .review-item,
+        .review-empty {
+            background: #f7f2ef;
+            border-radius: 20px;
+            padding: 18px;
+            color: #4f3d3b;
+            line-height: 1.6;
+        }
+        .review-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #3d1c29;
         }
         .product-detail-close {
             position: absolute;
@@ -276,6 +348,9 @@
     const overlayCloseBtn = document.getElementById('overlayCloseBtn');
     const overlayDecrement = document.getElementById('overlayDecrement');
     const overlayIncrement = document.getElementById('overlayIncrement');
+    const overlayRatingValue = document.getElementById('overlayProductRatingValue');
+    const overlayRatingCount = document.getElementById('overlayProductRatingCount');
+    const overlayReviewList = document.getElementById('overlayReviewList');
     const productCards = document.querySelectorAll('.product-card');
     const buttons = document.querySelectorAll('.add-to-cart');
     const isAuthenticated = "{{ Auth::check() }}" === "1";
@@ -376,6 +451,8 @@
         const image = card.dataset.image;
         const description = card.dataset.description || 'Beautiful fresh flowers for every occasion.';
         const productId = card.dataset.id;
+        const rating = parseFloat(card.dataset.rating || '0');
+        const reviewCount = parseInt(card.dataset.reviewCount || '0', 10);
 
         overlayImage.src = image;
         overlayImage.alt = name;
@@ -386,6 +463,18 @@
         overlayQtyInput.dataset.productName = name;
         overlayQtyInput.dataset.productPrice = price;
         overlayQtyInput.dataset.productImage = image;
+
+        if (overlayRatingValue) {
+            overlayRatingValue.textContent = rating.toFixed(1);
+        }
+        if (overlayRatingCount) {
+            overlayRatingCount.textContent = `(${reviewCount} review${reviewCount === 1 ? '' : 's'})`;
+        }
+        if (overlayReviewList) {
+            overlayReviewList.innerHTML = reviewCount > 0
+                ? '<div class="review-item"><strong>Customer feedback</strong><p>This bouquet is loved for its fresh, vibrant blooms and thoughtful presentation.</p></div>'
+                : '<div class="review-empty">No customer reviews yet. Be the first to rate this bouquet.</div>';
+        }
 
         // Track product view
         if (productId) {

@@ -3,9 +3,13 @@
 use App\Models\User;
 use App\Models\Flower;
 use App\Models\Event;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\ProductRating;
 use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminFlowerController;
 use App\Http\Controllers\AdminEventController;
+use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -73,6 +77,7 @@ Route::post('/customize', function (Request $request) {
     $files = glob($viewsDir.'/*.blade.php') ?: [];
     $items = [];
     $id = 1;
+    $stopwords = ['the', 'and', 'for', 'with', 'from', 'this', 'that', 'have', 'your', 'page', 'order', 'product', 'flower', 'gallery', 'see'];
 
     foreach ($files as $file) {
         $viewName = basename($file, '.blade.php');
@@ -199,22 +204,95 @@ Route::get('/checkout', function () {
 Route::post('/checkout', function (Request $request) {
     $user = Auth::user();
 
-    if ($user) {
-        $selectedItems = json_decode($request->input('selected_items', '[]'), true);
-        if (is_array($selectedItems) && count($selectedItems) > 0) {
-            $selectedIds = array_filter($selectedItems, function ($id) {
-                return is_numeric($id);
-            });
+    if (! $user) {
+        return redirect()->route('login')->with('error', 'Please log in before placing your order.');
+    }
 
-            if (count($selectedIds) > 0) {
-                \App\Models\Cart::where('user_id', Auth::id())
-                    ->whereIn('id', $selectedIds)
-                    ->delete();
+    $request->validate([
+        'full_name' => 'required|string|max:255',
+        'phone' => 'required|string|max:50',
+        'address' => 'required|string|max:1000',
+        'notes' => 'nullable|string|max:1000',
+        'selected_items' => 'nullable|string',
+        'buy_now_item' => 'nullable|string',
+    ]);
+
+    $selectedItems = json_decode($request->input('selected_items', '[]'), true);
+    $buyNowItem = json_decode($request->input('buy_now_item', 'null'), true);
+    $orderItems = [];
+    $selectedIds = [];
+
+    if (is_array($buyNowItem) && ! empty($buyNowItem['name']) && ! empty($buyNowItem['price']) && ! empty($buyNowItem['qty'])) {
+        $orderItems[] = [
+            'product_name' => $buyNowItem['name'],
+            'price' => floatval($buyNowItem['price']),
+            'qty' => intval($buyNowItem['qty']),
+            'image_url' => $buyNowItem['image'] ?? null,
+        ];
+    }
+
+    if (empty($orderItems) && is_array($selectedItems) && count($selectedItems) > 0) {
+        $selectedIds = array_values(array_filter($selectedItems, function ($id) {
+            return is_numeric($id);
+        }));
+
+        if (count($selectedIds) > 0) {
+            $cartItems = \App\Models\Cart::where('user_id', Auth::id())
+                ->whereIn('id', $selectedIds)
+                ->get(['id', 'product_name', 'price', 'image_url', 'qty']);
+
+            foreach ($cartItems as $item) {
+                $orderItems[] = [
+                    'product_name' => $item->product_name,
+                    'price' => $item->price,
+                    'qty' => $item->qty,
+                    'image_url' => $item->image_url,
+                    'cart_id' => $item->id,
+                ];
             }
         }
     }
 
-    return view('checkout', ['user' => $user, 'success' => true]);
+    if (count($orderItems) === 0) {
+        return redirect()->route('checkout')->with('error', 'Please select at least one item before placing your order.');
+    }
+
+    $subtotal = 0;
+    foreach ($orderItems as $item) {
+        $subtotal += $item['price'] * $item['qty'];
+    }
+
+    $shipping = $subtotal > 0 ? 150 : 0;
+    $total = $subtotal + $shipping;
+
+    $order = Order::create([
+        'user_id' => $user->id,
+        'full_name' => $request->input('full_name'),
+        'phone' => $request->input('phone'),
+        'address' => $request->input('address'),
+        'notes' => $request->input('notes'),
+        'status' => 'processing',
+        'subtotal' => $subtotal,
+        'shipping_cost' => $shipping,
+        'total' => $total,
+    ]);
+
+    foreach ($orderItems as $item) {
+        $order->items()->create([
+            'product_name' => $item['product_name'],
+            'price' => $item['price'],
+            'qty' => $item['qty'],
+            'image_url' => $item['image_url'] ?? null,
+        ]);
+    }
+
+    if (count($selectedIds) > 0) {
+        \App\Models\Cart::where('user_id', Auth::id())
+            ->whereIn('id', $selectedIds)
+            ->delete();
+    }
+
+    return redirect()->route('order')->with('success', 'Your order has been placed successfully.');
 })->name('checkout.submit');
 
 Route::get('/login', function () {
@@ -344,6 +422,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('/flowers/{flower}', [AdminFlowerController::class, 'update'])->name('flowers.update');
     Route::delete('/flowers/{flower}', [AdminFlowerController::class, 'destroy'])->name('flowers.destroy');
 
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [AdminEventController::class, 'create'])->name('events.create');
     Route::post('/events', [AdminEventController::class, 'store'])->name('events.store');
@@ -366,9 +448,90 @@ Route::post('/logout', function (Request $request) {
         ->with('clear_cart', true);
 })->name('logout');
 
-Route::get('/order', function () {
-    return view('order');
-})->name('order');
+Route::get('/order', function (Request $request) {
+    $query = Order::where('user_id', Auth::id())->with('items');
+
+    if ($request->filled('status') && array_key_exists($request->status, Order::statuses())) {
+        $query->where('status', $request->status);
+    }
+
+    $orders = $query->orderBy('created_at', 'desc')->get();
+
+    $productNames = $orders->flatMap(function ($order) {
+        return $order->items->pluck('product_name');
+    })->unique()->values()->all();
+
+    $productsByName = Product::whereIn('name', $productNames)
+        ->get()
+        ->keyBy('name');
+
+    $ratedOrderItemIds = ProductRating::where('user_id', Auth::id())
+        ->pluck('order_item_id')
+        ->toArray();
+
+    return view('order', [
+        'orders' => $orders,
+        'productsByName' => $productsByName,
+        'ratedOrderItemIds' => $ratedOrderItemIds,
+        'selectedStatus' => $request->query('status', ''),
+    ]);
+})->middleware('auth')->name('order');
+
+Route::post('/order/{order}/rate', function (Request $request, Order $order) {
+    if ($order->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized.');
+    }
+
+    if ($order->status !== 'completed') {
+        return back()->with('error', 'You can only rate products for completed orders.');
+    }
+
+    $request->validate([
+        'order_item_id' => 'required|integer',
+        'rating' => 'required|integer|min:1|max:5',
+        'review' => 'nullable|string|max:1000',
+    ]);
+
+    $item = $order->items()->where('id', $request->order_item_id)->first();
+
+    if (! $item) {
+        return back()->with('error', 'Order item not found.');
+    }
+
+    $product = Product::where('name', $item->product_name)->first();
+
+    if (! $product) {
+        return back()->with('error', 'Unable to rate this item because the product is no longer available.');
+    }
+
+    ProductRating::updateOrCreate(
+        [
+            'order_item_id' => $item->id,
+        ],
+        [
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+            'rating' => $request->rating,
+            'review' => $request->review,
+        ]
+    );
+
+    return back()->with('success', 'Thank you for rating the product.');
+})->middleware('auth')->name('order.rate');
+
+Route::post('/order/{order}/received', function (Request $request, Order $order) {
+    if ($order->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized.');
+    }
+
+    if ($order->status !== 'delivered') {
+        return back()->with('error', 'Order must be delivered before you can confirm receipt.');
+    }
+
+    $order->update(['status' => 'completed']);
+
+    return back()->with('success', 'Order confirmed received. You can now rate the product.');
+})->middleware('auth')->name('order.received');
 
 Route::middleware('auth')->prefix('api/cart')->group(function () {
     Route::get('/', [CartController::class, 'getCart'])->name('api.cart.get');

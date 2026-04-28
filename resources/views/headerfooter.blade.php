@@ -26,6 +26,7 @@
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active-link' : '' }}">About</a>
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active-link' : '' }}">Contact Us</a>
             @auth
+                <a href="{{ route('order') }}" class="{{ request()->routeIs('order') ? 'active-link' : '' }}">Orders</a>
                 @if(auth()->user()->role === 'admin')
                     <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.*') ? 'active-link' : '' }}">Admin</a>
                 @endif
