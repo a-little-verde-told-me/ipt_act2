@@ -1,11 +1,9 @@
-﻿/* -----------------------------------------
-   1. Variables & Global Reset
-   ----------------------------------------- */
+﻿/*Variables & Global Reset*/
 :root {
-    --primary-bg: #FCF9F5;    /* Cream (60%) */
-    --secondary-sage: #7D8E7A; /* Sage (30%) */
+    --primary-bg: #FCF9F5;   
+    --secondary-sage: #7D8E7A;
     --secondary-light: #DDE2DB;
-    --accent-rose: #A64452;   /* Rose (10%) */
+    --accent-rose: #A64452;   
     --text-dark: #333333;
     --text-muted: #555555;
     --white: #ffffff;
@@ -36,9 +34,7 @@ h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
 
-/* -----------------------------------------
-   2. Header & Navigation
-   ----------------------------------------- */
+/*Header & Navigation*/
 header {
     background-color: var(--white);
     border-bottom: 1px solid #eee;
@@ -166,9 +162,7 @@ header {
     font-size: 0.95rem;
 }
 
-/* -----------------------------------------
-   3. Hero Slider
-   ----------------------------------------- */
+/*Hero Slider*/
 .hero-section {
     width: 100%;
     height: 655px;
@@ -303,12 +297,10 @@ header {
 }
 
 .indicator.active {
-    background: #E91E63; /* Pink highlight from original screenshot */
+    background: #E91E63;
 }
 
-/* -----------------------------------------
-   4. Featured Bouquets
-   ----------------------------------------- */
+/*Featured Bouquets*/
 .featured-section {
     max-width: 1200px;
     margin: 80px auto;
@@ -489,18 +481,9 @@ header {
 }
 
 .products-page {
-    /* max-width: 90%; */
     width: 90%;
     margin: 40px auto 80px;
 }
-
-/* .products-page h1 {
-    font-size: 3rem;
-    text-align: center;
-    margin-bottom: 32px;
-    letter-spacing: 0.25rem;
-    text-transform: uppercase;
-} */
 
 .search-section {
     margin-bottom: 32px;
@@ -680,21 +663,11 @@ header {
     background: #8a3a45;
 }
 
-/* -----------------------------------------
-   Contact Page
-   ----------------------------------------- */
+/*Contact Page*/
 .contact-page {
     width: 90%;
     margin: 40px auto 80px;
 }
-
-/* .contact-page h1 {
-    font-size: 2.5rem;
-    letter-spacing: 0.15rem;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    text-align: center;
-} */
 
 .contact-grid {
     display: grid;
@@ -853,9 +826,7 @@ header {
     }
 }
 
-/* -----------------------------------------
-   5. Footer
-   ----------------------------------------- */
+/*Footer*/
 footer {
     padding: 40px 0;
     border-top: 1px solid #eee;
@@ -864,9 +835,7 @@ footer {
     color: var(--text-muted);
 }
 
-/* -----------------------------------------
-   6. Responsive Design
-   ----------------------------------------- */
+/* Responsive Design */
 @media (max-width: 1024px) {
     .bouquet-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -887,9 +856,7 @@ footer {
     .hero-cta { padding: 8px 20px; font-size: 0.85rem; }
 }
 
-/* -----------------------------------------
-   7. Gallery Page
-   ----------------------------------------- */
+/*Gallery Page*/
 .gallery-container {
     max-width: 90%;
     margin: 0 auto;
@@ -1308,9 +1275,7 @@ footer {
     .gallery-grid { grid-template-columns: 1fr; }
 }
 
-/* -----------------------------------------
-   8. Flowers Page
-   ----------------------------------------- */
+/* Flowers Page */
 .flowers-container {
     max-width: 1140px;
     margin: 0 auto;
@@ -1455,19 +1420,13 @@ footer {
     .flowers-grid { grid-template-columns: 1fr; }
 }
 
-/* -----------------------------------------
-   Search Page
-   ----------------------------------------- */
+/*Search Page*/
 .search-page {
     max-width: 1000px;
     margin: 0 auto;
     padding: 40px 24px 60px;
 }
 
-/* .search-page h1 {
-    font-size: 1.8rem;
-    margin-bottom: 18px;
-} */
 
 .search-form {
     display: flex;
@@ -1592,9 +1551,7 @@ footer {
     font-size: 0.9rem;
 }
 
-/* -----------------------------------------
-   Filter Page
-   ----------------------------------------- */
+/*Filter Page*/
 .filter-page {
     max-width: 1000px;
     margin: 0 auto;
@@ -1656,9 +1613,7 @@ footer {
     font-size: 0.9rem;
 }
 
-/* -----------------------------------------
-   Auth Pages
-   ----------------------------------------- */
+/*Auth Pages*/
 .auth-page {
     max-width: 70%;
     margin: 0 auto;
@@ -2002,9 +1957,7 @@ input[type="password"]:autofill {
     }
 }
 
-/* -----------------------------------------
-   Products Page
-   ----------------------------------------- */
+/*Products Page*/
 .products-page {
     max-width: 90%;
     margin: 0 auto;
@@ -2086,9 +2039,7 @@ input[type="password"]:autofill {
     .products-grid { grid-template-columns: 1fr; }
 }
 
-/* -----------------------------------------
-   Cart Page
-   ----------------------------------------- */
+/* Cart Page */
 .cart-page {
     width: 90%;
     margin: 40px auto 80px;
@@ -2400,9 +2351,7 @@ input[type="password"]:autofill {
 }
 
 
-/* -----------------------------------------
-   Checkout Page
-   ----------------------------------------- */
+/* Checkout Page */
 .checkout-page {
     width: 90%;
     margin: 40px auto 80px;
@@ -2939,9 +2888,7 @@ input[type="password"]:autofill {
     }
 }
 
-/* -----------------------------------------
-   About Page
-   ----------------------------------------- */
+/*About Page*/
 .about-page {
     max-width: 90%;
     margin: 0 auto;
@@ -3037,9 +2984,7 @@ input[type="password"]:autofill {
     font-size: 1rem;
 }
 
-/* -----------------------------------------
-   Admin Dashboard and Management
-   ----------------------------------------- */
+/*Admin Dashboard and Management*/
 .admin-body {
     background: #f7f3ef;
     color: #2f2925;
