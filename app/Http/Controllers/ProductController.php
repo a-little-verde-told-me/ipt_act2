@@ -36,6 +36,7 @@ class ProductController extends Controller
         // Sort logic
         $sort = $request->query('sort', 'newest');
         match($sort) {
+            'popular' => $query->orderBy('views', 'desc'),
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
             'name_asc' => $query->orderBy('name', 'asc'),
@@ -53,5 +54,14 @@ class ProductController extends Controller
             'activeCategory' => $activeCategory,
             'categoryOptions' => $categoryMap,
         ]);
+    }
+
+    /**
+     * Track product view for popularity sorting.
+     */
+    public function trackView(Product $product)
+    {
+        $product->increment('views');
+        return response()->json(['status' => 'tracked']);
     }
 }

@@ -378,3 +378,7 @@ Route::middleware('auth')->prefix('api/cart')->group(function () {
     Route::delete('/{cart}', [CartController::class, 'removeItem'])->name('api.cart.remove');
     Route::delete('/', [CartController::class, 'clearCart'])->name('api.cart.clear');
 });
+
+Route::prefix('api/product')->group(function () {
+    Route::post('/{product}/view', [\App\Http\Controllers\ProductController::class, 'trackView']);
+});

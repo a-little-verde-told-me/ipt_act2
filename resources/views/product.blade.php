@@ -27,6 +27,7 @@
                 <!-- Sort Dropdown -->
                 <select name="sort" id="sortSelect" style="border-radius: 999px">
                     <option value="newest" {{ ($activeSort ?? 'newest') === 'newest' ? 'selected' : '' }}>Newest</option>
+                    <option value="popular" {{ ($activeSort ?? '') === 'popular' ? 'selected' : '' }}>Most Popular</option>
                     <option value="price_low" {{ ($activeSort ?? '') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_high" {{ ($activeSort ?? '') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
                     <option value="name_asc" {{ ($activeSort ?? '') === 'name_asc' ? 'selected' : '' }}>Name: A-Z</option>
@@ -337,6 +338,7 @@
         const price = parsePrice(card.dataset.price || '0');
         const image = card.dataset.image;
         const description = card.dataset.description || 'Beautiful fresh flowers for every occasion.';
+        const productId = card.dataset.id;
 
         overlayImage.src = image;
         overlayImage.alt = name;
@@ -347,6 +349,17 @@
         overlayQtyInput.dataset.productName = name;
         overlayQtyInput.dataset.productPrice = price;
         overlayQtyInput.dataset.productImage = image;
+
+        // Track product view
+        if (productId) {
+            fetch(`/api/product/${productId}/view`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).catch(() => {});
+        }
 
         if (productDetailOverlay) {
             productDetailOverlay.style.display = 'flex';
