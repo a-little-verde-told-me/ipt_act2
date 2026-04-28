@@ -55,8 +55,8 @@
                  data-price="{{ $product->price }}"
                  data-description="{{ $product->description ?? 'Beautiful fresh flowers for every occasion.' }}"
                  data-image="{{ $productImageUrl }}"
-                 data-rating="{{ number_format($product->averageRating(), 1) }}"
-                 data-review-count="{{ $product->ratingCount() }}"
+                 data-rating="{{ number_format($product->ratings_avg_rating ?? $product->averageRating(), 1) }}"
+                 data-review-count="{{ $product->ratings_count ?? 0 }}"
             >
                 <div class="product-image">
                     <img src="{{ $productImageUrl }}" alt="{{ $product->name }}">
@@ -66,11 +66,11 @@
                     <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                 </div>
-                @if($product->ratingCount() > 0)
+                @if(($product->ratings_count ?? 0) > 0)
                     <div class="product-rating">
                         <span class="rating-star">★</span>
-                        <span class="rating-value">{{ number_format($product->averageRating(), 1) }}</span>
-                        <span class="rating-count">({{ $product->ratingCount() }})</span>
+                        <span class="rating-value">{{ number_format($product->ratings_avg_rating ?? $product->averageRating(), 1) }}</span>
+                        <span class="rating-count">({{ $product->ratings_count }})</span>
                     </div>
                 @endif
             </div>
@@ -114,9 +114,8 @@
                             <span id="overlayProductRatingCount">(0 reviews)</span>
                         </div>
                     </div>
-                    <div class="review-list" id="overlayReviewList">
-                        <div class="review-empty">No customer reviews yet. Be the first to rate this bouquet.</div>
-                    </div>
+                    <div class="review-list" id="overlayReviewList"></div>
+                    <div class="review-pagination" id="overlayReviewPagination"></div>
                 </div>
             </div>
         </div>
@@ -224,6 +223,50 @@
             padding: 18px;
             color: #4f3d3b;
             line-height: 1.6;
+        }
+        .review-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .review-item-header .review-author {
+            color: #6b4a4f;
+            font-weight: 700;
+        }
+        .review-item-header .review-rating {
+            color: #b45309;
+            font-weight: 700;
+        }
+        .review-item-text {
+            color: #4f3d3b;
+            margin: 0;
+            white-space: pre-line;
+        }
+        .review-pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .review-page-btn {
+            border: 1px solid #d9c7c2;
+            background: #fff;
+            color: #5b3f43;
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .review-page-btn:hover {
+            background: #f2d8d7;
+        }
+        .review-page-btn.active {
+            background: #8d5660;
+            color: #fff;
+            border-color: #8d5660;
         }
         .review-item strong {
             display: block;
@@ -352,10 +395,68 @@
     const overlayRatingValue = document.getElementById('overlayProductRatingValue');
     const overlayRatingCount = document.getElementById('overlayProductRatingCount');
     const overlayReviewList = document.getElementById('overlayReviewList');
+    const overlayReviewPagination = document.getElementById('overlayReviewPagination');
     const productCards = document.querySelectorAll('.product-card');
     const buttons = document.querySelectorAll('.add-to-cart');
     const isAuthenticated = "{{ Auth::check() }}" === "1";
     const buyNowStorageKey = 'fleur_buy_now_item';
+    const productReviews = {!! json_encode($productReviews) !!};
+
+    let overlayReviewPage = 1;
+    let overlayReviewProductId = null;
+
+    function anonymizeName(name) {
+        if (!name || name.length <= 2) {
+            return name;
+        }
+
+        const first = name.charAt(0);
+        const last = name.charAt(name.length - 1);
+        return `${first}${'*'.repeat(Math.max(1, name.length - 2))}${last}`;
+    }
+
+    function renderReviewStars(rating) {
+        return '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+    }
+
+    function renderOverlayReviewPage(page = 1) {
+        if (!overlayReviewList || !overlayReviewPagination) return;
+
+        const reviews = productReviews[overlayReviewProductId] || [];
+        const perPage = 3;
+        const totalPages = Math.max(1, Math.ceil(reviews.length / perPage));
+        const currentPage = Math.min(Math.max(1, page), totalPages);
+        const start = (currentPage - 1) * perPage;
+        const currentReviews = reviews.slice(start, start + perPage);
+
+        overlayReviewList.innerHTML = '';
+        overlayReviewPagination.innerHTML = '';
+
+        if (reviews.length === 0) {
+            overlayReviewList.innerHTML = '<div class="review-empty">No customer reviews yet. Be the first to rate this bouquet.</div>';
+            return;
+        }
+
+        currentReviews.forEach((item) => {
+            overlayReviewList.innerHTML += `
+                <div class="review-item">
+                    <div class="review-item-header">
+                        <span class="review-author">${anonymizeName(item.customer)}</span>
+                        <span class="review-rating">${renderReviewStars(item.rating)} ${item.rating.toFixed(1)}</span>
+                    </div>
+                    <p class="review-item-text">${item.review ? item.review : 'No written review provided.'}</p>
+                </div>
+            `;
+        });
+
+        if (totalPages > 1) {
+            for (let i = 1; i <= totalPages; i += 1) {
+                overlayReviewPagination.innerHTML += `
+                    <button type="button" class="review-page-btn ${i === currentPage ? 'active' : ''}" data-review-page="${i}">${i}</button>
+                `;
+            }
+        }
+    }
 
     function parsePrice(priceText) {
         const numeric = String(priceText).replace(/[^0-9.]/g, '');
@@ -453,7 +554,8 @@
         const description = card.dataset.description || 'Beautiful fresh flowers for every occasion.';
         const productId = card.dataset.id;
         const rating = parseFloat(card.dataset.rating || '0');
-        const reviewCount = parseInt(card.dataset.reviewCount || '0', 10);
+        const reviews = productReviews[productId] || [];
+        const reviewCount = reviews.length;
 
         overlayImage.src = image;
         overlayImage.alt = name;
@@ -465,17 +567,16 @@
         overlayQtyInput.dataset.productPrice = price;
         overlayQtyInput.dataset.productImage = image;
 
+        overlayReviewProductId = productId;
+        overlayReviewPage = 1;
+
         if (overlayRatingValue) {
             overlayRatingValue.textContent = rating.toFixed(1);
         }
         if (overlayRatingCount) {
             overlayRatingCount.textContent = `(${reviewCount} review${reviewCount === 1 ? '' : 's'})`;
         }
-        if (overlayReviewList) {
-            overlayReviewList.innerHTML = reviewCount > 0
-                ? '<div class="review-item"><strong>Customer feedback</strong><p>This bouquet is loved for its fresh, vibrant blooms and thoughtful presentation.</p></div>'
-                : '<div class="review-empty">No customer reviews yet. Be the first to rate this bouquet.</div>';
-        }
+        renderOverlayReviewPage(1);
 
         // Track product view
         if (productId) {
@@ -555,6 +656,18 @@ function attachCardDetailListeners() {
         productDetailOverlay.addEventListener('click', (event) => {
             if (event.target === productDetailOverlay) {
                 overlayClose();
+            }
+        });
+    }
+
+    if (overlayReviewPagination) {
+        overlayReviewPagination.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-review-page]');
+            if (!button) return;
+            const page = parseInt(button.dataset.reviewPage, 10);
+            if (!Number.isNaN(page)) {
+                overlayReviewPage = page;
+                renderOverlayReviewPage(page);
             }
         });
     }

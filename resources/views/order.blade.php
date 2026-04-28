@@ -132,6 +132,12 @@
             <a class="order-cta" href="{{ route('product') }}">Browse products</a>
         </div>
     @endif
+
+    @if ($orders->hasPages())
+        <div class="order-pagination-wrapper">
+            {{ $orders->links('pagination::custom') }}
+        </div>
+    @endif
 </div>
 
 <style>
@@ -293,6 +299,62 @@
         min-width: 160px;
         padding: 12px 22px;
         border-radius: 999px;
+    }
+
+    .order-pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 8px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination .page-item {
+        display: inline-block;
+    }
+
+    .pagination .page-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid #d9c7c2;
+        border-radius: 8px;
+        background: #fff;
+        color: #5b3f43;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        cursor: pointer;
+    }
+
+    .pagination .page-link:hover {
+        background: #f2d8d7;
+        border-color: #c7a9a3;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: #8d5660;
+        color: #fff;
+        border-color: #8d5660;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background: #f3ece8;
+        color: #9a8682;
+        border-color: #e5d9d3;
+        cursor: not-allowed;
     }
 
     @media (max-width: 900px) {

@@ -12,7 +12,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('ratings.user')
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings');
 
         // Search by product name (case-insensitive)
         if ($request->filled('search')) {
@@ -52,12 +54,23 @@ class ProductController extends Controller
         $perPage = 10;
         $products = $query->paginate($perPage)->appends($request->except('page'));
 
+        $productReviews = $products->getCollection()->mapWithKeys(function ($product) {
+            return [$product->id => $product->ratings->map(function ($rating) {
+                return [
+                    'rating' => $rating->rating,
+                    'review' => $rating->review,
+                    'customer' => $rating->user?->name ?? 'Anonymous',
+                ];
+            })->values()->all()];
+        })->toArray();
+
         return view('product', [
             'products' => $products,
             'activeSearch' => $request->query('search'),
             'activeSort' => $sort,
             'activeCategory' => $activeCategory,
             'categoryOptions' => $categoryMap,
+            'productReviews' => $productReviews,
         ]);
     }
 

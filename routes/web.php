@@ -455,7 +455,8 @@ Route::get('/order', function (Request $request) {
         $query->where('status', $request->status);
     }
 
-    $orders = $query->orderBy('created_at', 'desc')->get();
+    $perPage = 5;
+    $orders = $query->orderBy('created_at', 'desc')->paginate($perPage)->appends($request->except('page'));
 
     $productNames = $orders->flatMap(function ($order) {
         return $order->items->pluck('product_name');
@@ -498,7 +499,8 @@ Route::post('/order/{order}/rate', function (Request $request, Order $order) {
         return back()->with('error', 'Order item not found.');
     }
 
-    $product = Product::where('name', $item->product_name)->first();
+    $itemName = trim($item->product_name);
+    $product = Product::whereRaw('LOWER(name) = ?', [strtolower($itemName)])->first();
 
     if (! $product) {
         return back()->with('error', 'Unable to rate this item because the product is no longer available.');
