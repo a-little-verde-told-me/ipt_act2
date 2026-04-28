@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 12, 2026 at 02:35 PM
+-- Generation Time: Apr 28, 2026 at 04:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -274,7 +274,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (7, '2026_04_10_000005_create_carts_table', 4),
 (8, '2026_04_11_000000_rename_carts_to_cart_items', 5),
 (9, '2026_04_12_000000_create_flowers_table', 6),
-(10, '2026_04_12_000001_create_events_table', 6);
+(10, '2026_04_12_000001_create_events_table', 6),
+(11, '2026_04_28_000000_add_views_to_products_table', 7),
+(12, '2026_04_28_000001_add_ratings_to_products_table', 8);
 
 -- --------------------------------------------------------
 
@@ -301,6 +303,9 @@ CREATE TABLE `products` (
   `price` decimal(10,2) NOT NULL,
   `image_url` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
+  `views` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `rating` decimal(3,2) NOT NULL DEFAULT 0.00,
+  `rating_count` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -309,31 +314,31 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `category`, `price`, `image_url`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'Blooming Embrace Bouquet', 'Bouquet', 1499.00, 'products/blooming-embrace-bouquet.webp', 'A lush bouquet of mixed blossoms with soft pinks and creams.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(2, 'Citrus Kiss Bouquet', 'Bouquet', 1299.00, 'products/citrus-kiss-bouquet.webp', 'A bright, refreshing arrangement of yellow and orange blooms.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(3, 'Daisy Kiss Bouquet', 'Bouquet', 1099.00, 'products/daisy-kiss-bouquet.webp', 'A cheerful blend of daisies and greenery for everyday smiles.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(4, 'Emilia Bouquet', 'Bouquet', 1399.00, 'products/emilia-bouquet.webp', 'A graceful bouquet with elegant petals and delicate filler flowers.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(5, 'Emotions Bouquet', 'Bouquet', 1299.00, 'products/emotions-bouquet.webp', 'A heartfelt arrangement designed to express warmth and care.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(6, 'Gerbera Joy Bouquet', 'Bouquet', 1249.00, 'products/gerbera-joy-bouquet.jpg', 'A vibrant gerbera-focused bouquet bursting with color.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(7, 'Lemon Sorbet Bouquet', 'Bouquet', 1299.00, 'products/lemon-sorbet-bouquet.webp', 'A sunny citrus-inspired bouquet with soft pastel accents.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(8, 'Liliana Bouquet', 'Bouquet', 1399.00, 'products/liliana-bouquet.webp', 'A stylish floral display centered around fragrant lilies.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(9, 'Love Full In Bloom Bouquet', 'Bouquet', 1599.00, 'products/love-full-in-bloom-bouquet.webp', 'A romantic abundance of blooms in classic tones.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(10, 'Love In Bloom Bouquet', 'Bouquet', 1499.00, 'products/love-in-bloom-bouquet.jpg', 'A tender bouquet crafted for special love moments.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(11, 'Peachy Glow Bouquet', 'Bouquet', 1299.00, 'products/peachy-glow-bouquet.jpg', 'A soft peach-hued bouquet with warm, elegant charm.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(12, 'Pink Delight Bouquet', 'Bouquet', 1199.00, 'products/pink-delight-bouquet.jpg', 'A playful pink arrangement bursting with joyful petals.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(13, 'Pink Love Bouquet', 'Bouquet', 1299.00, 'products/pink-love-bouquet.webp', 'A dreamy pink bouquet made for romantic surprises.', '2026-04-11 20:57:20', '2026-04-12 01:04:42'),
-(14, 'Pink Sweet Bouquet', 'Bouquet', 1199.00, 'products/pink-sweet-bouquet.webp', 'A sweet blush arrangement with delicate floral accents.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(15, 'Rose Romance', 'Bouquet', 1599.00, 'products/Rose Romance.jpg', 'A timeless romantic bouquet of luxurious rose blooms.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(16, 'Rosy Charm Bouquet', 'Bouquet', 1249.00, 'products/rosy-charm-bouquet.jpg', 'A charming mix of rosy tones for elegant gifting.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(17, 'Royal Orchid Bouquet', 'Bouquet', 1699.00, 'products/royal-orchid-bouquet.jpg', 'A luxurious bouquet featuring premium orchids.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(18, 'Simple Sweet Bouquet', 'Bouquet', 1099.00, 'products/simple-sweet-bouquet.webp', 'A minimal yet sweet arrangement for gentle gestures.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(19, 'Stargazing Bloom Bouquet', 'Bouquet', 1599.00, 'products/stargazing-bloom-bouquet.jpg', 'An elegant bouquet inspired by starry night florals.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(20, 'Summer Medley Bouquet', 'Bouquet', 1399.00, 'products/summer-medley-bouquet.webp', 'A lively mix of summer flowers in bright, warm hues.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(21, 'Sunshine Cheer Bouquet', 'Bouquet', 1099.00, 'products/sunshine-cheer-bouquet.jpg', 'A cheerful, sunlit bouquet to brighten any room.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(22, 'Sweet Petals Bouquet', 'Bouquet', 1199.00, 'products/sweet-petals-bouquet.jpg', 'A delicate pastel arrangement with airy, fragrant petals.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(23, 'White Rose Bouquet', 'Bouquet', 1299.00, 'products/white-rose-bouquet.jpg', 'A classic bouquet of pure white roses for refined style.', '2026-04-11 20:57:20', '2026-04-11 20:57:20'),
-(24, 'Wildest Dreams Bouquet', 'Bouquet', 1499.00, 'products/wildest-dreams-bouquet.webp', 'A dreamy bouquet of dramatic blooms and lush greenery.', '2026-04-11 20:57:20', '2026-04-11 20:57:20');
+INSERT INTO `products` (`id`, `name`, `category`, `price`, `image_url`, `description`, `views`, `rating`, `rating_count`, `created_at`, `updated_at`) VALUES
+(1, 'Blooming Embrace Bouquet', 'Bouquet', 1499.00, 'products/blooming-embrace-bouquet.webp', 'A lush bouquet of mixed blossoms with soft pinks and creams.', 1, 4.80, 117, '2026-04-28 06:10:30', '2026-04-28 06:11:25'),
+(2, 'Citrus Kiss Bouquet', 'Bouquet', 1299.00, 'products/citrus-kiss-bouquet.webp', 'A bright, refreshing arrangement of yellow and orange blooms.', 0, 4.50, 89, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(3, 'Daisy Kiss Bouquet', 'Bouquet', 1099.00, 'products/daisy-kiss-bouquet.webp', 'A cheerful blend of daisies and greenery for everyday smiles.', 0, 4.60, 104, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(4, 'Emilia Bouquet', 'Bouquet', 1399.00, 'products/emilia-bouquet.webp', 'A graceful bouquet with elegant petals and delicate filler flowers.', 1, 4.70, 145, '2026-04-28 06:10:30', '2026-04-28 06:11:28'),
+(5, 'Emotions Bouquet', 'Bouquet', 1299.00, 'products/emotions-bouquet.webp', 'A heartfelt arrangement designed to express warmth and care.', 0, 4.40, 76, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(6, 'Gerbera Joy Bouquet', 'Bouquet', 1249.00, 'products/gerbera-joy-bouquet.jpg', 'A vibrant gerbera-focused bouquet bursting with color.', 1, 4.90, 156, '2026-04-28 06:10:30', '2026-04-28 06:11:32'),
+(7, 'Lemon Sorbet Bouquet', 'Bouquet', 1299.00, 'products/lemon-sorbet-bouquet.webp', 'A sunny citrus-inspired bouquet with soft pastel accents.', 0, 4.30, 92, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(8, 'Liliana Bouquet', 'Bouquet', 1399.00, 'products/liliana-bouquet.webp', 'A stylish floral display centered around fragrant lilies.', 0, 4.80, 128, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(9, 'Love Full In Bloom Bouquet', 'Bouquet', 1599.00, 'products/love-full-in-bloom-bouquet.webp', 'A romantic abundance of blooms in classic tones.', 0, 5.00, 203, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(10, 'Love In Bloom Bouquet', 'Bouquet', 1499.00, 'products/love-in-bloom-bouquet.jpg', 'A tender bouquet crafted for special love moments.', 0, 4.70, 134, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(11, 'Peachy Glow Bouquet', 'Bouquet', 1299.00, 'products/peachy-glow-bouquet.jpg', 'A soft peach-hued bouquet with warm, elegant charm.', 0, 4.60, 98, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(12, 'Pink Delight Bouquet', 'Bouquet', 1199.00, 'products/pink-delight-bouquet.jpg', 'A playful pink arrangement bursting with joyful petals.', 0, 4.50, 111, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(13, 'Pink Love Bouquet', 'Bouquet', 1299.00, 'products/pink-love-bouquet.webp', 'A dreamy pink bouquet made for romantic surprises.', 0, 4.80, 167, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(14, 'Pink Sweet Bouquet', 'Bouquet', 1199.00, 'products/pink-sweet-bouquet.webp', 'A sweet blush arrangement with delicate floral accents.', 0, 4.40, 83, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(15, 'Rose Romance', 'Bouquet', 1599.00, 'products/Rose Romance.jpg', 'A timeless romantic bouquet of luxurious rose blooms.', 0, 4.90, 189, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(16, 'Rosy Charm Bouquet', 'Bouquet', 1249.00, 'products/rosy-charm-bouquet.jpg', 'A charming mix of rosy tones for elegant gifting.', 0, 4.60, 105, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(17, 'Royal Orchid Bouquet', 'Bouquet', 1699.00, 'products/royal-orchid-bouquet.jpg', 'A luxurious bouquet featuring premium orchids.', 0, 4.90, 175, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(18, 'Simple Sweet Bouquet', 'Bouquet', 1099.00, 'products/simple-sweet-bouquet.webp', 'A minimal yet sweet arrangement for gentle gestures.', 0, 4.30, 67, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(19, 'Stargazing Bloom Bouquet', 'Bouquet', 1599.00, 'products/stargazing-bloom-bouquet.jpg', 'An elegant bouquet inspired by starry night florals.', 0, 4.80, 141, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(20, 'Summer Medley Bouquet', 'Bouquet', 1399.00, 'products/summer-medley-bouquet.webp', 'A lively mix of summer flowers in bright, warm hues.', 0, 4.70, 119, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(21, 'Sunshine Cheer Bouquet', 'Bouquet', 1099.00, 'products/sunshine-cheer-bouquet.jpg', 'A cheerful, sunlit bouquet to brighten any room.', 0, 4.50, 88, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(22, 'Sweet Petals Bouquet', 'Bouquet', 1199.00, 'products/sweet-petals-bouquet.jpg', 'A delicate pastel arrangement with airy, fragrant petals.', 0, 4.60, 96, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(23, 'White Rose Bouquet', 'Bouquet', 1299.00, 'products/white-rose-bouquet.jpg', 'A classic bouquet of pure white roses for refined style.', 0, 4.80, 152, '2026-04-28 06:10:30', '2026-04-28 06:10:30'),
+(24, 'Wildest Dreams Bouquet', 'Bouquet', 1499.00, 'products/wildest-dreams-bouquet.webp', 'A dreamy bouquet of dramatic blooms and lush greenery.', 0, 4.90, 168, '2026-04-28 06:10:30', '2026-04-28 06:10:30');
 
 -- --------------------------------------------------------
 
@@ -355,8 +360,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('3HrbudMsXi9Y3om2mDqifsbwigMm8Px46KjJrOMv', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidTZzNXRXVHVmNnpFdEpVa3BTVGJISklZTkR0NURWUHBMRVlZWVJOaSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7czo1OiJyb3V0ZSI7czoxNToiYWRtaW4uZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mjt9', 1775988399),
-('sT6bBwu7ly6ru51SNVDZIRMGUcoZf3RBiXsDwQxH', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidVdBOGUzODdyZWVXZklkcmdsaExVUzF2UW9aWklOWmpUcG1ycFczQiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9fQ==', 1775992823);
+('EPIXrAPZ8mdCIv9iRo8FtGl4js5nW3YBRQC2Q3r3', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiS0xQeFlON0pseldNaWQwNEdIMFpNV045SjVYQk9DeHBwMXJza1Q4NCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NjA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9kdWN0P2NhdGVnb3J5PSZzZWFyY2g9JnNvcnQ9cG9wdWxhciI7czo1OiJyb3V0ZSI7czo3OiJwcm9kdWN0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1777385492),
+('qNrLFMkq8eooqCQCzzSmnZUJspfzjx982oa7t9v9', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTjlFTGoyRjFIWm5GTXRScEk2aUJmbkZYY2syZ3hucDNrWjRDZEJCNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7czo1OiJyb3V0ZSI7czoyMDoiYWRtaW4ucHJvZHVjdHMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO30=', 1777383021);
 
 -- --------------------------------------------------------
 
@@ -389,11 +394,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `role`, `email_verified_at`, `password`, `age`, `gender`, `civil_status`, `mobile`, `address`, `zip`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'verde', 'verde', 'verde@gmail.com', 'user', NULL, '$2y$12$kY9ZEbi09lo9x2eIOr4Mke6jaJ8dMF6JiDShoQpg043j7KTMld5HS', 20, 'Male', 'Single', '09123456789', '#123 Vidal, Tonton, Lingayen, Pangasinan, Philippines', '2401', NULL, '2026-04-09 22:39:09', '2026-04-09 22:39:09'),
-(2, 'Admin User', 'admin', 'admin@gmail.com', 'admin', NULL, '$2y$12$PXmvqPcp0Q9oafI8d5K32uM/gBbqoC9xERHyPhvCRBKs.qWghE836', 30, 'Other', 'Single', '09990000000', 'Admin Office Address', '0000', NULL, '2026-04-10 01:19:50', '2026-04-11 20:57:20'),
+(2, 'Admin User', 'admin', 'admin@gmail.com', 'admin', NULL, '$2y$12$1Ag7XKQy6bPBndIiA9G7Pe9S5jo2ok9l1yCw0g1sl9A4MSsWST0mO', 30, 'Other', 'Single', '09990000000', 'Admin Office Address', '0000', NULL, '2026-04-10 01:19:50', '2026-04-28 06:10:30'),
 (3, 'Jane Doe', 'jane_doe', 'janedoe@gmail.com', 'user', NULL, '$2y$12$gHC6YCD4GWVVqs30sQBxm.OelzRKwYzOdMrDDGQvTINkCa2Wm/tGW', 25, 'Female', 'Single', '09876543210', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-10 22:21:37', '2026-04-10 22:21:37'),
 (4, 'John Doe', 'johndoe', 'johndoe@gmail.com', 'user', NULL, '$2y$12$zy2WP0mlrhfOAdmUUarSi.VG9XrlsDRJ4j8aZD3PWt1SXj7fd3lsu', 25, 'Male', 'Single', '09987654321', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-11 06:27:08', '2026-04-11 06:27:08'),
 (5, 'Arman Salon', 'armansalon', 'armansalon@gmail.com', 'user', NULL, '$2y$12$AG15FSV7j531ut8CfO.iq.aePgI/x/2rwIGPx8RwQT36G6TA.Gxga', 18, 'Male', 'Single', '09998765432', 'Alvear Street, Poblacion, Lingayen, Pangasinan, Region I, Philippines, 2401.', '2401', NULL, '2026-04-11 07:03:18', '2026-04-11 07:03:18'),
-(6, 'Test User', 'testuser', 'test@example.com', 'user', '2026-04-11 20:45:19', '$2y$12$AMd3AX7KlaCuyeg3rvnf1OudOMyD3YHY2yJS1cgDefhxmDtyRIpWK', 25, 'Other', 'Single', '09171234567', '123 Test Street', '1000', '698RKFOrT2', '2026-04-11 20:45:19', '2026-04-11 20:57:20'),
+(6, 'Test User', 'testuser', 'test@example.com', 'user', '2026-04-11 20:45:19', '$2y$12$8olcXsBRXTSx2Kaz0TS3dOAdHsR8eeP6j5KvPzsFxqFF0miuLpNtq', 25, 'Other', 'Single', '09171234567', '123 Test Street', '1000', '698RKFOrT2', '2026-04-11 20:45:19', '2026-04-28 06:10:30'),
 (8, 'maya hawke', 'mayabird', 'mayabird@gmail.com', 'user', NULL, '$2y$12$Q9Qq6KOUmRrxU9AlhNWJ9ud/oZqdA8SESmI189fB7b7FHiGOdj2HC', 18, 'Female', 'Single', '09999867643', '#123 Vidal, Tonton, Lingayen, Pangasinan, Philippines', '2401', NULL, '2026-04-12 02:47:28', '2026-04-12 02:47:28');
 
 --
@@ -541,13 +546,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -21,6 +21,8 @@ class Product extends Model
         'image_url',
         'description',
         'views',
+        'rating',
+        'rating_count',
     ];
 
     /**

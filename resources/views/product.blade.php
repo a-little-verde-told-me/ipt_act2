@@ -63,6 +63,13 @@
                     <p>{{ \Illuminate\Support\Str::limit($product->description ?? 'Beautiful fresh flowers for every occasion.', 96) }}</p>
                     <p class="product-price">₱{{ number_format($product->price, 2) }}</p>
                 </div>
+                @if($product->rating > 0)
+                    <div class="product-rating">
+                        <span class="rating-star">★</span>
+                        <span class="rating-value">{{ number_format($product->rating, 1) }}</span>
+                        <span class="rating-count">({{ $product->rating_count }})</span>
+                    </div>
+                @endif
             </div>
         @empty
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
@@ -100,6 +107,36 @@
     <style>
         body.no-scroll {
             overflow: hidden;
+        }
+        .product-card {
+            position: relative;
+        }
+        .product-rating {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(4px);
+        }
+        .rating-star {
+            color: #f59e0b;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .rating-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .rating-count {
+            color: #6b7280;
+            font-size: 0.75rem;
         }
         .product-detail-overlay {
             position: fixed;
