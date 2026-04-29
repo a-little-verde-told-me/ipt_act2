@@ -345,7 +345,7 @@
         .product-detail-actions {
             display: flex;
             gap: 12px;
-            flex-wrap: wrap;
+            /* flex-wrap: wrap; */
         }
         .product-detail-actions .btn {
             min-width: 160px;

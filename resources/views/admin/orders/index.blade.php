@@ -52,7 +52,7 @@
                         <form action="{{ route('admin.orders.updateStatus', $order) }}" method="post" class="inline-form">
                             @csrf
                             @method('PATCH')
-                            <select name="status" onchange="this.form.submit()">
+                            <select name="status" onchange="this.form.submit()" class="admin-status-select">
                                 @foreach(\App\Models\Order::statuses() as $key => $label)
                                     <option value="{{ $key }}" {{ $order->status === $key ? 'selected' : '' }}>
                                         {{ $label }}

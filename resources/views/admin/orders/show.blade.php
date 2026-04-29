@@ -77,7 +77,7 @@
                 @method('PATCH')
                 <div class="form-group">
                     <label for="status">Status:</label>
-                    <select name="status" id="status">
+                    <select name="status" id="status" class="admin-status-select">
                         @foreach(\App\Models\Order::statuses() as $key => $label)
                             <option value="{{ $key }}" {{ $order->status === $key ? 'selected' : '' }}>
                                 {{ $label }}
